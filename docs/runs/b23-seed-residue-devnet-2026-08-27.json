@@ -1,0 +1,27 @@
+{
+  "gate": "REVIEW-024 section 6 item 7",
+  "claim": "rippled accepts an ed25519 signature whose RFC 8032 nonce prefix is hedged, on the default path",
+  "builtFromCommit": "6efc8ab9f5f36ca1d0897efc8ea5c6578bfb3124",
+  "workingTreeDirty": false,
+  "account": "rsc9Z29Qz6w99TnpECxbeU6vBs2L3E3CbY",
+  "algorithm": "ed25519",
+  "signingPubKey": "ED21E08C1BC17CC137B5B38B6192E23C94760DE0D8EFCC2F03687A1B40F9A79B04",
+  "signingPubKeyDecodedFrom": "the submitted tx_blob, not the profile",
+  "signingSerialisationBytes": 297,
+  "hedgedSignature": "3A2E0D496321DBAC469CAA0B07C2DF41A4E779519F8355C3CC869F1FC4DE2BCF5228B61B9675757AAF1ACF17BBF2D3280AEDEFD060C0DB6D9EE823BF59FFBA08",
+  "deterministicWouldHaveBeen": "D470A15E4EFD0A2D3D5A998BC24FA9831EE2B14475351AEFB2FFB6AC0D014CC1B4BA6E75624DAA0435EFAF7A044DB7C67D07531554775495982212CAF18CD80A",
+  "differsFromRfc8032": true,
+  "bothVerifyUnderTheSameKey": true,
+  "engine": "tesSUCCESS",
+  "hash": "3386E9F5244713781667C7361F5A8614F5340E4B6AEA5038DB0339D40DDD3A48",
+  "validated": true,
+  "ledgerCarriesTheHedgedBytes": true,
+  "at": "2026-08-27T12:34:46.954Z",
+  "reExecutedFor": "B-23: the seed's owned lifetime — the profile-load path this run exercises first",
+  "doesNotEstablish": [
+    "that hedging is better — that is REVIEW-024's argument, not this run's",
+    "that rippled's verification path was read at source — it is not in this checkout, a named gap",
+    "that this exact combiner produced it — that is the KAT and the commit pin, not the ledger"
+  ],
+  "gateSatisfied": true
+}

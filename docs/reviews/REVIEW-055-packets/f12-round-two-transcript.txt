@@ -1,0 +1,2011 @@
+OpenAI Codex v0.151.0
+--------
+workdir: $USER_TMP/T/f12r2.zRcIsF
+model: gpt-5.6-luna
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR] (network access enabled)
+reasoning effort: high
+reasoning summaries: none
+session id: 01a14ca9-86dc-7882-bfd7-148f08ef7401
+--------
+user
+STEP 0. Two preconditions; if either fails, STOP and report only which one failed.
+(a) Network. Run `curl -s -o /dev/null -w '%{http_code}\n' https://api.github.com` and print the code. If it does not resolve, report NO NETWORK and stop.
+(b) Isolation. Read nothing outside this working directory and any fresh temp directory you create yourself. Do NOT list, read or grep the parent directory, `/private/tmp/claude-501/`, any other directory under `$TMPDIR`, or any `xrpl-confidential-positions` checkout.
+
+You are the ROUND-TWO reviewer of a proposed GitHub issue, `draft.md`, for XRPLF/mpt-crypto. It has NOT been filed, and you did not write it. Round one's findings are in `round1-findings.md`, and the author's rulings in `round1-rulings.md`. PROTOCOL.md is the authority, and REVIEW-INSTRUCTIONS.md is the procedure. You do not need to re-run builds: round one reproduced them independently.
+
+Constraints:
+- Read-only against GitHub and every remote.
+- Open anything you cite.
+- Count prose words yourself, excluding fenced code, block quotes, the `<details>` block and the footer.
+
+Answer, narrowly:
+1. Did each upheld finding get a real fix, without moving the problem, leaving a second copy, or adding an overclaim? Do you accept the one rejection?
+2. Are the changed sentences true? Check against https://github.com/XRPLF/mpt-crypto at `3baaaac33dadec3e649846e487f452c5b6b2d825`:
+   - the prerequisites quotation, verbatim at `build-wasm.sh:19`;
+   - "the changelog describes the change for all platforms" (emscripten's `ChangeLog.md` at the `6.0.6` tag);
+   - the collapsed sentence's four links;
+   - the corpus sentence in the `<details>` block.
+3. Verbosity: is it tight now? Give specific cuts with old text, new text and what is lost, or say it is tight.
+
+Output: per-question verdicts with evidence, then **Verdict:** ready to file, or not ready and why.
+exec
+/bin/zsh -lc "curl -s -o /dev/null -w '%{http_code}\\n' https://api.github.com" in $USER_TMP/T/f12r2.zRcIsF
+ succeeded in 0ms:
+200
+
+exec
+/bin/zsh -lc "printf '%s\\n' '--- files ---'; find . -maxdepth 2 -type f -print | sort; printf '%s\\n' '--- instructions ---'; find . -type f \\( -name AGENTS.md -o -name AGENTS.override.md -o -name REVIEW-INSTRUCTIONS.md -o -name PROTOCOL.md \\) -print | sort" in $USER_TMP/T/f12r2.zRcIsF
+ succeeded in 0ms:
+--- files ---
+./.git/COMMIT_EDITMSG
+./.git/HEAD
+./.git/config
+./.git/description
+./.git/index
+./PROTOCOL.md
+./REVIEW-INSTRUCTIONS.md
+./draft.md
+./round1-findings.md
+./round1-rulings.md
+--- instructions ---
+./PROTOCOL.md
+./REVIEW-INSTRUCTIONS.md
+
+exec
+/bin/zsh -lc 'for f in PROTOCOL.md REVIEW-INSTRUCTIONS.md round1-findings.md round1-rulings.md draft.md; do echo "===== $f ====="; cat -- "$f"; echo; done' in $USER_TMP/T/f12r2.zRcIsF
+ succeeded in 0ms:
+===== PROTOCOL.md =====
+# Upstream filing protocol
+
+**Ruled by the project owner 2026-09-01, after auditing the 2026-08-26 round.**
+
+This binds every filing to an XRPLF repository. `make check-filing` enforces the
+mechanical parts; the rest is judgement and is listed so it can be checked by a
+person.
+
+---
+
+## Why this exists
+
+Seven items were filed on 2026-08-26. An adversarial review run **after
+submission** found **13 defects**, six graded *would embarrass*. Four of five
+first-round issues needed same-day corrections in public.
+
+The 2026-09-01 audit re-verified all six open filings at upstream HEAD: **every
+claim still stands and none is stale.** So the content was recoverable. What was
+not recoverable is the impression left by correcting four public issues within
+hours of opening them.
+
+⚠ **The defect was the order of operations, not the research.** Everything below
+follows from that.
+
+---
+
+## The two commands
+
+- **`/upstream-issue`** — drafts a filing from a verified finding.
+- **`/issue-review`** — attacks the draft before it is sent. **Rule 1 gates on it.**
+
+⚠ Both are slash commands in `.claude/commands/`, matching this project's three
+existing ones — **user-invoked, never model-invoked**, because filing needs
+authorisation every time.
+
+⚠ **Both read the target repository's issue template first**, and that outranks
+anything here. **Measured 2026-09-01:** `XRPLF/rippled` sets
+`blank_issues_enabled: false` and offers only `bug_report.md` and
+`feature_request.md`; `XRPL-Standards`, `xrpl-dev-portal` and `mpt-crypto` have
+none. ⚠⚠ **`rippled#8118` fit neither rippled template, was filed anyway, and
+was closed without comment.** Reading the template first would have stopped that
+filing before it was written — which makes it the cheapest rule here and the one
+that was missing.
+
+---
+
+## The five rules
+
+### 1. Adversarial review runs BEFORE filing, and it gates
+
+No filing is sent until an independent adversarial pass has run against the
+**draft text and the frozen primary sources**, and every finding is resolved.
+
+⚠ **A review that runs after submission cannot prevent anything.** It can only
+produce a correction, and a correction is a public record that the filing was
+not ready.
+
+**The reviewer is given the draft and the sources, not the conclusion.**
+
+### 2. A filing is at most 300 words, with one concrete ask
+
+Counted over the issue body, excluding code blocks, quoted source and the
+disclosure footer.
+
+⚠ **`WORD_LIMIT` in `tools/check-filing.ts` is what enforces this, and the gate
+prints the number it used.** This heading states the rule; that constant is the
+instrument. If the two ever disagree, the gate is right and this line is the
+defect — and neither the skills nor a draft may restate the number at all.
+
+- **One ask per issue.** If there are five asks, that is five issues or one
+  errata list with five clearly numbered items and no argument between them.
+- **Evidence is linked, not inlined.** A permalink to a line range beats a
+  quotation; a quotation beats a paragraph explaining the quotation.
+- **State the defect, the evidence, and the fix.** Nothing else.
+
+⚠ The 2026-08-26 filings averaged **~750 words**. The dev-portal one was a
+two-sentence documentation fix in six sections. A maintainer who cannot find the
+ask in fifteen seconds will not look for it.
+
+### 3. No "positives" filings to a bug tracker
+
+An issue tracker is for things that need doing. Appreciation is not.
+
+⚠ **And on `rippled` it is not even accepted**: `blank_issues_enabled: false`,
+with only a bug report and a feature request offered.
+
+⚠ `rippled#8118` was *"four design decisions that were better than they
+looked"*. It needed a same-day correction because its central claim was false —
+the spec advertises the property **twice**, in wording close to what the filing
+presented as its own reading — and a core contributor **closed it without
+comment**.
+
+**Positive observations still get captured** in `UPSTREAM-FEEDBACK.md`, and they
+still hold the higher bar in `CLAUDE.md`. They reach a team through a channel
+meant for them, or not at all.
+
+### 4. No negative claim without its recorded search
+
+*"There is no field"*, *"nothing documents this"*, *"not exported"*, *"nobody
+has called this out"* — each is a claim about a whole corpus, and one search
+settles it.
+
+The search command and its result go **in the draft**, next to the claim.
+
+⚠ Two rows died this way. **U-15** quoted a sentence XLS-0096 has never
+contained. **`rippled#8118` item 1** said a property was not advertised anywhere,
+and the spec states it twice. `CLAIMS.md` **P-12** and
+`tools/check-negative-claims.ts` came out of the first; this rule extends the
+gate to drafts.
+
+### 5. Plain English, short sentences
+
+The reader is a maintainer skimming a queue, and English may not be their first
+language.
+
+- Short sentences. One idea each.
+- Say **`fail_hard`**, not `tapFailHard`. ⚠ Project shorthand is not an API name
+  and it has escaped into a public filing once already (`CLAIMS.md` E-156).
+- No rhetorical build-up, no *"interestingly"*, no *"it is worth noting"*.
+- Define an abbreviation on first use or drop it.
+- ⚠ **Do not carry this repository's emphasis style outward.** The warning signs
+  and bold blocks are internal instruments; in a filing they read as shouting.
+
+---
+
+## Before sending — the checklist
+
+1. `make check-filing FILE=<draft>` passes.
+2. An adversarial review has run on the draft and every finding is resolved.
+3. Every citation re-fetched at source **today**, with the ref recorded.
+4. Every negative claim carries its search.
+5. The Trail of Bits April 2026 review has been checked — ⚠ several things this
+   project first recorded as findings were already found and fixed there.
+6. The ask is one sentence and appears in the first paragraph.
+7. Authorisation from the project owner **for this filing**. ⚠ Authorisation is
+   never standing; it is per filing, per session.
+
+---
+
+## After sending
+
+- Archive the exact submitted text under `docs/upstream-filings/<date>/`. A
+  GitHub issue can be edited; the archive is what the register points at.
+- Record the issue URL in `UPSTREAM-FEEDBACK.md` and move the row to `Filed`.
+- ⚠ **If a correction becomes necessary, post it as a comment and leave the
+  original body alone.** Editing the body makes the thread incoherent — the
+  correction then refers to text that no longer exists — and GitHub shows the
+  edit history publicly anyway.
+
+---
+
+## What this protocol does not fix
+
+- ⚠ **It does not make a filing welcome.** Six of seven from 2026-08-26 have had
+  no response after six days. That is normal for these repositories and is not
+  evidence of anything, in either direction.
+- ⚠ **`check-filing` is lexical.** It counts words, finds unsearched negatives by
+  their common spellings, and flags long sentences. **It cannot tell whether a
+  claim is true**, and a claim phrased in a way it does not recognise is
+  invisible to it. The review in rule 1 is the instrument for that; this gate
+  only stops the shapes that have already gone wrong twice.
+
+===== REVIEW-INSTRUCTIONS.md =====
+# Upstream issue review
+
+Review the draft as a skeptical maintainer **and** as a fact-checker. Produce an
+edited version.
+
+⚠ **Read-only against GitHub. Do not create, submit, edit or close anything.**
+
+## ⚠⚠ STOP — did you write this draft?
+
+**If this draft was produced in this session, or by you, REFUSE.**
+
+Say plainly: *"I drafted this. Rule 1's review has not run and I cannot run
+it."* Then stop. **Do not review it, do not rewrite it, do not report a word
+count.** Producing an edited version here is worse than doing nothing, because
+it makes rule 1 look satisfied when no independent pass has happened.
+
+⚠ **The writer hands off for this reason; both halves of the handshake must
+refuse, or the gate is closed by whichever half is invoked second.** The first
+version of these two commands fixed only the writer, and an independent review
+found that running them back to back in one session still produced a
+"completed" review.
+
+⚠ **This project has measured what the difference is worth.** A self-review of
+these two commands found four defects and called them fixed. An independent pass
+then found **six more** — one of them introduced by the self-review, and one it
+had "fixed" in a single place while a second copy stood. **A further independent
+pass found four more, two of them in those fixes.**
+
+**A fresh session, a different model, or a person. Not you.**
+
+---
+
+## 0. First, the two cheap rejections — before any source is opened
+
+⚠ **These cost one API call each and can end the review immediately.** Verifying
+claims against primary sources and the Trail of Bits appendix is the expensive
+part; do not spend it on a draft that cannot be filed anyway.
+
+**Right venue?** Confirm the destination repository exists and is owned by the
+org the draft assumes. ⚠ **Testing this on U-54 found exactly that defect** — the
+wallet standard is not in `XRPLF/XRPL-Standards` at all. **A correct finding sent
+to the wrong repository is still a wasted filing**, and no evidence check catches
+it.
+
+**Right shape?** Read the target's `.github/ISSUE_TEMPLATE/` **and decode its
+`config.yml`** — listing filenames does not establish a policy.
+
+```sh
+gh api repos/<owner>/<repo>/contents/.github/ISSUE_TEMPLATE/config.yml \
+  --jq '.content' | base64 -d
+```
+
+⚠ **`blank_issues_enabled: false` means only the listed shapes are accepted.**
+`rippled` sets it, `rippled#8118` fit neither template, and it was closed without
+comment. **If the draft fits no accepted template, stop here and say so.**
+
+---
+
+## ⚠ Then correctness, and this is the whole point
+
+A concision pass would not have caught **a single one** of the thirteen defects
+found in the 2026-08-26 round. Every one was a claim that was **false or
+overstated**, and counting words finds none of those.
+
+**So attack the claims before you touch the prose.**
+
+### Verify every claim against the primary source, now
+
+- Open the source the draft cites. **Do not trust the draft's quotation** — a
+  filed row once quoted a sentence the specification has never contained
+  (`UPSTREAM-FEEDBACK.md` U-15).
+- Check line numbers and section numbers still resolve. Sources move.
+- ⚠ **Every negative claim needs its search, and you run it.** *"There is no
+  such field"*, *"not called out anywhere"*, *"not exported"* — one search
+  settles it. **`rippled#8118` said a property was not advertised anywhere; the
+  specification states it twice**, once in wording close to what the draft
+  presented as its own reading.
+- Check whether upstream already fixed it. **Four rows died as stale gaps** —
+  `UPSTREAM-FEEDBACK.md` U-3, U-8, U-9, U-10 — each describing something already closed.
+- Check the Trail of Bits April 2026 review. Several things this project first
+  recorded as findings were already found and fixed there. Read Appendices B to D
+  too: the fix review does not cover them, and F-19 was in Appendix B
+  (`CLAIMS.md` E-296).
+
+### Separate the three layers
+
+**Demonstrated** — you ran it or read it at source.
+**Inferred** — it follows, but nobody checked.
+**Proposed** — what the draft wants done.
+
+⚠ A draft that presents the second or third as the first is the defect that
+needed four public corrections. Say which layer each claim is on.
+
+⚠ **Do not let the draft's framing set yours.** Ask what would have to be true
+for the claim to be *wrong*, and go and check that.
+
+## Then the maintainer's read
+
+**Actionable?** Can a maintainer tell what to investigate, decide or change?
+
+**Scoped?** One independently actionable problem, or several disguised as one?
+
+**Skimmable?** Headings, bullets, code blocks, tables. Conclusion before
+evidence.
+
+**Something to do?** ⚠ A positives-only filing does not belong on a bug tracker
+at all — reject it rather than editing it.
+
+## Delete
+
+Essay introductions, throat-clearing, praise before the report, rhetorical
+questions, speculative motivation about maintainer intent, repeated conclusions,
+research narration, background a maintainer already has, and any restatement of
+the same point in summary and conclusion.
+
+**Also delete, specifically for this project:** project shorthand
+(`tapFailHard`), internal register references (`CLAIMS.md`, `E-nnn`,
+`REVIEW-nnn`), and this repository's ⚠-and-bold emphasis style.
+
+## Rewrite
+
+Produce the edited version. **Aim to cut at least 20% without losing
+load-bearing evidence.** If the draft is already tight, say so and do not cut
+mechanically.
+
+Run `make check-filing FILE=<draft>` on the result.
+
+## Report
+
+1. **Claims that did not survive verification** — with what you ran.
+2. **Claims that need a search that has not been run.**
+3. **Layer corrections** — demonstrated / inferred / proposed.
+4. **The edited version.**
+5. **Word count before and after.**
+
+⚠ **If any claim failed verification, say plainly that the draft is not ready to
+file.** Rule 1 gates on this. It is better to lose a filing than to correct one
+in public.
+
+===== round1-findings.md =====
+The core failure, changelog quotation, CI pin and run, current main state, Trail of Bits report, and tested fixes were verified. However, the audit claim is overstated and the draft does not clearly distinguish macOS-only evidence or independently unrerun table cells; it is not ready to file. The prose count before editing is 246 words.
+
+Full review comments:
+
+- [P2] Limit the audit claim to the searched repository — $USER_TMP/T/f12r1.uPcsX6/draft.md:64-69
+  The recorded commands use `--owner XRPLF`, so they searched the entire organization and returned many unrelated Attackathon/Sherlock results; the separate Zellic search returned #147. Therefore “the only match” is false as written. Scope this to `XRPLF/mpt-crypto` and WebAssembly-relevant results, or add a repository-scoped search; this follows `REVIEW-INSTRUCTIONS.md:73-75`.
+
+- [P2] State the tested platform and versions — $USER_TMP/T/f12r1.uPcsX6/draft.md:6-6
+  The title and opening wording can read as a cross-platform claim, but every reproduction was macOS arm64 and only 6.0.6, 6.0.10, and 6.0.12 were independently exercised. The changelog establishes the tool behavior, not failures on every host; rewrite this as the tested macOS arm64 result and avoid implying Linux was tested.
+
+- [P2] Mark independently unrerun table cells — $USER_TMP/T/f12r1.uPcsX6/draft.md:28-34
+  The independent rerun covered 6.0.2 shipped, 6.0.6 shipped/em++/`-sDEFAULT_TO_CXX`, 6.0.10 shipped/em++, and 6.0.12 shipped/em++; it did not rerun the 6.0.2 variants, 6.0.3–6.0.5 shipped cells, or the 6.0.10/6.0.12 `-sDEFAULT_TO_CXX` cells. Add that scope so the table does not present those results as independently verified, as required by `REVIEW-INSTRUCTIONS.md:120-134`.
+
+- [P3] Collapse the repeated source inventory — $USER_TMP/T/f12r1.uPcsX6/draft.md:16-21
+  The opening paragraph already states the compile/link mismatch, CI pin, and successful old run, so the four bullets under “At `3baaaac`” repeat that evidence. Replace them with one sentence retaining the four citations; the only loss is redundant prose, not load-bearing evidence. This follows `REVIEW-INSTRUCTIONS.md:109-124`.
+
+===== round1-rulings.md =====
+# F-12 round one — the author's rulings (2026-10-18)
+
+The round ran isolated, with network: the GitHub check printed 200, there were no DNS failures, and the transcript mentions project paths only in the prompt. It did not read the author's build directory (`f12b.*`). **It re-ran the builds independently and confirmed the result**: 6.0.2 as shipped; 6.0.6 as shipped, with `em++` and with `-sDEFAULT_TO_CXX`; 6.0.10 as shipped and with `em++`; 6.0.12 as shipped and with `em++`. It also verified the changelog quotation, the CI pin and run, the state of `main`, and the Trail of Bits report.
+
+| # | Finding | Ruling |
+|---|---|---|
+| P2 | *"The only match on these terms"* reads as if the org-wide searches returned one item | **Upheld as wording.** It now says that grepping those items for the WASM terms matched one item, this project's own #148 |
+| P2 | State the tested platform | **Upheld.** The opening says macOS arm64, and that the changelog describes the change for all platforms |
+| P2 | Mark the table cells the reviewer did not re-run | **Rejected.** The table reports the author's runs, all executed and logged in `docs/evidence/f12-emsdk-2026-10-18/`. The reviewer's coverage is recorded here, not in the filing |
+| P3 | Collapse the four "At `3baaaac`" bullets | **Upheld.** One sentence keeps all four links |
+
+Found by the author while fixing: the prerequisites quotation used an ellipsis, the shape F-13's round two rejected. It is now the exact text of `build-wasm.sh:19`, checked against the source.
+
+===== draft.md =====
+TITLE: [Build] build-wasm.sh links C++ with emcc, which fails from emsdk 6.0.6 on
+REPO: XRPLF/mpt-crypto
+
+---
+
+`build-wasm.sh` compiles `src/utility/mpt_utility.cpp` as C++, then links the module with plain `emcc`. From emsdk 6.0.6, `emcc` no longer links the C++ runtime by default, so the link fails with the C++ runtime missing. CI did not catch it because it pins emsdk 6.0.2, and the WASM job [passed at `3baaaac`](https://github.com/XRPLF/mpt-crypto/actions/runs/32380884181). The script's own prerequisites line names no version. On macOS arm64, every emsdk I tried from 6.0.6 on fails, and the changelog describes the change for all platforms.
+
+**Suggested fix:** link with `em++` on the three link lines, as Emscripten's changelog recommends.
+
+**Cause**
+
+Emscripten's [ChangeLog for 6.0.6](https://github.com/emscripten-core/emscripten/blob/6.0.6/ChangeLog.md#L23-L25):
+
+> `DEFAULT_TO_CXX` is now disabled by default. This means that `em++` is now required when linking C++ programs, matching the behavior of clang and gcc. The old behavior is still available using `-sDEFAULT_TO_CXX`. (#11121)
+
+At `3baaaac`, the C++ object is compiled with `em++` ([line 272](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/.github/scripts/build-wasm.sh#L272)) and linked with `emcc` ([lines 363, 365 and 374](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/.github/scripts/build-wasm.sh#L363-L374)). CI pins [emsdk 6.0.2](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/.github/workflows/build-wasm.yml#L38-L43), and the script asks only for [*"Emscripten SDK (emcc, em++, emcmake, emmake) on PATH"*](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/.github/scripts/build-wasm.sh#L19).
+
+**What I ran**
+
+`./.github/scripts/build-wasm.sh` at `3baaaac`, then `test-wasm.sh` where the table says so. Each build used a fresh source tree and its own emsdk. macOS arm64, 2026-10-18. I did not run Linux.
+
+```text
+emsdk                as shipped          em++ on the 3 link lines     -sDEFAULT_TO_CXX on the 3 link lines
+6.0.2                builds, tests pass  builds, tests pass,          builds, tests pass,
+                                         output byte-identical        output byte-identical
+6.0.3, 6.0.4, 6.0.5  builds, tests pass  not run                      not run
+6.0.6                fails at line 363   builds, tests pass           builds, tests pass
+6.0.10               fails at line 363   builds, tests pass           builds, tests pass
+6.0.12 (newest)      fails at line 363   builds, tests pass           builds, tests pass
+```
+
+The 6.0.6 and 6.0.10 failure. At 6.0.12 it also lists `__cxa_guard_acquire` and `__cxa_guard_release`.
+
+```text
+wasm-ld: error: …/mpt_crypto.wasm.lto.o: undefined symbol: operator new(unsigned long)
+  (and 7 more: operator delete, __cxa_allocate_exception, __cxa_throw,
+   typeinfo / vtable / ~length_error for std::length_error, std::logic_error::logic_error)
+emcc: warning: link failed with undefined C++ symbols. Try linking with 'em++' or passing '-sDEFAULT_TO_CXX'
+```
+
+All three lines need the change. With only lines 363 and 365 changed, 6.0.6 still fails at line 374.
+
+<details>
+<summary>Searches for an existing report</summary>
+
+```text
+# 2026-10-18. Open and closed, issues and PRs.
+gh search issues "DEFAULT_TO_CXX"   --repo XRPLF/mpt-crypto --include-prs   # 0
+gh search issues "undefined symbol" --repo XRPLF/mpt-crypto --include-prs   # 0
+gh search issues "__cxa_throw"      --repo XRPLF/mpt-crypto --include-prs   # 0
+gh search issues "6.0.6"            --repo XRPLF/mpt-crypto --include-prs   # 0
+gh search issues "emsdk"            --repo XRPLF/mpt-crypto --include-prs   # 2: #135 adds the pin, #145 an export
+gh search issues "DEFAULT_TO_CXX"   --owner XRPLF --include-prs             # 0
+
+# Audits
+Trail of Bits, April 2026 report: no mention of WebAssembly, emsdk or Emscripten.
+  https://github.com/trailofbits/publications/blob/master/reviews/2026-04-ripple-labs-xrp-ledger-confidential-transfer-securityreview.pdf
+  I could not obtain the June 2026 revision.
+Sherlock XRP Ledger Attackathon: full findings report not found. Its public trail:
+  gh search issues Attackathon --owner XRPLF --include-prs --limit 500
+  gh search issues Sherlock    --owner XRPLF --include-prs --limit 500
+  gh pr list -R XRPLF/rippled --state all --base ripple/attackathon-april-2026
+  Bodies, comments and PR review comments read. None concerns the WebAssembly build.
+  Grepping them for emsdk, Emscripten, WASM, DEFAULT_TO_CXX, em++, libc++ and __cxa
+  matched one item: this project's own filing, mpt-crypto#148.
+Zellic scan of mpt-crypto@3baaaac: report not found.
+  gh search issues Zellic --owner XRPLF --include-prs   # 1: mpt-crypto#147
+  #147 cites DEFI-1108, -1109 and -1110. None concerns the WebAssembly build.
+```
+
+</details>
+
+---
+
+*Disclosure: prepared with AI assistance. The builds above were run on 2026-10-18 at mpt-crypto `3baaaac`, and every link was checked the same day. `build-wasm.sh` and `build-wasm.yml` are unchanged at today's `main` (`c60a60c`).*
+
+
+exec
+/bin/zsh -lc "set -e
+printf '%s\\n' '--- repo ---'
+curl -sS https://api.github.com/repos/XRPLF/mpt-crypto | sed -n '1,80p'
+printf '%s\\n' '--- template config ---'
+curl -sS https://api.github.com/repos/XRPLF/mpt-crypto/contents/.github/ISSUE_TEMPLATE/config.yml | sed -n '1,120p'
+printf '%s\\n' '--- template directory ---'
+curl -sS https://api.github.com/repos/XRPLF/mpt-crypto/contents/.github/ISSUE_TEMPLATE | sed -n '1,160p'" in $USER_TMP/T/f12r2.zRcIsF
+ succeeded in 712ms:
+{
+  "id": 1114779728,
+  "node_id": "R_kgDOQnIwUA",
+  "name": "mpt-crypto",
+  "full_name": "XRPLF/mpt-crypto",
+  "private": false,
+  "owner": {
+    "login": "XRPLF",
+    "id": 67929741,
+    "node_id": "MDEyOk9yZ2FuaXphdGlvbjY3OTI5NzQx",
+    "avatar_url": "https://avatars.githubusercontent.com/u/67929741?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/XRPLF",
+    "html_url": "https://github.com/XRPLF",
+    "followers_url": "https://api.github.com/users/XRPLF/followers",
+    "following_url": "https://api.github.com/users/XRPLF/following{/other_user}",
+    "gists_url": "https://api.github.com/users/XRPLF/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/XRPLF/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/XRPLF/subscriptions",
+    "organizations_url": "https://api.github.com/users/XRPLF/orgs",
+    "repos_url": "https://api.github.com/users/XRPLF/repos",
+    "events_url": "https://api.github.com/users/XRPLF/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/XRPLF/received_events",
+    "type": "Organization",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "html_url": "https://github.com/XRPLF/mpt-crypto",
+  "description": null,
+  "fork": false,
+  "url": "https://api.github.com/repos/XRPLF/mpt-crypto",
+  "forks_url": "https://api.github.com/repos/XRPLF/mpt-crypto/forks",
+  "keys_url": "https://api.github.com/repos/XRPLF/mpt-crypto/keys{/key_id}",
+  "collaborators_url": "https://api.github.com/repos/XRPLF/mpt-crypto/collaborators{/collaborator}",
+  "teams_url": "https://api.github.com/repos/XRPLF/mpt-crypto/teams",
+  "hooks_url": "https://api.github.com/repos/XRPLF/mpt-crypto/hooks",
+  "issue_events_url": "https://api.github.com/repos/XRPLF/mpt-crypto/issues/events{/number}",
+  "events_url": "https://api.github.com/repos/XRPLF/mpt-crypto/events",
+  "assignees_url": "https://api.github.com/repos/XRPLF/mpt-crypto/assignees{/user}",
+  "branches_url": "https://api.github.com/repos/XRPLF/mpt-crypto/branches{/branch}",
+  "tags_url": "https://api.github.com/repos/XRPLF/mpt-crypto/tags",
+  "blobs_url": "https://api.github.com/repos/XRPLF/mpt-crypto/git/blobs{/sha}",
+  "git_tags_url": "https://api.github.com/repos/XRPLF/mpt-crypto/git/tags{/sha}",
+  "git_refs_url": "https://api.github.com/repos/XRPLF/mpt-crypto/git/refs{/sha}",
+  "trees_url": "https://api.github.com/repos/XRPLF/mpt-crypto/git/trees{/sha}",
+  "statuses_url": "https://api.github.com/repos/XRPLF/mpt-crypto/statuses/{sha}",
+  "languages_url": "https://api.github.com/repos/XRPLF/mpt-crypto/languages",
+  "stargazers_url": "https://api.github.com/repos/XRPLF/mpt-crypto/stargazers",
+  "contributors_url": "https://api.github.com/repos/XRPLF/mpt-crypto/contributors",
+  "subscribers_url": "https://api.github.com/repos/XRPLF/mpt-crypto/subscribers",
+  "subscription_url": "https://api.github.com/repos/XRPLF/mpt-crypto/subscription",
+  "commits_url": "https://api.github.com/repos/XRPLF/mpt-crypto/commits{/sha}",
+  "git_commits_url": "https://api.github.com/repos/XRPLF/mpt-crypto/git/commits{/sha}",
+  "comments_url": "https://api.github.com/repos/XRPLF/mpt-crypto/comments{/number}",
+  "issue_comment_url": "https://api.github.com/repos/XRPLF/mpt-crypto/issues/comments{/number}",
+  "contents_url": "https://api.github.com/repos/XRPLF/mpt-crypto/contents/{+path}",
+  "compare_url": "https://api.github.com/repos/XRPLF/mpt-crypto/compare/{base}...{head}",
+  "merges_url": "https://api.github.com/repos/XRPLF/mpt-crypto/merges",
+  "archive_url": "https://api.github.com/repos/XRPLF/mpt-crypto/{archive_format}{/ref}",
+  "downloads_url": "https://api.github.com/repos/XRPLF/mpt-crypto/downloads",
+  "issues_url": "https://api.github.com/repos/XRPLF/mpt-crypto/issues{/number}",
+  "pulls_url": "https://api.github.com/repos/XRPLF/mpt-crypto/pulls{/number}",
+  "milestones_url": "https://api.github.com/repos/XRPLF/mpt-crypto/milestones{/number}",
+  "notifications_url": "https://api.github.com/repos/XRPLF/mpt-crypto/notifications{?since,all,participating}",
+  "labels_url": "https://api.github.com/repos/XRPLF/mpt-crypto/labels{/name}",
+  "releases_url": "https://api.github.com/repos/XRPLF/mpt-crypto/releases{/id}",
+  "deployments_url": "https://api.github.com/repos/XRPLF/mpt-crypto/deployments",
+  "created_at": "2025-12-11T21:52:44Z",
+  "updated_at": "2026-10-05T17:03:45Z",
+  "pushed_at": "2026-10-02T00:59:32Z",
+  "git_url": "git://github.com/XRPLF/mpt-crypto.git",
+  "ssh_url": "git@github.com:XRPLF/mpt-crypto.git",
+  "clone_url": "https://github.com/XRPLF/mpt-crypto.git",
+  "svn_url": "https://github.com/XRPLF/mpt-crypto",
+  "homepage": null,
+  "size": 1218,
+  "stargazers_count": 9,
+  "watchers_count": 9,
+  "language": "C",
+  "has_issues": true,
+--- template config ---
+{
+  "message": "Not Found",
+  "documentation_url": "https://docs.github.com/rest/repos/contents#get-repository-content",
+  "status": "404"
+}
+--- template directory ---
+{
+  "message": "Not Found",
+  "documentation_url": "https://docs.github.com/rest/repos/contents#get-repository-content",
+  "status": "404"
+}
+
+exec
+/bin/zsh -lc "set -e
+base=https://raw.githubusercontent.com/XRPLF/mpt-crypto/3baaaac33dadec3e649846e487f452c5b6b2d825
+for spec in '.github/scripts/build-wasm.sh' '.github/workflows/build-wasm.yml'; do
+  echo \"===== "'$spec ====="
+  curl -sS "$base/$spec" | nl -ba | sed -n '"'1,390p'
+done
+printf '%s\\n' '===== run 32380884181 ====='
+curl -sS https://api.github.com/repos/XRPLF/mpt-crypto/actions/runs/32380884181 | sed -n '1,120p'
+printf '%s\\n' '===== changelog 6.0.6 ====='
+curl -sS https://raw.githubusercontent.com/emscripten-core/emscripten/6.0.6/ChangeLog.md | nl -ba | sed -n '18,30p'" in $USER_TMP/T/f12r2.zRcIsF
+ succeeded in 1392ms:
+     1	#!/usr/bin/env bash
+     2	# build-wasm.sh — Build the shipped mpt-crypto WebAssembly module.
+     3	#
+     4	# Produces the JS-consumable artifacts that downstream JS/TS libraries
+     5	# (e.g. xrpl.js) vendor:
+     6	#   emcc_out/mpt_crypto.js      (MODULARIZE CommonJS glue — Node require)
+     7	#   emcc_out/mpt_crypto.mjs     (EXPORT_ES6 ESM glue, web+node — Node import)
+     8	#   emcc_out/mpt_crypto.web.mjs (EXPORT_ES6 ESM glue, web only — bundlers/browsers)
+     9	#   emcc_out/mpt_crypto.wasm    (the compiled module, curated exports)
+    10	#
+    11	# Builds ONLY the module (not tests) — the companion test-wasm.sh validates it
+    12	# by running the crypto suite under Node; the CI workflow runs both in order.
+    13	# It has a dedicated emcc link (rather than CMake) because the wasm module needs
+    14	# MODULARIZE/exports/WASM_BIGINT.
+    15	#
+    16	# As a side effect it builds the wasm-target secp256k1 + OpenSSL static libs
+    17	# into emcc_build/, which test-wasm.sh reuses.
+    18	#
+    19	# Prerequisites: Emscripten SDK (emcc, em++, emcmake, emmake) on PATH.
+    20	#
+    21	# Usage (paths resolve to the repo root, so run from anywhere):
+    22	#   ./.github/scripts/build-wasm.sh          # full build (deps + module)
+    23	#   ./.github/scripts/build-wasm.sh --clean  # remove build artifacts and rebuild
+    24	
+    25	set -euo pipefail
+    26	
+    27	ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
+    28	BUILD_DIR="${ROOT_DIR}/emcc_build"
+    29	OUT_DIR="${ROOT_DIR}/emcc_out"
+    30	CONAN_LOCK="${ROOT_DIR}/conan.lock"
+    31	
+    32	# Pin dependency versions to conan.lock so this WASM build always matches the
+    33	# Conan package rippled consumes — drift here can silently break proof interop.
+    34	# secp256k1 drives the curve math (version-critical); OpenSSL is only SHA-2 +
+    35	# RAND, but we track it too to avoid surprises.
+    36	if [[ ! -f "${CONAN_LOCK}" ]]; then
+    37	    echo "ERROR: ${CONAN_LOCK} not found" >&2
+    38	    exit 1
+    39	fi
+    40	lock_version() {
+    41	    sed -nE "s|.*\"$1/([0-9][^#\"]*)#.*|\1|p" "${CONAN_LOCK}" | head -n1
+    42	}
+    43	
+    44	# secp256k1's git tag is "v0.7.1"; conan.lock stores "0.7.1", so prefix "v".
+    45	SECP256K1_VERSION="v$(lock_version secp256k1)"
+    46	OPENSSL_VERSION="$(lock_version openssl)"
+    47	
+    48	if [[ "${SECP256K1_VERSION}" == "v" || -z "${OPENSSL_VERSION}" ]]; then
+    49	    echo "ERROR: could not read secp256k1/openssl versions from ${CONAN_LOCK}" >&2
+    50	    exit 1
+    51	fi
+    52	
+    53	# Integrity pins for the directly-fetched sources. This WASM path fetches deps
+    54	# outside Conan (git tag / release tarball), so verify them the way Conan does
+    55	# from conan.lock. Update these together with the versions above.
+    56	SECP256K1_COMMIT="1a53f4961f337b4d166c25fce72ef0dc88806618"                       # tag v0.7.1
+    57	OPENSSL_SHA256="aaf51a1fe064384f811daeaeb4ec4dce7340ec8bd893027eee676af31e83a04f" # openssl-3.6.2.tar.gz
+    58	
+    59	# Portable sha256 (Linux coreutils sha256sum; macOS shasum).
+    60	sha256_of() {
+    61	    if command -v sha256sum &>/dev/null; then
+    62	        sha256sum "$1" | awk '{print $1}'
+    63	    else
+    64	        shasum -a 256 "$1" | awk '{print $1}'
+    65	    fi
+    66	}
+    67	
+    68	SECP256K1_SRC="${BUILD_DIR}/secp256k1"
+    69	SECP256K1_BUILD="${BUILD_DIR}/secp256k1/build"
+    70	OPENSSL_SRC="${BUILD_DIR}/openssl-${OPENSSL_VERSION}"
+    71	OBJ_DIR="${BUILD_DIR}/obj"
+    72	
+    73	# ---------------------------------------------------------------------------
+    74	# Helpers
+    75	# ---------------------------------------------------------------------------
+    76	log() { echo "==> $*"; }
+    77	require_cmd() {
+    78	    if ! command -v "$1" &>/dev/null; then
+    79	        echo "ERROR: $1 not found. Install Emscripten SDK and add to PATH." >&2
+    80	        exit 1
+    81	    fi
+    82	}
+    83	
+    84	# ---------------------------------------------------------------------------
+    85	# Argument handling
+    86	# ---------------------------------------------------------------------------
+    87	if [[ "${1:-}" == "--clean" ]]; then
+    88	    log "Cleaning build artifacts"
+    89	    rm -rf "${BUILD_DIR}" "${OUT_DIR}"
+    90	fi
+    91	
+    92	# ---------------------------------------------------------------------------
+    93	# Preflight checks
+    94	# ---------------------------------------------------------------------------
+    95	require_cmd emcc
+    96	require_cmd em++
+    97	require_cmd emcmake
+    98	require_cmd emmake
+    99	
+   100	mkdir -p "${BUILD_DIR}" "${OUT_DIR}" "${OBJ_DIR}"
+   101	
+   102	log "Dependencies (from conan.lock): secp256k1 ${SECP256K1_VERSION}, openssl ${OPENSSL_VERSION}"
+   103	
+   104	# ---------------------------------------------------------------------------
+   105	# 1. Build secp256k1
+   106	# ---------------------------------------------------------------------------
+   107	if [[ ! -f "${SECP256K1_BUILD}/lib/libsecp256k1.a" ]]; then
+   108	    log "Building secp256k1 ${SECP256K1_VERSION}"
+   109	
+   110	    if [[ ! -f "${SECP256K1_SRC}/CMakeLists.txt" ]]; then
+   111	        git clone --depth 1 --branch "${SECP256K1_VERSION}" \
+   112	            https://github.com/bitcoin-core/secp256k1.git "${SECP256K1_SRC}"
+   113	    fi
+   114	
+   115	    # A git tag is mutable (can be force-pushed); the commit it resolves to is
+   116	    # not. Verify the checked-out commit against the pin.
+   117	    actual_sha="$(git -C "${SECP256K1_SRC}" rev-parse HEAD)"
+   118	    if [[ "${actual_sha}" != "${SECP256K1_COMMIT}" ]]; then
+   119	        echo "ERROR: secp256k1 ${SECP256K1_VERSION} is ${actual_sha}, expected ${SECP256K1_COMMIT}." >&2
+   120	        echo "       If conan.lock bumped secp256k1, update SECP256K1_COMMIT in this script." >&2
+   121	        exit 1
+   122	    fi
+   123	
+   124	    mkdir -p "${SECP256K1_BUILD}"
+   125	    cd "${SECP256K1_BUILD}"
+   126	
+   127	    # The non-obvious flags below:
+   128	    #  - SECP256K1_WIDEMUL_INT64: wasm32 has no native 128-bit integer, so force
+   129	    #    the 64-bit field backend. This MUST match the mpt-crypto sources (step 4)
+   130	    #    and the test build (test-wasm.sh's HAVE___INT128=FALSE) — the widemul
+   131	    #    choice changes secp256k1's internal struct layout, so any mismatch is a
+   132	    #    silent ABI break at link time.
+   133	    #  - BUILD_SHARED_LIBS=OFF: force a static libsecp256k1.a. Some CI runners
+   134	    #    default this ON, which builds a .so instead and makes the final emcc link
+   135	    #    (step 5) fail with "libsecp256k1.a: No such file or directory".
+   136	    #  - Only the ECDH module is enabled — the one curve op mpt-crypto needs; the
+   137	    #    rest stay off to keep the wasm small.
+   138	    #  - ECMULT_WINDOW_SIZE / ECMULT_GEN_KB size the precomputed tables: a
+   139	    #    speed-vs-binary-size tradeoff only. They do NOT change results, so they
+   140	    #    have no bearing on proof interop with rippled.
+   141	    emcmake cmake .. \
+   142	        -DCMAKE_C_FLAGS="-DSECP256K1_WIDEMUL_INT64" \
+   143	        -DCMAKE_BUILD_TYPE=Release \
+   144	        -DBUILD_SHARED_LIBS=OFF \
+   145	        -DSECP256K1_BUILD_TESTS=OFF \
+   146	        -DSECP256K1_BUILD_BENCHMARK=OFF \
+   147	        -DSECP256K1_BUILD_CTIME_TESTS=OFF \
+   148	        -DSECP256K1_BUILD_EXAMPLES=OFF \
+   149	        -DSECP256K1_ENABLE_MODULE_ECDH=ON \
+   150	        -DSECP256K1_ENABLE_MODULE_RECOVERY=OFF \
+   151	        -DSECP256K1_ENABLE_MODULE_EXTRAKEYS=OFF \
+   152	        -DSECP256K1_ENABLE_MODULE_SCHNORRSIG=OFF \
+   153	        -DSECP256K1_ENABLE_MODULE_MUSIG=OFF \
+   154	        -DSECP256K1_ENABLE_MODULE_ELLSWIFT=OFF \
+   155	        -DSECP256K1_ECMULT_WINDOW_SIZE=15 \
+   156	        -DSECP256K1_ECMULT_GEN_KB=86
+   157	
+   158	    emmake make -j"$(nproc 2>/dev/null || sysctl -n hw.ncpu)"
+   159	
+   160	    cd "${ROOT_DIR}"
+   161	    log "secp256k1 built: $(wc -c < "${SECP256K1_BUILD}/lib/libsecp256k1.a") bytes"
+   162	else
+   163	    log "secp256k1 already built — skipping"
+   164	fi
+   165	
+   166	# ---------------------------------------------------------------------------
+   167	# 2. Build OpenSSL (stripped for SHA-256/512 + RAND_bytes only)
+   168	# ---------------------------------------------------------------------------
+   169	if [[ ! -f "${OPENSSL_SRC}/libcrypto.a" ]]; then
+   170	    log "Building OpenSSL ${OPENSSL_VERSION}"
+   171	
+   172	    if [[ ! -d "${OPENSSL_SRC}" ]]; then
+   173	        cd "${BUILD_DIR}"
+   174	        openssl_tarball="openssl-${OPENSSL_VERSION}.tar.gz"
+   175	        # --fail so an HTTP error (e.g. 404) aborts here with a clear status,
+   176	        # rather than saving the error body and surfacing as a hash mismatch.
+   177	        curl -fsSL "https://github.com/openssl/openssl/releases/download/openssl-${OPENSSL_VERSION}/${openssl_tarball}" \
+   178	            -o "${openssl_tarball}"
+   179	        got="$(sha256_of "${openssl_tarball}")"
+   180	        if [[ "${got}" != "${OPENSSL_SHA256}" ]]; then
+   181	            echo "ERROR: ${openssl_tarball} sha256 ${got}, expected ${OPENSSL_SHA256}." >&2
+   182	            echo "       If conan.lock bumped openssl, update OPENSSL_SHA256 in this script." >&2
+   183	            exit 1
+   184	        fi
+   185	        tar xzf "${openssl_tarball}"
+   186	        rm -f "${openssl_tarball}"
+   187	        cd "${ROOT_DIR}"
+   188	    fi
+   189	
+   190	    cd "${OPENSSL_SRC}"
+   191	
+   192	    # Heavily stripped configure — mpt-crypto only needs SHA-256/512, RAND_bytes,
+   193	    # and OPENSSL_cleanse, so everything else is disabled both to shrink the wasm
+   194	    # and to drop code that needs syscalls Emscripten can't provide. Key choices:
+   195	    #  - linux-generic32: a portable, asm-free 32-bit C target (wasm32 is 32-bit).
+   196	    #    CC=emcc does the actual compile, so --cross-compile-prefix stays empty.
+   197	    #  - OPENSSL_NO_SECURE_MEMORY: the secure heap relies on mmap/madvise, which
+   198	    #    aren't available under wasm.
+   199	    perl Configure linux-generic32 \
+   200	        --cross-compile-prefix= \
+   201	        CC=emcc AR=emar RANLIB=emranlib \
+   202	        no-asm no-threads no-shared no-dso no-engine no-async \
+   203	        no-ssl no-tls no-dtls no-cms no-comp no-ct no-ts no-srp no-srtp \
+   204	        no-ocsp no-cmp no-fips no-legacy no-tests no-ui-console no-stdio \
+   205	        no-err no-autoerrinit no-autoalginit \
+   206	        no-des no-rc2 no-rc4 no-idea no-seed no-bf no-cast no-camellia no-aria \
+   207	        no-sm2 no-sm3 no-sm4 no-whirlpool no-rmd160 no-mdc2 no-blake2 \
+   208	        no-siphash no-poly1305 no-chacha \
+   209	        no-dh no-dsa no-ec no-ecdh no-ecdsa \
+   210	        no-psk no-gost \
+   211	        no-cmac no-scrypt \
+   212	        no-sock no-dgram \
+   213	        no-http no-posix-io no-deprecated no-cached-fetch no-atexit \
+   214	        no-apps no-module no-autoload-config \
+   215	        -Oz -flto \
+   216	        -DOPENSSL_NO_SECURE_MEMORY
+   217	
+   218	    # build_libs (not the default target) builds only libcrypto/libssl — we never
+   219	    # need the openssl apps or test binaries.
+   220	    emmake make -j"$(nproc 2>/dev/null || sysctl -n hw.ncpu)" build_libs
+   221	
+   222	    cd "${ROOT_DIR}"
+   223	    log "OpenSSL built: $(wc -c < "${OPENSSL_SRC}/libcrypto.a") bytes"
+   224	else
+   225	    log "OpenSSL already built — skipping"
+   226	fi
+   227	
+   228	# ---------------------------------------------------------------------------
+   229	# 3. Set up secp256k1 private headers (for mpt_scalar.c)
+   230	# ---------------------------------------------------------------------------
+   231	# mpt_scalar.c reuses secp256k1's internal field/scalar arithmetic, which lives
+   232	# in secp256k1's src/ (not its public include/) and is pulled in as <private/...>.
+   233	# Symlink that src/ tree under obj/private/ so -I${OBJ_DIR} resolves those
+   234	# includes. test-wasm.sh reuses the same symlinks (it puts ${OBJ_DIR} on -I too).
+   235	log "Setting up secp256k1 private header symlink"
+   236	mkdir -p "${OBJ_DIR}/private"
+   237	ln -sf "${SECP256K1_SRC}/src"/* "${OBJ_DIR}/private/" 2>/dev/null || true
+   238	
+   239	# ---------------------------------------------------------------------------
+   240	# 4. Compile mpt-crypto sources
+   241	# ---------------------------------------------------------------------------
+   242	log "Compiling mpt-crypto sources"
+   243	
+   244	CFLAGS="-Oz -flto \
+   245	    -I${ROOT_DIR}/include \
+   246	    -I${SECP256K1_SRC}/include \
+   247	    -I${OPENSSL_SRC}/include \
+   248	    -I${OBJ_DIR} \
+   249	    -DSECP256K1_WIDEMUL_INT64"
+   250	
+   251	# Collect the objects for THIS source set explicitly and link that list (not a
+   252	# ${OBJ_DIR}/*.o glob), so a renamed or deleted source can't leave a stale .o
+   253	# behind for the link to silently pick up. Caveat: the -nt check compares only
+   254	# the source's mtime, not its headers — after editing a header, rebuild with
+   255	# --clean (or delete emcc_build/obj) to force recompilation.
+   256	OBJECTS=()
+   257	for f in "${ROOT_DIR}"/src/*.c; do
+   258	    name="$(basename "$f" .c)"
+   259	    obj="${OBJ_DIR}/${name}.o"
+   260	    OBJECTS+=("${obj}")
+   261	    if [[ "$f" -nt "${obj}" ]]; then
+   262	        echo "  CC  ${name}.c"
+   263	        emcc ${CFLAGS} -c "$f" -o "${obj}"
+   264	    fi
+   265	done
+   266	
+   267	name="mpt_utility"
+   268	obj="${OBJ_DIR}/${name}.o"
+   269	OBJECTS+=("${obj}")
+   270	if [[ "${ROOT_DIR}/src/utility/${name}.cpp" -nt "${obj}" ]]; then
+   271	    echo "  CXX ${name}.cpp"
+   272	    em++ ${CFLAGS} -std=c++17 -c "${ROOT_DIR}/src/utility/${name}.cpp" -o "${obj}"
+   273	fi
+   274	
+   275	# ---------------------------------------------------------------------------
+   276	# 5. Link final WASM
+   277	# ---------------------------------------------------------------------------
+   278	log "Linking mpt_crypto.wasm"
+   279	
+   280	EXPORTS="_malloc,_free"
+   281	EXPORTS="${EXPORTS},_mpt_secp256k1_context"
+   282	# _mpt_generate_keypair intentionally NOT exported: ElGamal keys come from
+   283	# ripple-keypairs (a separate secp256k1 seed), not the WASM CSPRNG.
+   284	EXPORTS="${EXPORTS},_mpt_generate_blinding_factor"
+   285	EXPORTS="${EXPORTS},_mpt_encrypt_amount,_mpt_decrypt_amount"
+   286	EXPORTS="${EXPORTS},_mpt_get_pedersen_commitment"
+   287	# Per-transaction context-hash + proof entries. On each line the get_*_context_hash
+   288	# and get_*_proof (generator) symbols ARE called by the @xrplf/mpt-crypto TS
+   289	# wrapper; the paired _mpt_verify_* symbols are NOT — the wrapper only generates
+   290	# proofs, never verifies. The verifiers (here and the standalone group below) are
+   291	# kept for consumers that verify client-side; they're safe to drop if you want a
+   292	# smaller module. Keep this list in sync with
+   293	# @xrplf/mpt-crypto's index.ts (unexported symbols get dead-stripped downstream).
+   294	EXPORTS="${EXPORTS},_mpt_get_convert_context_hash,_mpt_get_convert_proof,_mpt_verify_convert_proof"
+   295	EXPORTS="${EXPORTS},_mpt_get_clawback_context_hash,_mpt_get_clawback_proof,_mpt_verify_clawback_proof"
+   296	EXPORTS="${EXPORTS},_mpt_get_convert_back_context_hash,_mpt_get_convert_back_proof,_mpt_verify_convert_back_proof"
+   297	EXPORTS="${EXPORTS},_mpt_get_send_context_hash,_mpt_get_confidential_send_proof,_mpt_verify_send_proof"
+   298	# Standalone verifiers + low-level helpers — none used by the TS wrapper today
+   299	# (see the note above); exported for client-side verification.
+   300	EXPORTS="${EXPORTS},_mpt_verify_revealed_amount"
+   301	EXPORTS="${EXPORTS},_mpt_verify_send_range_proof"
+   302	EXPORTS="${EXPORTS},_mpt_verify_aggregated_bulletproof"
+   303	EXPORTS="${EXPORTS},_mpt_make_ec_pair,_mpt_serialize_ec_pair"
+   304	EXPORTS="${EXPORTS},_mpt_compute_convert_back_remainder"
+   305	# Homomorphic ElGamal ciphertext add/subtract (secp256k1_pubkey in/out, defined in
+   306	# src/elgamal.c, return 1 on success). Not used by the single-transaction builders,
+   307	# but batching multiple balance-mutating Confidential MPT transactions for one
+   308	# (account, token) requires predicting the post-inner spending balance client-side
+   309	# (CB_S' = CB_S -/+ the encrypted amount) so each chained proof binds to it. The TS
+   310	# wrapper marshals bytes<->secp256k1_pubkey via _mpt_make_ec_pair/_mpt_serialize_ec_pair.
+   311	EXPORTS="${EXPORTS},_secp256k1_elgamal_add,_secp256k1_elgamal_subtract"
+   312	
+   313	# Why these -s link flags (they define the JS-facing contract, so don't drop them
+   314	# without checking the @xrplf/mpt-crypto TS wrapper):
+   315	#  - MODULARIZE + EXPORT_NAME: emit a factory `MptCrypto()` instead of a global,
+   316	#    so the module can be require()'d / imported and loaded lazily.
+   317	#  - WASM_BIGINT: marshal i64 <-> JS BigInt directly — mpt amounts are uint64_t.
+   318	#  - ALLOW_MEMORY_GROWTH: let the heap grow on demand instead of reserving a fixed
+   319	#    block up front.
+   320	#  - GROWABLE_ARRAYBUFFERS=0: emsdk 6.x defaults this to 1, which grows the heap in
+   321	#    place backed by a RESIZABLE ArrayBuffer. A subarray of a resizable buffer makes
+   322	#    TextDecoder.decode throw in Chrome ("ArrayBuffer must not be resizable"), which
+   323	#    breaks the xrpl.js browser tests. Setting 0 keeps growth but reallocates a plain
+   324	#    (non-resizable) buffer on each grow — browser-safe, and no fixed memory cap.
+   325	#  - MAXIMUM_MEMORY=128MB: a defense-in-depth ceiling. The real working set is small
+   326	#    and stable — dominated by secp256k1's static tables, with per-op allocations
+   327	#    freed and reused, so it does not grow over time — and stays far below this cap.
+   328	#    The ceiling just bounds a hypothetical runaway well under the 2GB default.
+   329	#  - EXPORTED_RUNTIME_METHODS: the TS marshalling layer needs HEAPU8 + ccall/cwrap.
+   330	#  - ENVIRONMENT=web,node: the base .js/.mjs glues run under Node; a dedicated
+   331	#    browser glue is re-linked below as web,worker (no Node branch) — see the links.
+   332	LINK_FLAGS=(
+   333	    -Oz -flto
+   334	    "${OBJECTS[@]}"
+   335	    "${SECP256K1_BUILD}/lib/libsecp256k1.a"
+   336	    "${OPENSSL_SRC}/libcrypto.a"
+   337	    -sMODULARIZE=1
+   338	    -sEXPORT_NAME=MptCrypto
+   339	    -sWASM_BIGINT=1
+   340	    -sALLOW_MEMORY_GROWTH=1
+   341	    -sGROWABLE_ARRAYBUFFERS=0
+   342	    -sMAXIMUM_MEMORY=134217728
+   343	    -sEXPORTED_FUNCTIONS="${EXPORTS}"
+   344	    '-sEXPORTED_RUNTIME_METHODS=["ccall","cwrap","HEAPU8"]'
+   345	    -sENVIRONMENT=web,node
+   346	)
+   347	
+   348	# @xrplf/mpt-crypto ships dual CJS+ESM so the same package works under Node
+   349	# `require`/Jest AND under bundlers/browsers via `import`. Emit THREE Emscripten
+   350	# glues from the identical objects — they all wrap the SAME mpt_crypto.wasm:
+   351	#   - mpt_crypto.js      : MODULARIZE CommonJS   (require()'d by the CJS build / Node)
+   352	#   - mpt_crypto.mjs     : EXPORT_ES6, web+node  (Node `import`; its Node branch runs
+   353	#                          `await import("node:module")` to read the .wasm from disk)
+   354	#   - mpt_crypto.web.mjs : EXPORT_ES6, web only  (bundlers/browsers) — the same glue
+   355	#                          built with ENVIRONMENT=web,worker instead of web,node, so it
+   356	#                          carries NO Node branch and thus no `node:` imports. Browser
+   357	#                          bundlers reject the `node:` URI scheme at build time even
+   358	#                          though that code is dead in a browser, so the package's
+   359	#                          `browser` export must point here, not at mpt_crypto.mjs.
+   360	# Both ESM glues use `new URL('mpt_crypto.wasm', import.meta.url)` so bundlers
+   361	# auto-emit the .wasm as an asset instead of a runtime read. Keep the three links in
+   362	# lockstep — they must wrap the byte-identical module.
+   363	emcc "${LINK_FLAGS[@]}" -o "${OUT_DIR}/mpt_crypto.js"
+   364	wasm_sha_cjs="$(sha256_of "${OUT_DIR}/mpt_crypto.wasm")"
+   365	emcc "${LINK_FLAGS[@]}" -sEXPORT_ES6=1 -o "${OUT_DIR}/mpt_crypto.mjs"
+   366	wasm_sha_esm="$(sha256_of "${OUT_DIR}/mpt_crypto.wasm")"
+   367	# Browser-only glue. -sENVIRONMENT=web,worker (overriding web,node) drops the Node
+   368	# code path and its `node:` imports. Emscripten names the .wasm after the -o basename,
+   369	# so link under the shared `mpt_crypto` name in a temp dir — the glue then references
+   370	# `mpt_crypto.wasm`, the one we ship — and move just the glue out. Linking straight to
+   371	# mpt_crypto.web.mjs would emit and reference a separate mpt_crypto.web.wasm.
+   372	web_tmp="$(mktemp -d)"
+   373	trap 'rm -rf "${web_tmp}"' EXIT
+   374	emcc "${LINK_FLAGS[@]}" -sEXPORT_ES6=1 -sENVIRONMENT=web,worker -o "${web_tmp}/mpt_crypto.mjs"
+   375	wasm_sha_web="$(sha256_of "${web_tmp}/mpt_crypto.wasm")"
+   376	mv "${web_tmp}/mpt_crypto.mjs" "${OUT_DIR}/mpt_crypto.web.mjs"
+   377	
+   378	# The browser glue exists precisely so browser bundlers never see a `node:` import; the
+   379	# Node smoke test can't catch a regression (Node resolves node:module fine), so assert
+   380	# the invariant at build time. Matches emscripten's dynamic `import("node:…")` and any
+   381	# static `from "node:…"`, but not the benign `{…,node:…}` FS object literals.
+   382	if grep -Eq 'import\(["'"'"']node:|from[[:space:]]*["'"'"']node:' "${OUT_DIR}/mpt_crypto.web.mjs"; then
+   383	    echo "ERROR: mpt_crypto.web.mjs leaked a node: import — browser bundlers will reject it" >&2
+   384	    exit 1
+   385	fi
+   386	
+   387	# The .js/.mjs links overwrite the OUT_DIR .wasm in place; the browser link builds its
+   388	# own in a temp dir. All three must wrap the byte-identical module (the browser glue
+   389	# references the shipped mpt_crypto.wasm), so enforce it.
+   390	if [[ "${wasm_sha_cjs}" != "${wasm_sha_esm}" || "${wasm_sha_cjs}" != "${wasm_sha_web}" ]]; then
+===== .github/workflows/build-wasm.yml =====
+     1	# ──────────────────────────────────────────────────────────────────────────────
+     2	# Build WASM Module
+     3	#
+     4	# Builds the mpt-crypto C library as a single portable WebAssembly module
+     5	# (mpt_crypto.js CJS + mpt_crypto.mjs Node-ESM + mpt_crypto.web.mjs browser-ESM + mpt_crypto.wasm)
+     6	# for JS/TS consumers (xrpl.js). There is NO OS x arch matrix: one wasm32
+     7	# artifact runs in every browser and in Node/Deno/Bun on any
+     8	# platform/endianness.
+     9	#
+    10	# The artifact is validated before upload: .github/scripts/test-wasm.sh compiles
+    11	# the C crypto test suite to wasm and runs it under Node (ctest), then smoke-tests
+    12	# the shipped glue. The smoke test runs against the STAGED bundle, so a file
+    13	# dropped from the bundle fails CI instead of shipping green.
+    14	#
+    15	# Invoked via `workflow_call` from build.yml — on every PR and push to main (so
+    16	# the build+test path is exercised), and on tag push (so build.yml can attach the
+    17	# bundle to the release, which JS consumers download).
+    18	#
+    19	# The `build` job uploads `mpt-crypto-wasm-bundle` (mpt_crypto.js + .mjs + .web.mjs + .wasm),
+    20	# which the caller downloads and attaches to the GitHub release.
+    21	# ──────────────────────────────────────────────────────────────────────────────
+    22	
+    23	name: Build WASM Module
+    24	
+    25	on:
+    26	  workflow_call:
+    27	
+    28	jobs:
+    29	  build:
+    30	    name: Build + test WASM module
+    31	    permissions:
+    32	      contents: read
+    33	    runs-on: ubuntu-latest
+    34	    steps:
+    35	      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+    36	
+    37	      - name: Set up Emscripten
+    38	        uses: mymindstorm/setup-emsdk@6ab9eb1bda2574c4ddb79809fc9247783eaf9021 # v14
+    39	        with:
+    40	          # Pinned for reproducible wasm output. The emsdk version does not change
+    41	          # crypto results (browser-safety is handled by GROWABLE_ARRAYBUFFERS=0 in
+    42	          # build-wasm.sh — see the note there on resizable ArrayBuffers).
+    43	          version: 6.0.2
+    44	
+    45	      - name: Set up Node
+    46	        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+    47	        with:
+    48	          node-version: "22"
+    49	
+    50	      - name: Build WASM module
+    51	        run: ./.github/scripts/build-wasm.sh
+    52	
+    53	      - name: Stage WASM bundle
+    54	        # Stage BEFORE testing so the smoke test validates exactly what ships.
+    55	        run: |
+    56	          mkdir -p output
+    57	          cp emcc_out/mpt_crypto.js emcc_out/mpt_crypto.mjs emcc_out/mpt_crypto.web.mjs emcc_out/mpt_crypto.wasm output/
+    58	
+    59	      - name: Test WASM module
+    60	        # Point the glue smoke test at the staged bundle, not emcc_out, so a file
+    61	        # dropped from output/ fails here instead of shipping.
+    62	        env:
+    63	          GLUE_DIR: ${{ github.workspace }}/output
+    64	        run: ./.github/scripts/test-wasm.sh
+    65	
+    66	      - name: Package WASM bundle
+    67	        run: tar -czf mpt-crypto-wasm.tar.gz -C output .
+    68	
+    69	      - name: Upload bundle
+    70	        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+    71	        with:
+    72	          name: mpt-crypto-wasm-bundle
+    73	          path: mpt-crypto-wasm.tar.gz
+    74	          if-no-files-found: error
+===== run 32380884181 =====
+{
+  "id": 32380884181,
+  "name": "Build, Test and Release",
+  "node_id": "WFR_kwLOQnIwUM8AAAAHig0U1Q",
+  "head_branch": "main",
+  "head_sha": "3baaaac33dadec3e649846e487f452c5b6b2d825",
+  "path": ".github/workflows/build.yml",
+  "display_title": "ci: emit a browser-only ESM glue (mpt_crypto.web.mjs)  (#139)",
+  "run_number": 352,
+  "event": "push",
+  "status": "completed",
+  "conclusion": "success",
+  "workflow_id": 230478180,
+  "check_suite_id": 87779189552,
+  "check_suite_node_id": "CS_kwDOQnIwUM8AAAAUcAwjMA",
+  "url": "https://api.github.com/repos/XRPLF/mpt-crypto/actions/runs/32380884181",
+  "html_url": "https://github.com/XRPLF/mpt-crypto/actions/runs/32380884181",
+  "pull_requests": [
+
+  ],
+  "created_at": "2026-08-20T14:33:53Z",
+  "updated_at": "2026-08-20T15:25:04Z",
+  "actor": {
+    "login": "kuan121",
+    "id": 13514933,
+    "node_id": "MDQ6VXNlcjEzNTE0OTMz",
+    "avatar_url": "https://avatars.githubusercontent.com/u/13514933?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/kuan121",
+    "html_url": "https://github.com/kuan121",
+    "followers_url": "https://api.github.com/users/kuan121/followers",
+    "following_url": "https://api.github.com/users/kuan121/following{/other_user}",
+    "gists_url": "https://api.github.com/users/kuan121/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/kuan121/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/kuan121/subscriptions",
+    "organizations_url": "https://api.github.com/users/kuan121/orgs",
+    "repos_url": "https://api.github.com/users/kuan121/repos",
+    "events_url": "https://api.github.com/users/kuan121/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/kuan121/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "run_attempt": 1,
+  "referenced_workflows": [
+    {
+      "path": "XRPLF/mpt-crypto/.github/workflows/build-wasm.yml@3baaaac33dadec3e649846e487f452c5b6b2d825",
+      "sha": "3baaaac33dadec3e649846e487f452c5b6b2d825",
+      "ref": "refs/heads/main"
+    },
+    {
+      "path": "XRPLF/mpt-crypto/.github/workflows/build-native-libs.yml@3baaaac33dadec3e649846e487f452c5b6b2d825",
+      "sha": "3baaaac33dadec3e649846e487f452c5b6b2d825",
+      "ref": "refs/heads/main"
+    }
+  ],
+  "run_started_at": "2026-08-20T14:33:53Z",
+  "triggering_actor": {
+    "login": "kuan121",
+    "id": 13514933,
+    "node_id": "MDQ6VXNlcjEzNTE0OTMz",
+    "avatar_url": "https://avatars.githubusercontent.com/u/13514933?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/kuan121",
+    "html_url": "https://github.com/kuan121",
+    "followers_url": "https://api.github.com/users/kuan121/followers",
+    "following_url": "https://api.github.com/users/kuan121/following{/other_user}",
+    "gists_url": "https://api.github.com/users/kuan121/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/kuan121/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/kuan121/subscriptions",
+    "organizations_url": "https://api.github.com/users/kuan121/orgs",
+    "repos_url": "https://api.github.com/users/kuan121/repos",
+    "events_url": "https://api.github.com/users/kuan121/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/kuan121/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "jobs_url": "https://api.github.com/repos/XRPLF/mpt-crypto/actions/runs/32380884181/jobs",
+  "logs_url": "https://api.github.com/repos/XRPLF/mpt-crypto/actions/runs/32380884181/logs",
+  "check_suite_url": "https://api.github.com/repos/XRPLF/mpt-crypto/check-suites/87779189552",
+  "artifacts_url": "https://api.github.com/repos/XRPLF/mpt-crypto/actions/runs/32380884181/artifacts",
+  "cancel_url": "https://api.github.com/repos/XRPLF/mpt-crypto/actions/runs/32380884181/cancel",
+  "rerun_url": "https://api.github.com/repos/XRPLF/mpt-crypto/actions/runs/32380884181/rerun",
+  "previous_attempt_url": null,
+  "workflow_url": "https://api.github.com/repos/XRPLF/mpt-crypto/actions/workflows/230478180",
+  "head_commit": {
+    "id": "3baaaac33dadec3e649846e487f452c5b6b2d825",
+    "tree_id": "08544e7f2b0f2357528c76ffb82094040a68ac45",
+    "message": "ci: emit a browser-only ESM glue (mpt_crypto.web.mjs)  (#139)",
+    "timestamp": "2026-08-20T14:33:49Z",
+    "author": {
+      "name": "Kuan Lin",
+      "email": "redacted@example.invalid"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com"
+    }
+  },
+  "repository": {
+    "id": 1114779728,
+    "node_id": "R_kgDOQnIwUA",
+    "name": "mpt-crypto",
+    "full_name": "XRPLF/mpt-crypto",
+    "private": false,
+    "owner": {
+      "login": "XRPLF",
+      "id": 67929741,
+      "node_id": "MDEyOk9yZ2FuaXphdGlvbjY3OTI5NzQx",
+      "avatar_url": "https://avatars.githubusercontent.com/u/67929741?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/XRPLF",
+      "html_url": "https://github.com/XRPLF",
+      "followers_url": "https://api.github.com/users/XRPLF/followers",
+      "following_url": "https://api.github.com/users/XRPLF/following{/other_user}",
+      "gists_url": "https://api.github.com/users/XRPLF/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/XRPLF/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/XRPLF/subscriptions",
+      "organizations_url": "https://api.github.com/users/XRPLF/orgs",
+===== changelog 6.0.6 =====
+    18	
+    19	See docs/process.md for more on how version tagging works.
+    20	
+    21	6.0.6 (in development)
+    22	----------------------
+    23	- `DEFAULT_TO_CXX` is now disabled by default. This means that `em++` is now
+    24	  required when linking C++ programs, matching the behavior of clang and gcc.
+    25	  The old behavior is still available using `-sDEFAULT_TO_CXX`. (#11121)
+    26	- Added example Meson cross compilation files (`wasm32-emscripten.ini` and
+    27	  `wasm64-emscripten.ini`) in `tools/meson/`. (#27478)
+    28	- libcxx and libcxxabi were updated to LLVM 22.1.8. (#27428)
+    29	
+    30	6.0.5 - 07/29/26
+
+exec
+/bin/zsh -lc "set -e
+for q in 'Attackathon org:XRPLF' 'Sherlock org:XRPLF' 'DEFAULT_TO_CXX org:XRPLF' 'emsdk repo:XRPLF/mpt-crypto' 'Zellic repo:XRPLF/mpt-crypto'; do
+  echo \"===== "'$q ====="
+  curl -sS -G '"'https://api.github.com/search/issues' --data-urlencode \"q="'$q" --data-urlencode '"'per_page=100' | python3 -c 'import json,sys; d=json.load(sys.stdin); print(\"count\",d.get(\"total_count\")); [print(i.get(\"html_url\"), \"|\", i.get(\"title\")) for i in d.get(\"items\",[])]'
+done" in $USER_TMP/T/f12r2.zRcIsF
+ succeeded in 3399ms:
+count 88
+https://github.com/XRPLF/mpt-crypto/issues/148 | [Build] conan.lock pins an openssl revision that the Conan remote in the README's setup does not serve
+https://github.com/XRPLF/rippled/issues/6878 | [XLS-0096] ConvertBack Missing sfIssuerEncryptedBalance Check
+https://github.com/XRPLF/rippled/issues/6885 | [XLS-0096] ElGamal Ciphertext Malleability in ConvertBack
+https://github.com/XRPLF/rippled/issues/6886 | [XLS-0096] ConvertBack from EncZero Spending — ZKP Zero-Balance Boundary
+https://github.com/XRPLF/rippled/issues/6875 | [XLS-0096] Clawback Context Hash Missing Version — Same-Ledger Race
+https://github.com/XRPLF/rippled/issues/6925 | Batch Transactions: OnlyOne mode applies tec state changes from multiple inner transactions
+https://github.com/XRPLF/rippled/issues/6920 | Misleading assert message in Permission constructor inverts the condition description
+https://github.com/XRPLF/rippled/issues/6919 | Default checkGranularSemantics (tesSUCCESS) provides no semantic enforcement for most granular permissions
+https://github.com/XRPLF/rippled/issues/6916 | SetRegularKey free-fee path not available in Batch inner transactions
+https://github.com/XRPLF/rippled/issues/6926 | Batch Transactions: No duplicate sequence/ticket check for OnlyOne and Independent modes
+https://github.com/XRPLF/rippled/issues/6918 | checkValidity does not return early for valid inner batch transactions
+https://github.com/XRPLF/rippled/issues/6912 | ConfidentialMPTSend missing checkExtraFeatures for sfCredentialIDs
+https://github.com/XRPLF/rippled/issues/6891 | checkInsufficientReserve skips balance verification when Sponsorship SLE has ReserveCount (even phantom)
+https://github.com/XRPLF/rippled/issues/6917 | Batch disabledTxTypes does not include pseudo-transaction types
+https://github.com/XRPLF/rippled/issues/6921 | Non-delegable tx with sfDelegate yields retry error instead of permanent rejection
+https://github.com/XRPLF/rippled/issues/6903 | Tick size rounding bypassed for MPT/IOU offers in certain order types
+https://github.com/XRPLF/rippled/issues/6905 | checkCreateMPT skips reserve check during DEX offer crossing
+https://github.com/XRPLF/rippled/issues/6904 | checkMPTDEX passes (owner, owner) to canTransfer, incorrectly removing valid offers
+https://github.com/XRPLF/rippled/issues/6915 | Batch inner AccountSet sigWithMaster always false, blocking master-key-gated operations
+https://github.com/XRPLF/rippled/pull/7537 | fix: Fix MPT/DEX Audit/Attackathon reports (Phase 2)
+https://github.com/XRPLF/rippled/pull/7334 | fix: Fix MPT/DEX Audit/Attackathon reports (Phase 1)
+https://github.com/XRPLF/rippled/pull/6732 | Batch for Attackathon
+https://github.com/XRPLF/rippled/pull/6828 | Confidential Transfer for Attackathon
+https://github.com/XRPLF/rippled/pull/6809 | Confidential Transfer for Attackathon
+https://github.com/XRPLF/rippled/pull/6842 | Sponsored Fees and Reserves for Attackathon
+https://github.com/XRPLF/rippled/pull/6817 | Sponsored Fees and Reserves for Attackathon
+https://github.com/XRPLF/rippled/pull/6830 | fix: Bidirection Object Storage for delegation for Attackathon
+https://github.com/XRPLF/rippled/pull/6834 | Fix DynamicMPT for Attackathon
+https://github.com/XRPLF/rippled/pull/6816 | MPT DEX for Attackathon
+https://github.com/XRPLF/rippled/pull/6852 | fix: Fix pipeline for attackathon
+https://github.com/XRPLF/rippled/pull/6831 | Fix granular permission for Attackathon
+https://github.com/XRPLF/rippled/pull/6856 | Sponsor new commits
+https://github.com/XRPLF/rippled/pull/6851 | fix: fix pipeline failures for attackathon
+https://github.com/XRPLF/rippled/pull/6967 | fix: Fix touchy "funds are conserved" assertion in LoanPay (#6231)
+https://github.com/XRPLF/rippled/pull/6857 | Turn amendments to supported yes for attackathon
+https://github.com/XRPLF/rippled/pull/5984 | audit tooling for xls-66 lending protocol security review
+https://github.com/XRPLF/rippled/issues/7018 | [Misfile] Closed — content moved to Sherlock contest 1260
+https://github.com/XRPLF/rippled/issues/6877 | [XLS-0096] BlindingFactor Length Not Validated in Preflight
+https://github.com/XRPLF/rippled/issues/6879 | [XLS-0096] Invariant Allows CB_IN Without CB_S — OR vs AND Logic
+https://github.com/XRPLF/rippled/issues/6884 | [XLS-0096] ZKP Failures Return tecINTERNAL — Wrong TER Code
+https://github.com/XRPLF/rippled/issues/6881 | [XLS-0096] Silent Context Null Disables All Confidential Operations
+https://github.com/XRPLF/rippled/pull/6854 | fix delegate test failure
+https://github.com/XRPLF/rippled/issues/6883 | [XLS-0096] Send to Issuer Not Explicitly Blocked — Wrong TER Code
+https://github.com/XRPLF/rippled/issues/6882 | [XLS-0096] OA Underflow Without Guard in Clawback doApply
+https://github.com/XRPLF/rippled/issues/6880 | [XLS-0096] mpt_secp256k1_context() Returns Non-const Mutable Pointer
+https://github.com/XRPLF/rippled/issues/6923 | Permission delegation no-op bypass patterns
+https://github.com/XRPLF/rippled/issues/6924 | Permission delegation lifecycle and cleanup issues
+https://github.com/XRPLF/rippled/issues/6902 | PermissionedDomain invariant skips credential validation for SponsorshipTransfer
+https://github.com/XRPLF/rippled/issues/6900 | getLedgerEntryOwner missing ltLOAN_BROKER and ltLOAN prevents object sponsorship
+https://github.com/XRPLF/rippled/issues/6866 | [XLS-0068] SponsorshipSet Update FeeAmount Lacks Reserve Floor Check
+https://github.com/XRPLF/rippled/issues/6888 | [XLS-0096] Privacy Enable Key Substitution — Internal Key Compromise Window
+https://github.com/XRPLF/rippled/issues/6892 | ltSPONSORSHIP missing from AccountDelete's nonObligationDeleter prevents sponsee account deletion
+https://github.com/XRPLF/rippled/issues/6876 | [XLS-0096] Conservation Equation Not Checked for Send/MergeInbox
+https://github.com/XRPLF/rippled/issues/6897 | No invariant verifying sfSponsor field on objects matches sponsoring/sponsored count deltas
+https://github.com/XRPLF/rippled/issues/6887 | [XLS-0096] MPToken Deletion With Encrypted Fields When COA == 0
+https://github.com/XRPLF/rippled/pull/6861 | Support compact AND-composed sigma proof
+https://github.com/XRPLF/rippled/issues/6896 | setSponsorFieldU32 silently clamps to 0 on underflow instead of failing
+https://github.com/XRPLF/rippled/issues/6873 | [XLS-0096] Privacy Flag Disable Retains Encryption Keys
+https://github.com/XRPLF/rippled/issues/6874 | [XLS-0096] TOCTOU COA Underflow via Parallel ConvertBack
+https://github.com/XRPLF/rippled/issues/6872 | [XLS-0096] DepositPreauth Checked in doApply Not preclaim
+https://github.com/XRPLF/rippled/pull/6231 | fix: Fix touchy "funds are conserved" assertion in LoanPay
+https://github.com/XRPLF/rippled/issues/6870 | [XLS-0096] Auditor Key Cannot Be Added Post-Registration
+https://github.com/XRPLF/rippled/issues/6895 | MPTokenIssuanceDestroy reads sponsor from erased SLE
+https://github.com/XRPLF/rippled/issues/6865 | [XLS-0068] Co-Signed Sponsoring Bypasses Sponsor Balance Check
+https://github.com/XRPLF/rippled/issues/6910 | ConvertBack preclaim missing sfIssuerEncryptionKey presence check
+https://github.com/XRPLF/rippled/issues/6871 | [XLS-0096] ConvertBack Missing sfOutstandingAmount Update
+https://github.com/XRPLF/rippled/pull/6043 | fix: correct index for limit in `book_offers` CLI
+https://github.com/XRPLF/rippled/issues/6911 | ConvertBack doApply lacks overflow check on MPTAmount addition
+https://github.com/XRPLF/rippled/issues/6907 | Deposit preauth checked after expensive ZK proof verification in ConfidentialMPTSend
+https://github.com/XRPLF/rippled/issues/6909 | No invariant conservation check for ConfidentialMPTSend
+https://github.com/XRPLF/rippled/issues/6906 | Transfer fee bypass via confidential sends
+https://github.com/XRPLF/rippled/issues/6913 | Confidential MPT transaction types not in batch disabledTxTypes list
+https://github.com/XRPLF/rippled/issues/6894 | Sponsored account creation double-counts base reserve
+https://github.com/XRPLF/rippled/pull/6840 | fix: MPT/DEX assorted fixes
+https://github.com/XRPLF/rippled/issues/6869 | [XLS-0096] Key Upload Blocked by Field Presence Not Value
+https://github.com/XRPLF/rippled/issues/6893 | SponsorReserve granular permission allows delegate to make principal cover delegate's object reserves
+https://github.com/XRPLF/rippled/issues/6914 | ConfidentialMPTClawback preclaim does not verify clawAmount <= OutstandingAmount
+https://github.com/XRPLF/rippled/issues/6864 | [XLS-0068] ReserveCount Inflation via Co-Signed + Pre-Funded Interaction
+https://github.com/XRPLF/rippled/issues/6908 | ValidMPTPayment invariant entirely skips all confidential transaction types
+https://github.com/XRPLF/rippled/issues/6867 | [XLS-0096] Clawback Increments Version Instead of Resetting to 0
+https://github.com/XRPLF/rippled/issues/6901 | TrustSet free trust line check uses sponsor's ownerCount, skipping sponsor reserve validation
+https://github.com/XRPLF/rippled/issues/6899 | Preclaim XRP reserve overestimate for sponsored checks
+https://github.com/XRPLF/rippled/issues/6868 | [XLS-0096] Unguarded sfAuditorEncryptedBalance Read — Late Auditor Addition
+https://github.com/XRPLF/rippled/issues/6890 | SponsorFee granular permission allows delegate to create self-benefiting fee sponsorship, redirecting principal's XRP
+https://github.com/XRPLF/rippled/issues/6922 | AMMClawback preclaim returns tesSUCCESS instead of tecNO_PERMISSION for unauthorized clawback
+https://github.com/XRPLF/rippled/issues/6863 | [XLS-0068] ReserveCount Inflation via Co-Signed + Pre-Funded Interaction
+https://github.com/XRPLF/rippled/issues/6889 | Sponsor signature bypass in inner batch transactions allows unauthorized reserve locking
+https://github.com/XRPLF/rippled/issues/6898 | SponsoringAccountCount has no overflow protection
+===== Sherlock org:XRPLF =====
+count 19
+https://github.com/XRPLF/rippled/issues/7026 | Pre-contest finding: batch delegate revocation silently clears all delegates (Sherlock XRPL #1260)
+https://github.com/XRPLF/mpt-crypto/issues/101 | [Enhancement] Extend ElGamal decryption range beyond 10^6 (BSGS or Pollard's kangaroo)
+https://github.com/XRPLF/mpt-crypto/issues/148 | [Build] conan.lock pins an openssl revision that the Conan remote in the README's setup does not serve
+https://github.com/XRPLF/mpt-crypto/issues/103 | [Test] Regression test: assert pk_base != H_vec[i] for all i (closes loop on PR #63)
+https://github.com/XRPLF/rippled/issues/6885 | [XLS-0096] ElGamal Ciphertext Malleability in ConvertBack
+https://github.com/XRPLF/rippled/pull/8181 | fix: Enforce pseudo-account directory contents with an invariant
+https://github.com/XRPLF/mpt-crypto/issues/85 | [Hardening] Make `secp256k1_bulletproof_ipa_msm` and its prover-side call sites constant-time on secret scalars
+https://github.com/XRPLF/mpt-crypto/issues/102 | [Bug] secp256k1_elgamal_add fails on identity point — enables MergeInbox griefing
+https://github.com/XRPLF/rippled/pull/7671 | fix: Better handling of txs that send XRP + charge reserve
+https://github.com/XRPLF/rippled/issues/7018 | [Misfile] Closed — content moved to Sherlock contest 1260
+https://github.com/XRPLF/rippled/pull/8141 | fix: Correct fee-payer XRP delta in ValidVault for sponsored VaultWithdraw
+https://github.com/XRPLF/rippled/issues/7906 | MPTokenIssuanceSet::preclaim accepts sfDomainID without verifying issuer is a member of the PermissionedDomain
+https://github.com/XRPLF/rippled/pull/7682 | Payment tx fee payer ID fix
+https://github.com/XRPLF/rippled/issues/6972 | [MPT DEX] MPT Path-Finding Filters Use Incorrect Logic for Both Source and Destination Assets
+https://github.com/XRPLF/mpt-crypto/pull/86 | fix: route secret-scalar tweak_mul through ecdh + ecmult_const
+https://github.com/XRPLF/rippled/issues/7929 | PermissionedDomainDelete allows deletion while MPTokenIssuance (and hybrid offers) still reference the domain via sfDomainID
+https://github.com/XRPLF/rippled/issues/7928 | PermissionedDomainDelete allows deletion while MPTokenIssuance (and hybrid offers) still reference the domain via sfDomainID
+https://github.com/XRPLF/mpt-crypto/issues/84 | [Hardening] Replace `secp256k1_ec_pubkey_tweak_mul` with constant-time `secp256k1_ecdh` for secret scalars (sigma-proof and BP discrete sites)
+https://github.com/XRPLF/rippled/pull/7542 | checkInsufficientReserve ->checkXrpBalance
+===== DEFAULT_TO_CXX org:XRPLF =====
+count 0
+===== emsdk repo:XRPLF/mpt-crypto =====
+count 2
+https://github.com/XRPLF/mpt-crypto/pull/145 | ci: export generate_canonical_encrypted_zero to WASM
+https://github.com/XRPLF/mpt-crypto/pull/135 | ci: Add workflow to build WASM artifact and attach to releases
+===== Zellic repo:XRPLF/mpt-crypto =====
+count 1
+https://github.com/XRPLF/mpt-crypto/pull/147 | fix: honour proof_out capacity and validate required pointers (Zellic DEFI-1108/1109/1110)
+
+exec
+/bin/zsh -lc "set -e
+for term in emsdk Emscripten WASM DEFAULT_TO_CXX 'em++' libc++ __cxa; do
+  echo \"===== "'$term org:XRPLF ====="
+  curl -sS -G '"'https://api.github.com/search/issues' --data-urlencode \"q="'$term org:XRPLF" --data-urlencode '"'per_page=100' | python3 -c 'import json,sys; d=json.load(sys.stdin); print(\"count\",d.get(\"total_count\")); [print(i.get(\"html_url\"), \"|\", i.get(\"title\")) for i in d.get(\"items\",[])]'
+done
+printf '%s\\n' '===== mpt #148 ====='
+curl -sS https://api.github.com/repos/XRPLF/mpt-crypto/issues/148 | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get(\"html_url\")); print(d.get(\"title\")); print(d.get(\"body\"))'
+printf '%s\\n' '===== mpt #148 comments ====='
+curl -sS 'https://api.github.com/repos/XRPLF/mpt-crypto/issues/148/comments?per_page=100' | python3 -c 'import json,sys; d=json.load(sys.stdin); print(\"comments\",len(d)); [print(x.get(\"html_url\"), x.get(\"body\")) for x in d]'" in $USER_TMP/T/f12r2.zRcIsF
+ succeeded in 4826ms:
+count 2
+https://github.com/XRPLF/mpt-crypto/pull/145 | ci: export generate_canonical_encrypted_zero to WASM
+https://github.com/XRPLF/mpt-crypto/pull/135 | ci: Add workflow to build WASM artifact and attach to releases
+===== Emscripten org:XRPLF =====
+count 9
+https://github.com/XRPLF/mpt-crypto/pull/145 | ci: export generate_canonical_encrypted_zero to WASM
+https://github.com/XRPLF/rippled/pull/8050 | chore: [DEPENDABOT] Bump cxx from 1.0.198 to 1.0.199 in /crates in the rust-dependencies group across 1 directory
+https://github.com/XRPLF/mpt-crypto/pull/139 | ci: emit a browser-only ESM glue (mpt_crypto.web.mjs) 
+https://github.com/XRPLF/xrpl.js/pull/3364 | Support for Confidential MPT (XLS-0096)
+https://github.com/XRPLF/mpt-crypto/pull/135 | ci: Add workflow to build WASM artifact and attach to releases
+https://github.com/XRPLF/xbridge-cli/pull/150 | build(deps-dev): bump mypy from 1.2.0 to 1.3.0
+https://github.com/XRPLF/xrpl-py/pull/586 | chore(deps-dev): bump mypy from 1.2.0 to 1.3.0
+https://github.com/XRPLF/xbridge-cli/pull/140 | build(deps-dev): bump pytest from 7.2.1 to 7.3.1
+https://github.com/XRPLF/xbridge-cli/pull/134 | build(deps-dev): bump pytest from 7.2.1 to 7.3.0
+===== WASM org:XRPLF =====
+count 219
+https://github.com/XRPLF/mpt-crypto/pull/145 | ci: export generate_canonical_encrypted_zero to WASM
+https://github.com/XRPLF/rippled/pull/7745 | chore: Exclude wasm related code and deps by default
+https://github.com/XRPLF/XRPL-Standards/pull/631 | spec(XLS-102): Specify byte order of integers crossing the host boundary
+https://github.com/XRPLF/rippled/pull/6329 | feat: Smart Escrows (XLS-100)
+https://github.com/XRPLF/mpt-crypto/issues/141 | generate_canonical_encrypted_zero is not exported to WASM or npm, so the one check an outside observer most needs is unreachable from the published packages
+https://github.com/XRPLF/xrpl-rust/pull/368 | feat: Add Smart Escrow (XLS-100) support
+https://github.com/XRPLF/rippled/pull/8614 | Timothybanks/module inspector
+https://github.com/XRPLF/rippled/pull/8305 | fix: Use kSmdNever on sfBytecode
+https://github.com/XRPLF/xrpl-dev-portal/pull/3997 | Update faucet with new WASM Devnet
+https://github.com/XRPLF/mpt-crypto/pull/152 | ci: fix CI (conan.xrplf.org remote, macOS runner setup)
+https://github.com/XRPLF/rippled/pull/5980 | experimental: WASM trace logs stored in a db and outputted in `tx`
+https://github.com/XRPLF/xrpl-py/pull/818 | [DO NOT MERGE] Smart Escrows
+https://github.com/XRPLF/xrpl-rust/pull/374 | ci(deps): bump taiki-e/install-action from 2.87.8 to 2.87.21 in the github-actions group
+https://github.com/XRPLF/mpt-crypto/pull/150 | feat: Integrate BSGS in mpt_utility
+https://github.com/XRPLF/rippled/pull/8236 | tests: Add wasm call tests
+https://github.com/XRPLF/rippled/pull/8568 | fix: Allow WASM transactions in simulate only in admin mode
+https://github.com/XRPLF/rippled/pull/7952 | refactor: Wasm vm redesign
+https://github.com/XRPLF/rippled/pull/8114 | feat: Port wat based wasm tests to new wasm design
+https://github.com/XRPLF/rippled/pull/5553 | build Rust tests into rippled instead of needing hex strings
+https://github.com/XRPLF/rippled/pull/8295 | fix: Charge heavy rpc if wasm was executed during simulate call
+https://github.com/XRPLF/rippled/pull/8225 | feat: Report all errors in wasm code check
+https://github.com/XRPLF/rippled/pull/8571 | fix: Add limits for the number of entries in the type, imports, and exports sections in a wasm module
+https://github.com/XRPLF/rippled/pull/5809 | feat: XLS-101d Smart Contracts
+https://github.com/XRPLF/rippled/pull/8569 | chore: Merge develop
+https://github.com/XRPLF/rippled/pull/8012 | refactor: Wasm vm redesign
+https://github.com/XRPLF/rippled/pull/8238 | fix: Use a transient wasm engine to bypass the persisted memory usage…
+https://github.com/XRPLF/mpt-crypto/pull/147 | fix: honour proof_out capacity and validate required pointers (Zellic DEFI-1108/1109/1110)
+https://github.com/XRPLF/mpt-crypto/issues/148 | [Build] conan.lock pins an openssl revision that the Conan remote in the README's setup does not serve
+https://github.com/XRPLF/rippled/pull/8206 | refactor: Generate code to register host functions in wasm vm
+https://github.com/XRPLF/rippled/pull/8156 | refactor: Use temINVALID_BYTECODE istead of temBAD_WASM
+https://github.com/XRPLF/rippled/pull/8176 | refactor: Generate code to register host functions in wasm vm
+https://github.com/XRPLF/XRPL-Standards/pull/627 | fix(XLS-0102): Specify float_cmp return values
+https://github.com/XRPLF/rippled/pull/8609 | fix: Trap memory.grow that runs out of fuel as tecOUT_OF_GAS
+https://github.com/XRPLF/rippled/pull/8327 | fix: Use codegen when compiling rust crate
+https://github.com/XRPLF/rippled/pull/8201 | fix: Port smart escrow tests to new design
+https://github.com/XRPLF/rippled/pull/7805 | feat: Read version information in Wasm Module
+https://github.com/XRPLF/rippled/pull/8195 | feat: Add sponsorship, loanBroker, and loan keylet host functions
+https://github.com/XRPLF/rippled/pull/8194 | chore: Update ripple/se/wasmi-tests from base ripple/wasmi-host-functions
+https://github.com/XRPLF/rippled/pull/8193 | Update ripple/se/wasmi-tests from base ripple/wasmi-host-functions
+https://github.com/XRPLF/rippled/pull/8103 | fix:  Move host function test over to new wasm design
+https://github.com/XRPLF/rippled/pull/7789 | fix: Add perf tests for escrow create and escrow finish
+https://github.com/XRPLF/rippled/pull/8187 | Smart escrow develop branch
+https://github.com/XRPLF/rippled/pull/8196 | Update ripple/smart-escrow from base ripple/se/fees
+https://github.com/XRPLF/XRPL-Standards/pull/624 | XLS-102: Add sponsorship, loan_broker, and loan ledger entry ID functions
+https://github.com/XRPLF/rippled/pull/8270 | gas price must > 0
+https://github.com/XRPLF/rippled/pull/8215 | feat: Handle Smart Escrow's Bytecode, Data and Gas fields
+https://github.com/XRPLF/xrpl.js/issues/3275 | Try "self-service faucet" for networks where no faucet can be inferred.
+https://github.com/XRPLF/mpt-crypto/pull/138 | ci: Export secp256k1 elgamal subtract and add for WASM
+https://github.com/XRPLF/rippled/pull/8259 | fix: Pin dynamic fuel costs in wasmi engine
+https://github.com/XRPLF/rippled/pull/8138 | chore: Update ripple/smart escrow
+https://github.com/XRPLF/rippled/pull/8110 | feat: Remove float_root
+https://github.com/XRPLF/XRPL-Standards/pull/620 | spec(XLS-102): Rename rippled to xrpld
+https://github.com/XRPLF/rippled/pull/8291 | fix: Charge to transfer budget on update_data host call
+https://github.com/XRPLF/rippled/pull/8217 | fix: Update float_compare() doc and refactor enum definition
+https://github.com/XRPLF/mpt-crypto/pull/139 | ci: emit a browser-only ESM glue (mpt_crypto.web.mjs) 
+https://github.com/XRPLF/rippled/pull/6075 | feat: Add WASM host functions (Wasmi version)
+https://github.com/XRPLF/rippled/pull/8022 | test: Add tests for `HostContext`
+https://github.com/XRPLF/rippled/pull/8073 | chore: upgrade wasmi to 2.0.0-beta.10
+https://github.com/XRPLF/XRPL-Standards/pull/618 | XLS-102: Remove float_root host function
+https://github.com/XRPLF/rippled/pull/7441 | test: Add WASMI engine tests
+https://github.com/XRPLF/mpt-crypto/pull/135 | ci: Add workflow to build WASM artifact and attach to releases
+https://github.com/XRPLF/xrpl.js/pull/3449 | Release 0.1.1: release-mpt-crypto-0.1.1 → main
+https://github.com/XRPLF/xrpl.js/pull/3530 | build(deps): bump axios and nx
+https://github.com/XRPLF/rippled/pull/7920 | trace host function refactor
+https://github.com/XRPLF/rippled/pull/8228 | Decide the Smart Escrow fee limits from the ledger, not local configuration
+https://github.com/XRPLF/mpt-crypto/pull/137 | ci: prevent slow sanitizer builds from silently skipping releases
+https://github.com/XRPLF/rippled/pull/7696 | refactor: SField renames: Compute->Gas, Wasm->VM, FinishFunction->Bytecode
+https://github.com/XRPLF/rippled/pull/7947 | finish fn result refactor
+https://github.com/XRPLF/rippled/pull/8216 | Decide the Smart Escrow fee limits from the ledger, and lower the default values of the limits
+https://github.com/XRPLF/XRPL-Standards/pull/504 | spec(XLS-102): Add float host functions and versioning rules
+https://github.com/XRPLF/xrpl.js/pull/3364 | Support for Confidential MPT (XLS-0096)
+https://github.com/XRPLF/xrpl.js/pull/3539 | build(deps): bump brace-expansion and nx
+https://github.com/XRPLF/xrpl-rust/pull/367 | Sync definitions.json with rippled ripple/se/supported
+https://github.com/XRPLF/rippled/pull/7693 | Renames for Smart Escrow
+https://github.com/XRPLF/xrpl.js/pull/3538 | build(deps): bump smol-toml and nx
+https://github.com/XRPLF/XRPL-Standards/pull/532 | add limits to the wasm vm
+https://github.com/XRPLF/rippled/pull/7851 | chore: Update hf merge july
+https://github.com/XRPLF/rippled/pull/6218 | clean up host function header files with macros
+https://github.com/XRPLF/rippled/pull/6240 | Check wasm return type
+https://github.com/XRPLF/rippled/pull/7797 | refactor: SField and TER code renames
+https://github.com/XRPLF/wasmi/pull/2 | add disallowing start fn as a config option
+https://github.com/XRPLF/rippled/pull/7338 | refactor: rename host functions
+https://github.com/XRPLF/rippled/pull/6343 | Add tests for wasm  functions with many parameters
+https://github.com/XRPLF/xrpl.js/pull/3274 | [DO NOT MERGE] smart contracts
+https://github.com/XRPLF/rippled/pull/7000 | Memory transfer limit
+https://github.com/XRPLF/rippled/pull/7383 | Cleanup and some refactoring
+https://github.com/XRPLF/rippled/pull/7393 | HF one entry point
+https://github.com/XRPLF/mpt-crypto/pull/136 | ci: Add a self-contained static archive for Rust & Python consumers
+https://github.com/XRPLF/rippled/pull/7298 | fix: Fix build issues post-clang-tidy changes
+https://github.com/XRPLF/XRPL-Standards/pull/531 | update: host function renames
+https://github.com/XRPLF/rippled/pull/6296 | Fix negation of int64_t
+https://github.com/XRPLF/rippled/pull/5999 | feat: Add WASMI dependency (Smart Escrows)
+https://github.com/XRPLF/rippled/pull/6230 | Ensure lifetime of imports
+https://github.com/XRPLF/rippled/pull/6239 | Ensure request size less than int limit
+https://github.com/XRPLF/rippled/pull/6245 | Fix for Big-Endian machines
+https://github.com/XRPLF/rippled/pull/7053 | Remove some float hostfunctions
+https://github.com/XRPLF/rippled/pull/6208 | Fix unaligned access
+https://github.com/XRPLF/rippled/pull/6277 | Reject non-canonical binaries
+https://github.com/XRPLF/rippled/pull/6441 | Modularise the wasm module
+https://github.com/XRPLF/rippled/pull/7200 | bump get_nft host function cost from 1000 to 5000
+===== DEFAULT_TO_CXX org:XRPLF =====
+count 0
+===== em++ org:XRPLF =====
+count 1441
+https://github.com/XRPLF/xrpl4j/pull/606 | Fix IT Environment logging
+https://github.com/XRPLF/xrpl.js/pull/3540 | build(deps-dev): bump source-map-js from 1.2.1 to 1.2.2
+https://github.com/XRPLF/xrpl.js/pull/3508 | build(deps-dev): bump eslint-import-resolver-typescript from 4.4.4 to 4.4.5
+https://github.com/XRPLF/xrpl-dev-portal/pull/3994 | Bump source-map-js from 1.2.1 to 1.2.2
+https://github.com/XRPLF/xrpl-py/pull/1047 | chore(deps-dev): bump flake8-annotations from 3.1.1 to 3.2.0
+https://github.com/XRPLF/xrpl.js/pull/3517 | build(deps-dev): bump expect from 30.5.1 to 30.5.2
+https://github.com/XRPLF/xrpl.js/pull/3506 | build(deps-dev): bump jest from 30.5.1 to 30.5.2
+https://github.com/XRPLF/xrpl.js/pull/3502 | build(deps-dev): bump ts-jest from 29.4.12 to 29.4.14
+https://github.com/XRPLF/xrpl.js/pull/3499 | build(deps-dev): bump eslint-plugin-tsdoc from 0.5.2 to 0.5.3
+https://github.com/XRPLF/xrpl.js/pull/3516 | build(deps-dev): bump jest-mock from 30.5.1 to 30.5.2
+https://github.com/XRPLF/xrpl.js/pull/3503 | build(deps): bump ws from 8.21.3 to 8.22.0
+https://github.com/XRPLF/xrpl-dev-portal/pull/3991 | Bump smol-toml from 1.8.0 to 1.9.0
+https://github.com/XRPLF/xrpl-py/pull/1052 | chore(deps-dev): bump flake8-absolute-import from 1.0.0.2 to 1.0.0.3
+https://github.com/XRPLF/rippled/issues/8008 | Excessive `clientFeeChange` jobs: data race and no-subscriber update failure in `reportFeeChange()`
+https://github.com/XRPLF/xrpl.js/pull/3512 | build(deps-dev): bump prettier from 3.9.6 to 3.9.9
+https://github.com/XRPLF/xrpl-dev-portal/pull/3993 | Bump postcss-selector-parser and @fullhuman/postcss-purgecss
+https://github.com/XRPLF/xrpl.js/pull/3500 | build(deps-dev): bump typedoc from 0.28.19 to 0.28.20
+https://github.com/XRPLF/xrpl-py/pull/1056 | chore(deps): bump websockets from 15.0.1 to 16.1.1
+https://github.com/XRPLF/xrpl-py/pull/1044 | chore(deps-dev): bump flake8-isort from 6.1.2 to 7.0.0
+https://github.com/XRPLF/xrpl-py/pull/1048 | chore(deps-dev): bump sphinx from 7.4.7 to 8.1.3
+https://github.com/XRPLF/xrpl.js/pull/3514 | build(deps-dev): bump webpack-bundle-analyzer from 5.3.0 to 5.4.0
+https://github.com/XRPLF/xrpl.js/pull/3515 | build(deps-dev): bump @eslint-community/eslint-plugin-eslint-comments from 4.7.2 to 4.8.1
+https://github.com/XRPLF/xrpl.js/pull/3537 | build(deps): bump handlebars and lerna
+https://github.com/XRPLF/xrpl.js/pull/3538 | build(deps): bump smol-toml and nx
+https://github.com/XRPLF/xrpl-py/pull/1049 | chore(deps-dev): bump black from 26.3.1 to 26.5.1
+https://github.com/XRPLF/xrpl.js/pull/3529 | build(deps-dev): bump ip-address from 10.7.0 to 10.7.3
+https://github.com/XRPLF/xrpl-go/pull/435 | fix(transaction)!: validate constrained fields and correct asset models
+https://github.com/XRPLF/xrpl-py/pull/1053 | chore(deps-dev): bump pydoclint from 0.7.6 to 0.10.1
+https://github.com/XRPLF/xrpl.js/pull/3505 | build(deps-dev): bump eslint-plugin-n from 17.24.0 to 18.4.0
+https://github.com/XRPLF/xrpl.js/pull/3501 | build(deps-dev): bump typescript-eslint from 8.58.1 to 8.70.1
+https://github.com/XRPLF/xrpl.js/pull/3513 | build(deps-dev): bump globals from 16.5.0 to 17.12.0
+https://github.com/XRPLF/xrpl-rust/pull/374 | ci(deps): bump taiki-e/install-action from 2.87.8 to 2.87.21 in the github-actions group
+https://github.com/XRPLF/xrpl-py/pull/1057 | chore(deps): bump typing-extensions from 4.15.0 to 4.16.0
+https://github.com/XRPLF/xrpl-py/pull/1050 | chore(deps-dev): bump packaging from 26.2 to 26.3
+https://github.com/XRPLF/xrpl-py/pull/1045 | chore(deps-dev): bump coverage from 7.13.5 to 7.16.2
+https://github.com/XRPLF/xrpl-py/pull/1054 | chore(deps-dev): bump mypy from 1.20.2 to 2.3.1
+https://github.com/XRPLF/xrpl.js/pull/3504 | build(deps-dev): bump typescript from 5.9.3 to 7.0.2
+https://github.com/XRPLF/xrpl.js/pull/3498 | build(deps-dev): bump eslint-plugin-jsdoc from 52.0.4 to 64.5.4
+https://github.com/XRPLF/xrpl.js/pull/3536 | build(deps-dev): bump shell-quote from 1.10.0 to 1.12.0
+https://github.com/XRPLF/xrpl.js/pull/3509 | build(deps-dev): bump webpack from 5.110.3 to 5.111.1
+https://github.com/XRPLF/xrpl-py/pull/998 | chore(deps-dev): bump urllib3 from 2.6.3 to 2.7.0
+https://github.com/XRPLF/xrpl-py/pull/1051 | chore(deps-dev): bump poethepoet from 0.37.0 to 0.48.0
+https://github.com/XRPLF/xrpl-py/pull/1000 | chore(deps): bump idna from 3.10 to 3.15
+https://github.com/XRPLF/xrpl-dev-portal/pull/3724 | Bump ws from 8.18.0 to 8.21.0 in /_code-samples/non-fungible-token/js
+https://github.com/XRPLF/xrpl-dev-portal/pull/3722 | Bump ws from 8.17.1 to 8.21.0 in /_code-samples/trade-in-the-decentralized-exchange/js
+https://github.com/XRPLF/xrpl-go/pull/454 | chore(deps): bump source-map-js from 1.2.1 to 1.2.2 in /docs
+https://github.com/XRPLF/xrpl-dev-portal/pull/3983 | Bump electron from 38.2.0 to 41.10.6 in /_code-samples/build-a-desktop-wallet/js
+https://github.com/XRPLF/xbridge-cli/pull/184 | build(deps): bump pycryptodome from 3.19.1 to 3.23.0
+https://github.com/XRPLF/xrpl-rust/pull/373 | feat: Support `LendingProtocolV1_1`
+https://github.com/XRPLF/xrpl-py/pull/1042 | chore(deps): bump anyio from 4.9.0 to 4.14.2
+https://github.com/XRPLF/xrpl.js/pull/3530 | build(deps): bump axios and nx
+https://github.com/XRPLF/clio/pull/3264 | ci: [DEPENDABOT] bump the github-actions group across 2 directories with 2 updates
+https://github.com/XRPLF/rippled/pull/8009 | fix: Data race and no-subscriber update failure in reportFeeChange()
+https://github.com/XRPLF/xbridge-cli/pull/185 | build(deps): bump click from 8.1.7 to 8.1.8
+https://github.com/XRPLF/xrpl.js/pull/3507 | build(deps-dev): bump eslint from 9.39.4 to 10.11.0
+https://github.com/XRPLF/rippled/pull/8562 | ci: [DEPENDABOT] bump the github-actions group across 1 directory with 2 updates
+https://github.com/XRPLF/clio/pull/3262 | ci: [DEPENDABOT] bump actions/upload-artifact from 7.0.1 to 7.0.2 in /.github/actions/code-coverage
+https://github.com/XRPLF/clio/pull/3260 | ci: [DEPENDABOT] bump actions/upload-artifact from 7.0.1 to 7.0.2
+https://github.com/XRPLF/rippled/pull/8564 | chore: [DEPENDABOT] bump cxx from 1.0.202 to 1.0.203 in /crates in the rust-dependencies group
+https://github.com/XRPLF/xrpl.js/pull/3539 | build(deps): bump brace-expansion and nx
+https://github.com/XRPLF/xrpl-dev-portal/pull/3982 | Bump moment from 2.30.1 to 2.31.0
+https://github.com/XRPLF/clio/pull/3261 | ci: [DEPENDABOT] bump actions/download-artifact from 8.0.1 to 8.0.2
+https://github.com/XRPLF/xrpl-go/pull/443 | chore(deps): bump fast-uri from 3.1.7 to 3.1.8 in /docs
+https://github.com/XRPLF/xbridge-cli/pull/186 | build(deps): bump psutil from 5.9.7 to 7.2.2
+https://github.com/XRPLF/xrpl4j/pull/699 | Bump com.github.ben-manes.caffeine:caffeine from 2.9.3 to 3.0.0
+https://github.com/XRPLF/xrpl-dev-portal/pull/3942 | Bump js-yaml and @redocly/realm
+https://github.com/XRPLF/xbridge-cli/pull/183 | build(deps): bump jinja2 from 3.1.2 to 3.1.6
+https://github.com/XRPLF/xrpl4j/pull/778 | Bump io.github.openfeign:feign-bom from 12.3 to 13.12
+https://github.com/XRPLF/xrpl.js/pull/3459 | build(deps-dev): bump @humanfs/node from 0.16.7 to 0.16.8
+https://github.com/XRPLF/xrpl4j/pull/693 | Bump com.jayway.jsonpath:json-path-assert from 2.8.0 to 2.10.0
+https://github.com/XRPLF/xrpl.js/pull/3460 | build(deps-dev): bump browserslist from 4.28.2 to 4.28.8
+https://github.com/XRPLF/xrpl-go/pull/455 | chore(deps): bump compression from 1.8.1 to 1.8.2 in /docs
+https://github.com/XRPLF/xrpl-go/pull/392 | chore(deps): bump colord from 2.9.3 to 2.10.0 in /docs
+https://github.com/XRPLF/rippled/pull/8224 | chore: [DEPENDABOT] bump cxx from 1.0.199 to 1.0.202 in /crates in the rust-dependencies group across 1 directory
+https://github.com/XRPLF/clio/pull/3218 | ci: [DEPENDABOT] bump codecov/codecov-action from 7.0.0 to 7.1.1
+https://github.com/XRPLF/xrpl-go/pull/388 | chore(deps): bump browserslist from 4.28.2 to 4.28.9 in /docs
+https://github.com/XRPLF/rippled/pull/8572 | chore: [DEPENDABOT] bump pyparsing from 3.3.2 to 3.3.3 in /cmake/scripts/codegen in the codegen-dependencies group
+https://github.com/XRPLF/xrpl4j/pull/694 | Bump org.apache.maven.plugins:maven-gpg-plugin from 1.6 to 3.2.8
+https://github.com/XRPLF/rippled/pull/8251 | ci: [DEPENDABOT] bump codecov/codecov-action from 7.0.0 to 7.1.1 in the github-actions group across 1 directory
+https://github.com/XRPLF/xrpl.js/pull/3511 | build(deps-dev): bump react from 19.2.8 to 19.3.0
+https://github.com/XRPLF/xrpl-go/pull/453 | chore(deps): bump proxy-addr from 2.0.7 to 2.0.8 in /docs
+https://github.com/XRPLF/xrpl-dev-portal/pull/3839 | Bump js-yaml and @redocly/realm
+https://github.com/XRPLF/clio/pull/3219 | ci: [DEPENDABOT] bump docker/setup-qemu-action from 4.3.0 to 4.4.0 in /.github/actions/build-docker-image
+https://github.com/XRPLF/xrpl4j/pull/685 | Bump org.junit:junit-bom from 5.14.1 to 6.0.2
+https://github.com/XRPLF/xrpl-dev-portal/pull/3838 | Bump dompurify and @redocly/realm
+https://github.com/XRPLF/xrpl.js/pull/3457 | build(deps-dev): bump postcss-selector-parser from 7.1.1 to 7.1.5
+https://github.com/XRPLF/xrpl4j/pull/832 | Changes to single asset vault
+https://github.com/XRPLF/XRPL-Standards/pull/649 | deps(deps): update markdown requirement from <4.0.0,>=3.10.3 to >=3.11,<4.0.0
+https://github.com/XRPLF/xrpl.js/pull/3257 | build(deps-dev): bump @eslint/js from 9.39.4 to 10.0.1
+https://github.com/XRPLF/xrpl-go/pull/452 | chore(deps): bump shell-quote from 1.9.0 to 1.12.0 in /docs
+https://github.com/XRPLF/xrpl.js/pull/3382 | build(deps-dev): bump react from 19.2.5 to 19.2.7
+https://github.com/XRPLF/xrpl-go/pull/390 | chore(deps): bump svgo from 3.3.4 to 3.3.5 in /docs
+https://github.com/XRPLF/clio/pull/3200 | ci: [DEPENDABOT] bump actions/deploy-pages from 5.0.0 to 5.0.1
+https://github.com/XRPLF/xrpl.js/pull/3425 | build(deps-dev): bump socket.io-parser from 4.2.6 to 4.2.7
+https://github.com/XRPLF/rippled/pull/8180 | ci: [DEPENDABOT] bump actions/deploy-pages from 5.0.0 to 5.0.1 in the github-actions group across 1 directory
+https://github.com/XRPLF/actions/pull/183 | ci: [DEPENDABOT] bump the github-actions group across 1 directory with 2 updates
+https://github.com/XRPLF/xrpl4j/pull/763 | Bump org.bouncycastle:bcprov-jdk18on from 1.78.1 to 1.84 in /xrpl4j-client
+https://github.com/XRPLF/xrpl4j/pull/765 | Bump org.bouncycastle:bcprov-jdk18on from 1.78.1 to 1.84 in /xrpl4j-core
+https://github.com/XRPLF/xrpl4j/pull/764 | Bump org.bouncycastle:bcprov-jdk18on from 1.78.1 to 1.84 in /xrpl4j-integration-tests
+https://github.com/XRPLF/xrpl.js/pull/3403 | build(deps-dev): bump typescript from 5.2.2 to 6.0.3
+===== libc++ org:XRPLF =====
+count None
+===== __cxa org:XRPLF =====
+count None
+===== mpt #148 =====
+https://github.com/XRPLF/mpt-crypto/issues/148
+[Build] conan.lock pins an openssl revision that the Conan remote in the README's setup does not serve
+The README sends readers to rippled's `BUILD.md` to set up Conan. That setup runs `conan/init.sh`, which adds the `xrplf` remote at `https://conan.xrplf.org/repository/conan/` ([`init.sh#L21`](https://github.com/XRPLF/rippled/blob/8f4e9c25d892767727ca5af09599df2b47890f9a/conan/init.sh#L21)). This repository's `conan.lock` pins `openssl/3.6.2#4789bbf1…`, which that remote does not serve, so dependency resolution fails. The same command works with `https://conan.ripplex.io`, which is the remote this repository's own scripts and CI add.
+
+**Ask:** move this repository to `conan.xrplf.org`, as XRPLF/clio#3118 did for clio.
+
+**What I ran**
+
+mpt-crypto `3baaaac` (tag `1.0.5`), Conan 2.32.0, a fresh `CONAN_HOME` for each run, 2026-09-23.
+
+```sh
+conan profile detect
+bash rippled/conan/init.sh          # rippled 8f4e9c25: global.conf, profiles, xrplf remote
+conan graph info . --lockfile=conan.lock
+# exit 1
+# ERROR: Package 'openssl/3.6.2' not resolved: Unable to find
+#   'openssl/3.6.2#4789bbf131b77d0515d15e094c8f697f%1778071755.506' in remotes.
+
+# Control, with the remote this repository's scripts use:
+conan profile detect
+conan remote add --index 0 xrplf https://conan.ripplex.io
+conan graph info . --lockfile=conan.lock
+# exit 0, all three recipes "Downloaded (xrplf)"
+```
+
+Checked directly against each remote:
+
+```sh
+curl https://conan.xrplf.org/repository/conan/v2/conans/openssl/3.6.2/_/_/revisions   # 404
+curl https://conan.ripplex.io/v2/conans/openssl/3.6.2/_/_/revisions                   # 4789bbf1…
+curl https://center2.conan.io/v2/conans/openssl/3.6.2/_/_/revisions                   # 36f92686… only
+
+# Every other pinned recipe is on the new remote at the pinned revision:
+#   zlib/1.3.2#1cb806da, secp256k1/0.7.1#b1f450b7,
+#   strawberryperl/5.32.1.1#8d114504, nasm/2.16.01#31e26f2e
+```
+
+**Where `conan.ripplex.io` is added**
+
+- https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/conan/lockfile/regenerate.sh#L17
+- https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/.github/scripts/build-native-libs.sh#L16
+- https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/.github/workflows/build.yml#L71 (macOS jobs)
+- The Linux jobs run in `ghcr.io/xrplf/clio-ci:14342e0…`, whose Dockerfile adds it: https://github.com/XRPLF/clio/blob/14342e087ceb8b593027198bf9ef06a43833c696/docker/ci/Dockerfile#L115
+
+CI at `3baaaac` passed with that remote (https://github.com/XRPLF/mpt-crypto/actions/runs/32380884181).
+
+**Suggested fix**
+
+One possible approach, following clio#3118: point the three lines above at `conan.xrplf.org`, add that remote in the Linux jobs, and regenerate `conan.lock`. I tried the regeneration. `regenerate.sh`'s own `conan lock create` command, with only the remote URL changed, succeeds and picks `openssl/3.6.4`. The new lockfile then resolves. rippled `develop` pins `openssl/3.6.3`, if you prefer to match it.
+
+<details>
+<summary>Searches for an existing report</summary>
+
+```text
+# 2026-09-23. Open and closed, issues and PRs.
+gh search issues "conan.xrplf.org" --repo XRPLF/mpt-crypto --include-prs   # 0
+gh search issues "not resolved"    --repo XRPLF/mpt-crypto --include-prs   # 0
+gh search issues "openssl/3.6.2"   --repo XRPLF/mpt-crypto --include-prs   # 1: #135 (WASM build)
+gh search issues "conan.lock"      --repo XRPLF/mpt-crypto --include-prs   # 3: #95 adds the lockfile; #130, #135
+gh search issues "conan.xrplf.org" --owner XRPLF --include-prs             # 0
+
+# Audits
+Trail of Bits, April 2026 report: no mention of Conan.
+  https://github.com/trailofbits/publications/blob/master/reviews/2026-04-ripple-labs-xrp-ledger-confidential-transfer-securityreview.pdf
+  I could not obtain its later revision; XRPLF/mpt-crypto#122 cites it for a Conan command
+  used to run CodeQL.
+Sherlock XRP Ledger Attackathon: full findings report not found. Public XRPLF issues and PRs
+  matching "Sherlock" or "Attackathon" (104 on 2026-09-22, 103 on 2026-09-28), with comments,
+  and the 16 PRs against rippled's ripple/attackathon-april-2026 branch, with review comments:
+  none concerns a Conan remote.
+```
+
+</details>
+
+---
+
+*Disclosure: prepared with AI assistance. Every command and link above was checked on 2026-09-23 at mpt-crypto `3baaaac`, rippled `develop` `8f4e9c25` and clio `14342e0`, and re-checked on 2026-09-28. I found no stated policy on AI-assisted contributions, so I am disclosing by default.*
+
+===== mpt #148 comments =====
+comments 0
+
+exec
+/bin/zsh -lc "set -e
+printf '%s\\n' '===== mpt #147 ====='
+curl -sS https://api.github.com/repos/XRPLF/mpt-crypto/pulls/147 | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get(\"html_url\")); print(d.get(\"title\")); print(d.get(\"body\"))'
+printf '%s\\n' '===== current main c60a60c build-wasm relevant lines ====='
+for path in .github/scripts/build-wasm.sh .github/workflows/build-wasm.yml; do
+  echo \"--- "'$path ---"
+  curl -sS "https://raw.githubusercontent.com/XRPLF/mpt-crypto/c60a60c/$path" | nl -ba | grep -E '"'Prerequisites|mpt_utility.cpp|emcc .*LINK_FLAGS|version: 6\\.0\\.2|uses: mymindstorm|em\\+\\+|emcc' | head -30
+done
+printf '%s\\n' '===== current main commit ====='
+curl -sS https://api.github.com/repos/XRPLF/mpt-crypto/commits/c60a60c | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get(\"sha\"), d.get(\"commit\",{}).get(\"message\"))'
+printf '%s\\n' '===== search API errors for special terms ====='
+for q in 'libc++ org:XRPLF' '__cxa org:XRPLF'; do echo \"--- "'$q ---"; curl -sS -G '"'https://api.github.com/search/issues' --data-urlencode \"q="'$q" | python3 -c '"'import json,sys; print(json.load(sys.stdin))'; done" in $USER_TMP/T/f12r2.zRcIsF
+ exited 127 in 457ms:
+https://github.com/XRPLF/mpt-crypto/pull/147
+fix: honour proof_out capacity and validate required pointers (Zellic DEFI-1108/1109/1110)
+Summary
+
+Resolves the three findings from the Zellic scan of mpt-crypto@3baaaac (current `main`): DEFI-1108, DEFI-1109, DEFI-1110 on the DEFI board. Each was verified against the source at that commit before anything was changed.
+
+DEFI-1110 (memory safety, the one that matters)
+
+`secp256k1_bulletproof_prove_agg` documents `*proof_len` as the caller's buffer capacity on input, but overwrites it with `proof_size` immediately after validating `m`. The only capacity check, in the serialization block, then compares that value against a locally recomputed `expected` equal to it, so `*proof_len < expected` is dead for every supported `m`, and an undersized `proof_out` is serialized past its end.
+
+Reproduced under AddressSanitizer on unpatched `main`: a 600-byte heap buffer with declared capacity 600 takes a heap-buffer-overflow WRITE 0 bytes after the region, in the trailing-scalar memcpy block, for an m=1 proof requiring 688 bytes (88-byte overrun). The same repro against this branch returns 0 and reports 688.
+
+Fix: capture the capacity in a local before `*proof_len` is written, and resolve the size-query (`proof_out == NULL`), NULL-`proof_len` and insufficient-capacity paths at the top of the function, before any proving work rather than after it.
+
+Compatibility: both in-repo callers (`mpt_get_bulletproof_agg`, reached from the Send and ConvertBack builders) already pass `kMPT_{SINGLE,DOUBLE}_BULLETPROOF_SIZE`, which equal the computed sizes for m=1 and m=2, so existing callers are unaffected. Two behaviour differences worth knowing: a size query now returns immediately without running the prover (previously it returned 1 only if proving succeeded), and on an internal proving failure `*proof_len` is left at the caller's capacity rather than set to the required size. Neither is relied on in-repo. Separately, note that `mpt_get_bulletproof_agg` only checks the written length after the call returns, so the utility layer was never itself enforcing the capacity it passes down; correct today because every caller hands it a matching constant.
+
+DEFI-1108 (robustness)
+
+`secp256k1_bulletproof_create_commitment` dereferenced `h_generator` and `commitment_C` without validating them, so a NULL required pointer crashed the process instead of returning the documented 0 (confirmed: SIGSEGV on unpatched `main`). Added `MPT_ARG_CHECK` entry-point checks, the idiom already used across `elgamal.c` and the proof modules. The same checks are added to `prove_agg`, which had the identical gap the scan did not flag. `context_id` is deliberately excluded: it is documented optional and NULL-guarded at every transcript absorption.
+
+DEFI-1109 (documented, deliberately not changed)
+
+`secp256k1_elgamal_add` / `_subtract` cannot represent an identity result, because a `secp256k1_pubkey` has no encoding for the point at infinity; subtracting a ciphertext from itself, or any pair sharing a component, returns 0 indistinguishably from a genuine failure. Giving the ciphertext an identity-capable representation changes the exported representation downstream consumers build on, so this PR documents the limitation in the API contract and pins it with tests instead. Whether to change the representation is a protocol decision, not a library one, and it is the same underlying mechanism as AXRT-4218 at the transactor layer, so the two are worth deciding together. Both functions are WASM-exported specifically for client-side chained-balance prediction (`CB_S' = CB_S -/+ the encrypted amount`), which is the path that can actually reach a cancellation, so the header now points callers at `generate_canonical_encrypted_zero()` for a zero balance.
+
+Testing
+
+New `tests/test_api_hardening.c`. Verified to be genuine regression tests by building the same file against unpatched `main`: the DEFI-1108 case exits 139 (SIGSEGV) and the DEFI-1110 case exits 134 (assertion), while the DEFI-1109 case passes both before and after, since it pins existing behaviour rather than changing it.
+
+On this branch: Debug build on macOS with `MPT_CRYPTO_WERROR=ON`, 13/13 ctest pass. `pre-commit run` clean on all changed files. The `_shared` test variant is exercised only in CI.
+
+===== current main c60a60c build-wasm relevant lines =====
+--- .github/scripts/build-wasm.sh ---
+zsh:7: command not found: curl
+zsh:7: command not found: nl
+zsh:7: command not found: grep
+zsh:7: command not found: head
+
+exec
+/bin/zsh -lc "set -e
+printf '%s\\n' '===== current main c60a60c build-wasm relevant lines ====='
+for p in .github/scripts/build-wasm.sh .github/workflows/build-wasm.yml; do
+  echo \"--- "'$p ---"
+  /usr/bin/curl -sS "https://raw.githubusercontent.com/XRPLF/mpt-crypto/c60a60c/$p" | /usr/bin/nl -ba | /usr/bin/grep -E '"'Prerequisites|mpt_utility.cpp|emcc .*LINK_FLAGS|version: 6\\.0\\.2|uses: mymindstorm|em\\+\\+|emcc' | /usr/bin/head -30
+done
+printf '%s\\n' '===== current main commit ====='
+/usr/bin/curl -sS https://api.github.com/repos/XRPLF/mpt-crypto/commits/c60a60c | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get(\"sha\"), d.get(\"commit\",{}).get(\"message\"))'
+printf '%s\\n' '===== search API errors for special terms ====='
+for q in 'libc++ org:XRPLF' '__cxa org:XRPLF'; do echo \"--- "'$q ---"; /usr/bin/curl -sS -G https://api.github.com/search/issues --data-urlencode "q=$q" | python3 -c '"'import json,sys; print(json.load(sys.stdin))'; done" in $USER_TMP/T/f12r2.zRcIsF
+ succeeded in 1205ms:
+     6	#   emcc_out/mpt_crypto.js      (MODULARIZE CommonJS glue — Node require)
+     7	#   emcc_out/mpt_crypto.mjs     (EXPORT_ES6 ESM glue, web+node — Node import)
+     8	#   emcc_out/mpt_crypto.web.mjs (EXPORT_ES6 ESM glue, web only — bundlers/browsers)
+     9	#   emcc_out/mpt_crypto.wasm    (the compiled module, curated exports)
+    13	# It has a dedicated emcc link (rather than CMake) because the wasm module needs
+    17	# into emcc_build/, which test-wasm.sh reuses.
+    19	# Prerequisites: Emscripten SDK (emcc, em++, emcmake, emmake) on PATH.
+    28	BUILD_DIR="${ROOT_DIR}/emcc_build"
+    29	OUT_DIR="${ROOT_DIR}/emcc_out"
+    95	require_cmd emcc
+    96	require_cmd em++
+   134	    #    default this ON, which builds a .so instead and makes the final emcc link
+   196	    #    CC=emcc does the actual compile, so --cross-compile-prefix stays empty.
+   201	        CC=emcc AR=emar RANLIB=emranlib \
+   255	# --clean (or delete emcc_build/obj) to force recompilation.
+   263	        emcc ${CFLAGS} -c "$f" -o "${obj}"
+   272	    em++ ${CFLAGS} -std=c++17 -c "${ROOT_DIR}/src/utility/${name}.cpp" -o "${obj}"
+   363	emcc "${LINK_FLAGS[@]}" -o "${OUT_DIR}/mpt_crypto.js"
+   365	emcc "${LINK_FLAGS[@]}" -sEXPORT_ES6=1 -o "${OUT_DIR}/mpt_crypto.mjs"
+   374	emcc "${LINK_FLAGS[@]}" -sEXPORT_ES6=1 -sENVIRONMENT=web,worker -o "${web_tmp}/mpt_crypto.mjs"
+--- .github/workflows/build-wasm.yml ---
+    38	        uses: mymindstorm/setup-emsdk@6ab9eb1bda2574c4ddb79809fc9247783eaf9021 # v14
+    43	          version: 6.0.2
+    57	          cp emcc_out/mpt_crypto.js emcc_out/mpt_crypto.mjs emcc_out/mpt_crypto.web.mjs emcc_out/mpt_crypto.wasm output/
+    60	        # Point the glue smoke test at the staged bundle, not emcc_out, so a file
+===== current main commit =====
+c60a60cc82eac5f7446480e0363105b8ace44631 feat(rotate): ElGamal key-rotation proofs (9 of 9) (#142)
+
+Co-authored-by: Murat Cenk <redacted@example.invalid>
+===== search API errors for special terms =====
+--- libc++ org:XRPLF ---
+{'message': "API rate limit exceeded for 210.170.162.227. (But here's the good news: Authenticated requests get a higher rate limit. Check out the documentation for more details.)", 'documentation_url': 'https://docs.github.com/rest/overview/resources-in-the-rest-api#rate-limiting'}
+--- __cxa org:XRPLF ---
+{'message': "API rate limit exceeded for 210.170.162.227. (But here's the good news: Authenticated requests get a higher rate limit. Check out the documentation for more details.)", 'documentation_url': 'https://docs.github.com/rest/overview/resources-in-the-rest-api#rate-limiting'}
+
+exec
+/bin/zsh -lc "python3 - <<'PY'
+from pathlib import Path
+import re
+s=Path('draft.md').read_text()
+# issue body only after the first --- and before disclosure/footer
+s=s.split('---',2)[-1]
+s=s.split('\\n---\\n\\n*Disclosure:',1)[0]
+lines=s.splitlines(); out=[]; in_fence=False; in_details=False
+for line in lines:
+    if line.strip().startswith('<details>'):
+        in_details=True
+    if in_details:
+        if line.strip().startswith('</details>'):
+            in_details=False
+        continue
+    if line.strip().startswith('"'```'"'):
+        in_fence=not in_fence
+        continue
+    if in_fence or line.startswith('>'):
+        continue
+    out.append(line)
+t='\\n'.join(out)
+# Count whitespace-delimited tokens after stripping markdown punctuation only for readability; report both common regex and whitespace.
+print('WHITESPACE',len(t.split()))
+print('WORDLIKE',len(re.findall(r\"[A-Za-z0-9]+(?:[.'’_+-][A-Za-z0-9]+)*\",t)))
+print('--- prose ---')
+print(t)
+PY" in $USER_TMP/T/f12r2.zRcIsF
+ succeeded in 0ms:
+WHITESPACE 32
+WORDLIKE 32
+--- prose ---
+
+
+*Disclosure: prepared with AI assistance. The builds above were run on 2026-10-18 at mpt-crypto `3baaaac`, and every link was checked the same day. `build-wasm.sh` and `build-wasm.yml` are unchanged at today's `main` (`c60a60c`).*
+
+exec
+/bin/zsh -lc "python3 - <<'PY'
+from pathlib import Path
+import re
+s=Path('draft.md').read_text(); lines=s.splitlines()
+start=next(i+1 for i,x in enumerate(lines) if x.strip()=='---')
+end=next(i for i,x in enumerate(lines) if x.startswith('*Disclosure:'))
+lines=lines[start:end]
+out=[]; in_fence=False; in_details=False
+for line in lines:
+    if line.strip() == '<details>': in_details=True
+    if in_details:
+        if line.strip() == '</details>': in_details=False
+        continue
+    if line.strip().startswith('"'```'"'):
+        in_fence=not in_fence; continue
+    if in_fence or line.startswith('>'): continue
+    out.append(line)
+t='\\n'.join(out)
+print('WHITESPACE',len(t.split()))
+print('WORDLIKE',len(re.findall(r\"[A-Za-z0-9]+(?:[.'’_+-][A-Za-z0-9]+)*\",t)))
+print('--- prose ---'); print(t)
+PY" in $USER_TMP/T/f12r2.zRcIsF
+ succeeded in 0ms:
+WHITESPACE 200
+WORDLIKE 258
+--- prose ---
+
+`build-wasm.sh` compiles `src/utility/mpt_utility.cpp` as C++, then links the module with plain `emcc`. From emsdk 6.0.6, `emcc` no longer links the C++ runtime by default, so the link fails with the C++ runtime missing. CI did not catch it because it pins emsdk 6.0.2, and the WASM job [passed at `3baaaac`](https://github.com/XRPLF/mpt-crypto/actions/runs/32380884181). The script's own prerequisites line names no version. On macOS arm64, every emsdk I tried from 6.0.6 on fails, and the changelog describes the change for all platforms.
+
+**Suggested fix:** link with `em++` on the three link lines, as Emscripten's changelog recommends.
+
+**Cause**
+
+Emscripten's [ChangeLog for 6.0.6](https://github.com/emscripten-core/emscripten/blob/6.0.6/ChangeLog.md#L23-L25):
+
+
+At `3baaaac`, the C++ object is compiled with `em++` ([line 272](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/.github/scripts/build-wasm.sh#L272)) and linked with `emcc` ([lines 363, 365 and 374](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/.github/scripts/build-wasm.sh#L363-L374)). CI pins [emsdk 6.0.2](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/.github/workflows/build-wasm.yml#L38-L43), and the script asks only for [*"Emscripten SDK (emcc, em++, emcmake, emmake) on PATH"*](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/.github/scripts/build-wasm.sh#L19).
+
+**What I ran**
+
+`./.github/scripts/build-wasm.sh` at `3baaaac`, then `test-wasm.sh` where the table says so. Each build used a fresh source tree and its own emsdk. macOS arm64, 2026-10-18. I did not run Linux.
+
+
+The 6.0.6 and 6.0.10 failure. At 6.0.12 it also lists `__cxa_guard_acquire` and `__cxa_guard_release`.
+
+
+All three lines need the change. With only lines 363 and 365 changed, 6.0.6 still fails at line 374.
+
+
+---
+
+
+exec
+/bin/zsh -lc 'set -e
+for n in 84 85 101 102 103 148; do
+  echo "===== issue $n matched term lines ====="
+  /usr/bin/curl -L -sS "https://github.com/XRPLF/mpt-crypto/issues/$n" | /usr/bin/grep -Eio '"'.{0,80}(emsdk|emscripten|wasm|default_to_cxx|em\\+\\+|libc\\+\\+|__cxa).{0,120}' | head -20 || true
+done
+printf '%s\\n' '===== current GitHub web search snippets ====='
+for q in 'Attackathon org:XRPLF' 'Sherlock org:XRPLF'; do
+  echo \"--- "'$q ---"
+  /usr/bin/curl -L -sS -G '"'https://github.com/search' --data-urlencode \"q="'$q" --data-urlencode '"'type=issues' | /usr/bin/grep -Eo 'href=\"/XRPLF/["'^"]+"[''^>]*>[''^<]+'"' | head -30 || true
+done" in $USER_TMP/T/f12r2.zRcIsF
+ succeeded in 21485ms:
+===== issue 85 matched term lines =====
+===== issue 101 matched term lines =====
+===== issue 102 matched term lines =====
+===== issue 103 matched term lines =====
+===== issue 148 matched term lines =====
+h issues \"openssl/3.6.2\"   --repo XRPLF/mpt-crypto --include-prs   # 1: #135 (WASM build)\ngh search issues \"conan.lock\"      --repo XRPLF/mpt-crypto --include-prs   # 3: #95 adds the lockfile; #130, 
+t;openssl/3.6.2\u0026quot;   --repo XRPLF/mpt-crypto --include-prs   # 1: #135 (WASM build)\ngh search issues \u0026quot;conan.lock\u0026quot;      --repo XRPLF/mpt-crypto --include-prs   # 3: #95 adds th
+h issues \"openssl/3.6.2\"   --repo XRPLF/mpt-crypto --include-prs   # 1: #135 (WASM build)\ngh search issues \"conan.lock\"      --repo XRPLF/mpt-crypto --include-prs   # 3: #95 adds the lockfile; #130, 
+h issues \"openssl/3.6.2\"   --repo XRPLF/mpt-crypto --include-prs   # 1: #135 (WASM build)\ngh search issues \"conan.lock\"      --repo XRPLF/mpt-crypto --include-prs   # 3: #95 adds the lockfile; #130, 
+ &quot;openssl/3.6.2&quot;   --repo XRPLF/mpt-crypto --include-prs   # 1: #135 (WASM build)
+rch issues "openssl/3.6.2"   --repo XRPLF/mpt-crypto --include-prs   # 1: #135 (WASM build)
+===== current GitHub web search snippets =====
+--- Attackathon org:XRPLF ---
+href="/XRPLF/mpt-crypto/issues/148" target="_blank">#
+href="/XRPLF/rippled/issues/6878" target="_blank">#
+href="/XRPLF/rippled/issues/6885" target="_blank">#
+href="/XRPLF/rippled/issues/6886" target="_blank">#
+href="/XRPLF/rippled/issues/6875" target="_blank">#
+href="/XRPLF/rippled/issues/6925" target="_blank">#
+href="/XRPLF/rippled/issues/6920" target="_blank">#
+href="/XRPLF/rippled/issues/6919" target="_blank">#
+href="/XRPLF/rippled/issues/6916" target="_blank">#
+href="/XRPLF/rippled/issues/6926" target="_blank">#
+--- Sherlock org:XRPLF ---
+href="/XRPLF/rippled/issues/7026" target="_blank">#
+href="/XRPLF/mpt-crypto/issues/101" target="_blank">#
+href="/XRPLF/mpt-crypto/issues/148" target="_blank">#
+href="/XRPLF/mpt-crypto/issues/103" target="_blank">#
+href="/XRPLF/rippled/issues/6885" target="_blank">#
+href="/XRPLF/mpt-crypto/issues/85" target="_blank">#
+href="/XRPLF/mpt-crypto/issues/102" target="_blank">#
+href="/XRPLF/rippled/issues/7018" target="_blank">#
+href="/XRPLF/rippled/issues/7906" target="_blank">#
+href="/XRPLF/rippled/issues/6972" target="_blank">#
+
+exec
+/bin/zsh -lc "python3 - <<'PY'
+from pathlib import Path
+import re
+lines=Path('draft.md').read_text().splitlines()
+start=next(i+1 for i,x in enumerate(lines) if x.strip()=='---')
+end=next(i for i,x in enumerate(lines) if x.startswith('*Disclosure:'))
+body='\\n'.join(lines[start:end])
+print('body whitespace',len(body.split()))
+# remove details, fences, blockquotes
+ls=body.splitlines(); out=[]; fence=False; details=False
+for x in ls:
+ if x.strip()=='<details>': details=True
+ if details:
+  if x.strip()=='</details>': details=False
+  continue
+ if x.strip().startswith('"'```'"'): fence=not fence; continue
+ if fence or x.startswith('>'): continue
+ out.append(x)
+t='\\n'.join(out)
+print('prose whitespace',len(t.split()))
+# Markdown link destinations removed, markdown punctuation and heading markers removed
+u=re.sub(r'\\[(["'^]]+)'"\\]\\(["'^)]*'"\\)',r'\\1',t)
+u=re.sub(r'["'`*_]'"', '', u)
+print('prose whitespace no urls',len(u.split()))
+print('regex',len(re.findall(r\"\\b[\\w+.-]+\\b\",u)))
+PY" in $USER_TMP/T/f12r2.zRcIsF
+ succeeded in 36ms:
+body whitespace 550
+prose whitespace 200
+prose whitespace no urls 200
+regex 206
+
+exec
+/bin/zsh -lc "nl -ba draft.md | sed -n '1,120p'" in $USER_TMP/T/f12r2.zRcIsF
+ succeeded in 0ms:
+     1	TITLE: [Build] build-wasm.sh links C++ with emcc, which fails from emsdk 6.0.6 on
+     2	REPO: XRPLF/mpt-crypto
+     3	
+     4	---
+     5	
+     6	`build-wasm.sh` compiles `src/utility/mpt_utility.cpp` as C++, then links the module with plain `emcc`. From emsdk 6.0.6, `emcc` no longer links the C++ runtime by default, so the link fails with the C++ runtime missing. CI did not catch it because it pins emsdk 6.0.2, and the WASM job [passed at `3baaaac`](https://github.com/XRPLF/mpt-crypto/actions/runs/32380884181). The script's own prerequisites line names no version. On macOS arm64, every emsdk I tried from 6.0.6 on fails, and the changelog describes the change for all platforms.
+     7	
+     8	**Suggested fix:** link with `em++` on the three link lines, as Emscripten's changelog recommends.
+     9	
+    10	**Cause**
+    11	
+    12	Emscripten's [ChangeLog for 6.0.6](https://github.com/emscripten-core/emscripten/blob/6.0.6/ChangeLog.md#L23-L25):
+    13	
+    14	> `DEFAULT_TO_CXX` is now disabled by default. This means that `em++` is now required when linking C++ programs, matching the behavior of clang and gcc. The old behavior is still available using `-sDEFAULT_TO_CXX`. (#11121)
+    15	
+    16	At `3baaaac`, the C++ object is compiled with `em++` ([line 272](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/.github/scripts/build-wasm.sh#L272)) and linked with `emcc` ([lines 363, 365 and 374](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/.github/scripts/build-wasm.sh#L363-L374)). CI pins [emsdk 6.0.2](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/.github/workflows/build-wasm.yml#L38-L43), and the script asks only for [*"Emscripten SDK (emcc, em++, emcmake, emmake) on PATH"*](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/.github/scripts/build-wasm.sh#L19).
+    17	
+    18	**What I ran**
+    19	
+    20	`./.github/scripts/build-wasm.sh` at `3baaaac`, then `test-wasm.sh` where the table says so. Each build used a fresh source tree and its own emsdk. macOS arm64, 2026-10-18. I did not run Linux.
+    21	
+    22	```text
+    23	emsdk                as shipped          em++ on the 3 link lines     -sDEFAULT_TO_CXX on the 3 link lines
+    24	6.0.2                builds, tests pass  builds, tests pass,          builds, tests pass,
+    25	                                         output byte-identical        output byte-identical
+    26	6.0.3, 6.0.4, 6.0.5  builds, tests pass  not run                      not run
+    27	6.0.6                fails at line 363   builds, tests pass           builds, tests pass
+    28	6.0.10               fails at line 363   builds, tests pass           builds, tests pass
+    29	6.0.12 (newest)      fails at line 363   builds, tests pass           builds, tests pass
+    30	```
+    31	
+    32	The 6.0.6 and 6.0.10 failure. At 6.0.12 it also lists `__cxa_guard_acquire` and `__cxa_guard_release`.
+    33	
+    34	```text
+    35	wasm-ld: error: …/mpt_crypto.wasm.lto.o: undefined symbol: operator new(unsigned long)
+    36	  (and 7 more: operator delete, __cxa_allocate_exception, __cxa_throw,
+    37	   typeinfo / vtable / ~length_error for std::length_error, std::logic_error::logic_error)
+    38	emcc: warning: link failed with undefined C++ symbols. Try linking with 'em++' or passing '-sDEFAULT_TO_CXX'
+    39	```
+    40	
+    41	All three lines need the change. With only lines 363 and 365 changed, 6.0.6 still fails at line 374.
+    42	
+    43	<details>
+    44	<summary>Searches for an existing report</summary>
+    45	
+    46	```text
+    47	# 2026-10-18. Open and closed, issues and PRs.
+    48	gh search issues "DEFAULT_TO_CXX"   --repo XRPLF/mpt-crypto --include-prs   # 0
+    49	gh search issues "undefined symbol" --repo XRPLF/mpt-crypto --include-prs   # 0
+    50	gh search issues "__cxa_throw"      --repo XRPLF/mpt-crypto --include-prs   # 0
+    51	gh search issues "6.0.6"            --repo XRPLF/mpt-crypto --include-prs   # 0
+    52	gh search issues "emsdk"            --repo XRPLF/mpt-crypto --include-prs   # 2: #135 adds the pin, #145 an export
+    53	gh search issues "DEFAULT_TO_CXX"   --owner XRPLF --include-prs             # 0
+    54	
+    55	# Audits
+    56	Trail of Bits, April 2026 report: no mention of WebAssembly, emsdk or Emscripten.
+    57	  https://github.com/trailofbits/publications/blob/master/reviews/2026-04-ripple-labs-xrp-ledger-confidential-transfer-securityreview.pdf
+    58	  I could not obtain the June 2026 revision.
+    59	Sherlock XRP Ledger Attackathon: full findings report not found. Its public trail:
+    60	  gh search issues Attackathon --owner XRPLF --include-prs --limit 500
+    61	  gh search issues Sherlock    --owner XRPLF --include-prs --limit 500
+    62	  gh pr list -R XRPLF/rippled --state all --base ripple/attackathon-april-2026
+    63	  Bodies, comments and PR review comments read. None concerns the WebAssembly build.
+    64	  Grepping them for emsdk, Emscripten, WASM, DEFAULT_TO_CXX, em++, libc++ and __cxa
+    65	  matched one item: this project's own filing, mpt-crypto#148.
+    66	Zellic scan of mpt-crypto@3baaaac: report not found.
+    67	  gh search issues Zellic --owner XRPLF --include-prs   # 1: mpt-crypto#147
+    68	  #147 cites DEFI-1108, -1109 and -1110. None concerns the WebAssembly build.
+    69	```
+    70	
+    71	</details>
+    72	
+    73	---
+    74	
+    75	*Disclosure: prepared with AI assistance. The builds above were run on 2026-10-18 at mpt-crypto `3baaaac`, and every link was checked the same day. `build-wasm.sh` and `build-wasm.yml` are unchanged at today's `main` (`c60a60c`).*
+
+exec
+/bin/zsh -lc "python3 - <<'PY'
+from pathlib import Path
+import re
+lines=Path('draft.md').read_text().splitlines(); start=next(i+1 for i,x in enumerate(lines) if x.strip()=='---'); end=next(i for i,x in enumerate(lines) if x.startswith('*Disclosure:'))
+ls=lines[start:end]; out=[]; fence=details=False
+for x in ls:
+ if x.strip()=='<details>': details=True
+ if details:
+  if x.strip()=='</details>': details=False
+  continue
+ if x.strip().startswith('"'```'"'): fence=not fence; continue
+ if fence or x.startswith('>'): continue
+ out.append(x)
+t='\\n'.join(out)
+t=re.sub(r'\\[(["'^]]+)'"\\]\\(["'^)]*'"\\)',r'\\1',t)
+t=re.sub(r'[*_]', '', t)
+t=t.replace('"'`'"','')
+# count tokens, treat C++ and em++ etc as tokens, ordinary hyphenated terms as one
+pat=r\"[A-Za-z0-9]+(?:[+./_-][A-Za-z0-9]+)*(?:['’][A-Za-z0-9]+)?\"
+words=re.findall(pat,t)
+print(len(words)); print(words)
+PY" in $USER_TMP/T/f12r2.zRcIsF
+ succeeded in 0ms:
+199
+['build-wasm.sh', 'compiles', 'src/utility/mptutility.cpp', 'as', 'C', 'then', 'links', 'the', 'module', 'with', 'plain', 'emcc', 'From', 'emsdk', '6.0.6', 'emcc', 'no', 'longer', 'links', 'the', 'C', 'runtime', 'by', 'default', 'so', 'the', 'link', 'fails', 'with', 'the', 'C', 'runtime', 'missing', 'CI', 'did', 'not', 'catch', 'it', 'because', 'it', 'pins', 'emsdk', '6.0.2', 'and', 'the', 'WASM', 'job', 'passed', 'at', '3baaaac', 'The', "script's", 'own', 'prerequisites', 'line', 'names', 'no', 'version', 'On', 'macOS', 'arm64', 'every', 'emsdk', 'I', 'tried', 'from', '6.0.6', 'on', 'fails', 'and', 'the', 'changelog', 'describes', 'the', 'change', 'for', 'all', 'platforms', 'Suggested', 'fix', 'link', 'with', 'em', 'on', 'the', 'three', 'link', 'lines', 'as', "Emscripten's", 'changelog', 'recommends', 'Cause', "Emscripten's", 'ChangeLog', 'for', '6.0.6', 'At', '3baaaac', 'the', 'C', 'object', 'is', 'compiled', 'with', 'em', 'line', '272', 'and', 'linked', 'with', 'emcc', 'lines', '363', '365', 'and', '374', 'CI', 'pins', 'emsdk', '6.0.2', 'and', 'the', 'script', 'asks', 'only', 'for', 'Emscripten', 'SDK', 'emcc', 'em', 'emcmake', 'emmake', 'on', 'PATH', 'What', 'I', 'ran', 'github/scripts/build-wasm.sh', 'at', '3baaaac', 'then', 'test-wasm.sh', 'where', 'the', 'table', 'says', 'so', 'Each', 'build', 'used', 'a', 'fresh', 'source', 'tree', 'and', 'its', 'own', 'emsdk', 'macOS', 'arm64', '2026-10-18', 'I', 'did', 'not', 'run', 'Linux', 'The', '6.0.6', 'and', '6.0.10', 'failure', 'At', '6.0.12', 'it', 'also', 'lists', 'cxaguardacquire', 'and', 'cxaguardrelease', 'All', 'three', 'lines', 'need', 'the', 'change', 'With', 'only', 'lines', '363', 'and', '365', 'changed', '6.0.6', 'still', 'fails', 'at', 'line', '374']
+
+codex
+Q1 — The audit and source-inventory findings are fixed, and the table-cell rejection is acceptable because the table explicitly reports the author's runs. Q2 — The prerequisites quotation, four links, and corpus sentence check out, but the all-platform claim is not supported by the cited changelog. Q3 — The draft is tight at about 200 prose words after the requested exclusions; no cuts are needed.
+
+Review comment:
+
+- [P2] Scope the failure claim to the tested platform and versions — $USER_TMP/T/f12r2.zRcIsF/draft.md:6-6
+  The only documented failures are on macOS arm64 for 6.0.6, 6.0.10, and 6.0.12. The cited ChangeLog entry at lines 23–25 describes the `DEFAULT_TO_CXX` change generally, but does not establish behavior on all host platforms or every later SDK. The title and “for all platforms” wording therefore retain the round-one overclaim; qualify them to the tested scope.

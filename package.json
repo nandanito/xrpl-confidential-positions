@@ -1,0 +1,49 @@
+{
+  "name": "xrpl-confidential-positions",
+  "private": true,
+  "type": "module",
+  "description": "W-CONF — Confidential MPT research and reference application. Devnet only.",
+  "scripts": {
+    "check-amendments": "bun run tools/check-amendments.ts",
+    "devnet-smoke": "bun run tools/devnet-submit.ts",
+    "observer": "bun run tools/observer-harness.ts",
+    "issuer-view": "bun run tools/issuer-decrypt-balance.ts",
+    "signer": "cd signer && cargo build",
+    "signer-test": "cd signer && cargo test",
+    "xrpl-vectors": "bun run tools/spike-step3-2026-08-18/xrpl-vectors.ts",
+    "step3": "bun run tools/spike-step3-2026-08-18/devnet-signer-send.ts",
+    "step3-clean": "bun run tools/spike-step3-2026-08-18/devnet-clean-account.ts",
+    "typecheck": "tsc --noEmit",
+    "check-loopback": "bun run tools/check-loopback.ts",
+    "check-blinding": "bun run tools/check-blinding-sources.ts",
+    "check-personas": "bun run tools/check-personas.ts",
+    "facility": "bun run facility/run-facility.ts",
+    "node-start": "tools/loopback-node/node.sh start",
+    "node-wait": "tools/loopback-node/node.sh wait",
+    "node-status": "tools/loopback-node/node.sh status"
+  },
+  "dependencies": {
+    "@elysiajs/cors": "^1.4.2",
+    "@noble/curves": "^1.9.7",
+    "@noble/hashes": "^1.8.0",
+    "@tanstack/react-router": "^1.170.32",
+    "@tanstack/react-start": "^1.168.49",
+    "@xrplf/mpt-crypto": "0.1.0",
+    "elysia": "^1.4.30",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "ripple-address-codec": "5.0.1",
+    "ripple-binary-codec": "2.9.0",
+    "ripple-keypairs": "2.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/bun": "^1.4.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.5",
+    "@vitejs/plugin-react": "^6.1.1",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2"
+  }
+}

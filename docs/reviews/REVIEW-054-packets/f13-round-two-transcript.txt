@@ -1,0 +1,2347 @@
+OpenAI Codex v0.151.0
+--------
+workdir: $USER_TMP/T/f13r2.dGDwTa
+model: gpt-5.6-luna
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR] (network access enabled)
+reasoning effort: high
+reasoning summaries: none
+session id: 01a14c83-491f-7413-b5ce-c9af562e53d7
+--------
+user
+STEP 0. Two preconditions; if either fails, STOP and report only which one failed.
+(a) Network. Run `curl -s -o /dev/null -w '%{http_code}\n' https://api.github.com` and print the code. If it does not resolve, report NO NETWORK and stop.
+(b) Isolation. Read nothing outside this working directory and any fresh temp directory you create yourself. Do NOT list, read or grep the parent directory, `/private/tmp/claude-501/`, any other directory under `$TMPDIR`, or any `xrpl-confidential-positions` checkout.
+
+You are the ROUND-TWO reviewer of a proposed GitHub issue, `draft.md`, for XRPLF/mpt-crypto. It has NOT been filed, and you did not write it. Round one's findings are in `round1-findings.md`, and the author's rulings in `round1-rulings.md`. The draft was substantially rewritten after round one. PROTOCOL.md is the authority, and REVIEW-INSTRUCTIONS.md is the procedure.
+
+Constraints:
+- Read-only against GitHub and every remote.
+- zsh: use `printf '%s\n'`, not `echo`, for TeX or Markdown containing backslashes.
+- Open anything you cite.
+- `make check-filing` does not exist here. Count prose words yourself, excluding fenced code, block quotes, the `<details>` block and the footer.
+
+Answer, narrowly:
+1. **Did each upheld finding get a real fix?** Watch for a fix that moved the problem, fixed one copy and left another, or introduced an overclaim. Do you accept the two rejections?
+2. **Is every NEW claim true?** Check each against its source:
+   - the XLS-0096 §17.1 quotation, verbatim, at the linked commit and lines;
+   - the rippled call chain at commit `7939339a65e97d9dc8d3496391d01932e3a0b9fd`: does `verifySendProofs` really reach `mpt_verify_send_proof`, at the linked lines?
+   - the 1.0.2 permalink: does commit `376691c5f…` hold the shared-C1 check at lines 1140-1145, inside `mpt_verify_send_proof`?
+   - the Trail of Bits note: is TOB-RIPCTX-16 Resolved, and is "moved the code to the shared-r proof" a fair summary?
+   - the component table;
+   - the title.
+3. **Is the opening's word "incorrect" fair?** Or should it be softer, given the paper may describe an earlier design?
+4. **Verbosity.** Specific cuts, each with the old text, the new text and what is lost, or say it is tight.
+
+Output: per-question verdicts with evidence, then **Verdict:** ready to file, or not ready and why.
+exec
+/bin/zsh -lc "curl -s -o /dev/null -w '%{http_code}\\n' https://api.github.com" in $USER_TMP/T/f13r2.dGDwTa
+ succeeded in 0ms:
+200
+
+exec
+/bin/zsh -lc "printf '%s\\n' 'FILES:'; find . -maxdepth 2 -type f -print | sort; printf '%s\\n' 'STATUS:'; git status --short; printf '%s\\n' 'ROOT:'; git rev-parse --show-toplevel" in $USER_TMP/T/f13r2.dGDwTa
+ succeeded in 0ms:
+FILES:
+./.git/COMMIT_EDITMSG
+./.git/HEAD
+./.git/config
+./.git/description
+./.git/index
+./PROTOCOL.md
+./REVIEW-INSTRUCTIONS.md
+./draft.md
+./round1-findings.md
+./round1-rulings.md
+STATUS:
+ROOT:
+$USER_TMP/T/f13r2.dGDwTa
+
+exec
+/bin/zsh -lc "printf '%s\\n' '--- PROTOCOL.md ---'; cat PROTOCOL.md; printf '%s\\n' '--- REVIEW-INSTRUCTIONS.md ---'; cat REVIEW-INSTRUCTIONS.md; printf '%s\\n' '--- round1-findings.md ---'; cat round1-findings.md; printf '%s\\n' '--- round1-rulings.md ---'; cat round1-rulings.md; printf '%s\\n' '--- draft.md ---'; cat draft.md" in $USER_TMP/T/f13r2.dGDwTa
+ succeeded in 0ms:
+--- PROTOCOL.md ---
+# Upstream filing protocol
+
+**Ruled by the project owner 2026-09-01, after auditing the 2026-08-26 round.**
+
+This binds every filing to an XRPLF repository. `make check-filing` enforces the
+mechanical parts; the rest is judgement and is listed so it can be checked by a
+person.
+
+---
+
+## Why this exists
+
+Seven items were filed on 2026-08-26. An adversarial review run **after
+submission** found **13 defects**, six graded *would embarrass*. Four of five
+first-round issues needed same-day corrections in public.
+
+The 2026-09-01 audit re-verified all six open filings at upstream HEAD: **every
+claim still stands and none is stale.** So the content was recoverable. What was
+not recoverable is the impression left by correcting four public issues within
+hours of opening them.
+
+⚠ **The defect was the order of operations, not the research.** Everything below
+follows from that.
+
+---
+
+## The two commands
+
+- **`/upstream-issue`** — drafts a filing from a verified finding.
+- **`/issue-review`** — attacks the draft before it is sent. **Rule 1 gates on it.**
+
+⚠ Both are slash commands in `.claude/commands/`, matching this project's three
+existing ones — **user-invoked, never model-invoked**, because filing needs
+authorisation every time.
+
+⚠ **Both read the target repository's issue template first**, and that outranks
+anything here. **Measured 2026-09-01:** `XRPLF/rippled` sets
+`blank_issues_enabled: false` and offers only `bug_report.md` and
+`feature_request.md`; `XRPL-Standards`, `xrpl-dev-portal` and `mpt-crypto` have
+none. ⚠⚠ **`rippled#8118` fit neither rippled template, was filed anyway, and
+was closed without comment.** Reading the template first would have stopped that
+filing before it was written — which makes it the cheapest rule here and the one
+that was missing.
+
+---
+
+## The five rules
+
+### 1. Adversarial review runs BEFORE filing, and it gates
+
+No filing is sent until an independent adversarial pass has run against the
+**draft text and the frozen primary sources**, and every finding is resolved.
+
+⚠ **A review that runs after submission cannot prevent anything.** It can only
+produce a correction, and a correction is a public record that the filing was
+not ready.
+
+**The reviewer is given the draft and the sources, not the conclusion.**
+
+### 2. A filing is at most 300 words, with one concrete ask
+
+Counted over the issue body, excluding code blocks, quoted source and the
+disclosure footer.
+
+⚠ **`WORD_LIMIT` in `tools/check-filing.ts` is what enforces this, and the gate
+prints the number it used.** This heading states the rule; that constant is the
+instrument. If the two ever disagree, the gate is right and this line is the
+defect — and neither the skills nor a draft may restate the number at all.
+
+- **One ask per issue.** If there are five asks, that is five issues or one
+  errata list with five clearly numbered items and no argument between them.
+- **Evidence is linked, not inlined.** A permalink to a line range beats a
+  quotation; a quotation beats a paragraph explaining the quotation.
+- **State the defect, the evidence, and the fix.** Nothing else.
+
+⚠ The 2026-08-26 filings averaged **~750 words**. The dev-portal one was a
+two-sentence documentation fix in six sections. A maintainer who cannot find the
+ask in fifteen seconds will not look for it.
+
+### 3. No "positives" filings to a bug tracker
+
+An issue tracker is for things that need doing. Appreciation is not.
+
+⚠ **And on `rippled` it is not even accepted**: `blank_issues_enabled: false`,
+with only a bug report and a feature request offered.
+
+⚠ `rippled#8118` was *"four design decisions that were better than they
+looked"*. It needed a same-day correction because its central claim was false —
+the spec advertises the property **twice**, in wording close to what the filing
+presented as its own reading — and a core contributor **closed it without
+comment**.
+
+**Positive observations still get captured** in `UPSTREAM-FEEDBACK.md`, and they
+still hold the higher bar in `CLAUDE.md`. They reach a team through a channel
+meant for them, or not at all.
+
+### 4. No negative claim without its recorded search
+
+*"There is no field"*, *"nothing documents this"*, *"not exported"*, *"nobody
+has called this out"* — each is a claim about a whole corpus, and one search
+settles it.
+
+The search command and its result go **in the draft**, next to the claim.
+
+⚠ Two rows died this way. **U-15** quoted a sentence XLS-0096 has never
+contained. **`rippled#8118` item 1** said a property was not advertised anywhere,
+and the spec states it twice. `CLAIMS.md` **P-12** and
+`tools/check-negative-claims.ts` came out of the first; this rule extends the
+gate to drafts.
+
+### 5. Plain English, short sentences
+
+The reader is a maintainer skimming a queue, and English may not be their first
+language.
+
+- Short sentences. One idea each.
+- Say **`fail_hard`**, not `tapFailHard`. ⚠ Project shorthand is not an API name
+  and it has escaped into a public filing once already (`CLAIMS.md` E-156).
+- No rhetorical build-up, no *"interestingly"*, no *"it is worth noting"*.
+- Define an abbreviation on first use or drop it.
+- ⚠ **Do not carry this repository's emphasis style outward.** The warning signs
+  and bold blocks are internal instruments; in a filing they read as shouting.
+
+---
+
+## Before sending — the checklist
+
+1. `make check-filing FILE=<draft>` passes.
+2. An adversarial review has run on the draft and every finding is resolved.
+3. Every citation re-fetched at source **today**, with the ref recorded.
+4. Every negative claim carries its search.
+5. The Trail of Bits April 2026 review has been checked — ⚠ several things this
+   project first recorded as findings were already found and fixed there.
+6. The ask is one sentence and appears in the first paragraph.
+7. Authorisation from the project owner **for this filing**. ⚠ Authorisation is
+   never standing; it is per filing, per session.
+
+---
+
+## After sending
+
+- Archive the exact submitted text under `docs/upstream-filings/<date>/`. A
+  GitHub issue can be edited; the archive is what the register points at.
+- Record the issue URL in `UPSTREAM-FEEDBACK.md` and move the row to `Filed`.
+- ⚠ **If a correction becomes necessary, post it as a comment and leave the
+  original body alone.** Editing the body makes the thread incoherent — the
+  correction then refers to text that no longer exists — and GitHub shows the
+  edit history publicly anyway.
+
+---
+
+## What this protocol does not fix
+
+- ⚠ **It does not make a filing welcome.** Six of seven from 2026-08-26 have had
+  no response after six days. That is normal for these repositories and is not
+  evidence of anything, in either direction.
+- ⚠ **`check-filing` is lexical.** It counts words, finds unsearched negatives by
+  their common spellings, and flags long sentences. **It cannot tell whether a
+  claim is true**, and a claim phrased in a way it does not recognise is
+  invisible to it. The review in rule 1 is the instrument for that; this gate
+  only stops the shapes that have already gone wrong twice.
+--- REVIEW-INSTRUCTIONS.md ---
+# Upstream issue review
+
+Review the draft as a skeptical maintainer **and** as a fact-checker. Produce an
+edited version.
+
+⚠ **Read-only against GitHub. Do not create, submit, edit or close anything.**
+
+## ⚠⚠ STOP — did you write this draft?
+
+**If this draft was produced in this session, or by you, REFUSE.**
+
+Say plainly: *"I drafted this. Rule 1's review has not run and I cannot run
+it."* Then stop. **Do not review it, do not rewrite it, do not report a word
+count.** Producing an edited version here is worse than doing nothing, because
+it makes rule 1 look satisfied when no independent pass has happened.
+
+⚠ **The writer hands off for this reason; both halves of the handshake must
+refuse, or the gate is closed by whichever half is invoked second.** The first
+version of these two commands fixed only the writer, and an independent review
+found that running them back to back in one session still produced a
+"completed" review.
+
+⚠ **This project has measured what the difference is worth.** A self-review of
+these two commands found four defects and called them fixed. An independent pass
+then found **six more** — one of them introduced by the self-review, and one it
+had "fixed" in a single place while a second copy stood. **A further independent
+pass found four more, two of them in those fixes.**
+
+**A fresh session, a different model, or a person. Not you.**
+
+---
+
+## 0. First, the two cheap rejections — before any source is opened
+
+⚠ **These cost one API call each and can end the review immediately.** Verifying
+claims against primary sources and the Trail of Bits appendix is the expensive
+part; do not spend it on a draft that cannot be filed anyway.
+
+**Right venue?** Confirm the destination repository exists and is owned by the
+org the draft assumes. ⚠ **Testing this on U-54 found exactly that defect** — the
+wallet standard is not in `XRPLF/XRPL-Standards` at all. **A correct finding sent
+to the wrong repository is still a wasted filing**, and no evidence check catches
+it.
+
+**Right shape?** Read the target's `.github/ISSUE_TEMPLATE/` **and decode its
+`config.yml`** — listing filenames does not establish a policy.
+
+```sh
+gh api repos/<owner>/<repo>/contents/.github/ISSUE_TEMPLATE/config.yml \
+  --jq '.content' | base64 -d
+```
+
+⚠ **`blank_issues_enabled: false` means only the listed shapes are accepted.**
+`rippled` sets it, `rippled#8118` fit neither template, and it was closed without
+comment. **If the draft fits no accepted template, stop here and say so.**
+
+---
+
+## ⚠ Then correctness, and this is the whole point
+
+A concision pass would not have caught **a single one** of the thirteen defects
+found in the 2026-08-26 round. Every one was a claim that was **false or
+overstated**, and counting words finds none of those.
+
+**So attack the claims before you touch the prose.**
+
+### Verify every claim against the primary source, now
+
+- Open the source the draft cites. **Do not trust the draft's quotation** — a
+  filed row once quoted a sentence the specification has never contained
+  (`UPSTREAM-FEEDBACK.md` U-15).
+- Check line numbers and section numbers still resolve. Sources move.
+- ⚠ **Every negative claim needs its search, and you run it.** *"There is no
+  such field"*, *"not called out anywhere"*, *"not exported"* — one search
+  settles it. **`rippled#8118` said a property was not advertised anywhere; the
+  specification states it twice**, once in wording close to what the draft
+  presented as its own reading.
+- Check whether upstream already fixed it. **Four rows died as stale gaps** —
+  `UPSTREAM-FEEDBACK.md` U-3, U-8, U-9, U-10 — each describing something already closed.
+- Check the Trail of Bits April 2026 review. Several things this project first
+  recorded as findings were already found and fixed there. Read Appendices B to D
+  too: the fix review does not cover them, and F-19 was in Appendix B
+  (`CLAIMS.md` E-296).
+
+### Separate the three layers
+
+**Demonstrated** — you ran it or read it at source.
+**Inferred** — it follows, but nobody checked.
+**Proposed** — what the draft wants done.
+
+⚠ A draft that presents the second or third as the first is the defect that
+needed four public corrections. Say which layer each claim is on.
+
+⚠ **Do not let the draft's framing set yours.** Ask what would have to be true
+for the claim to be *wrong*, and go and check that.
+
+## Then the maintainer's read
+
+**Actionable?** Can a maintainer tell what to investigate, decide or change?
+
+**Scoped?** One independently actionable problem, or several disguised as one?
+
+**Skimmable?** Headings, bullets, code blocks, tables. Conclusion before
+evidence.
+
+**Something to do?** ⚠ A positives-only filing does not belong on a bug tracker
+at all — reject it rather than editing it.
+
+## Delete
+
+Essay introductions, throat-clearing, praise before the report, rhetorical
+questions, speculative motivation about maintainer intent, repeated conclusions,
+research narration, background a maintainer already has, and any restatement of
+the same point in summary and conclusion.
+
+**Also delete, specifically for this project:** project shorthand
+(`tapFailHard`), internal register references (`CLAIMS.md`, `E-nnn`,
+`REVIEW-nnn`), and this repository's ⚠-and-bold emphasis style.
+
+## Rewrite
+
+Produce the edited version. **Aim to cut at least 20% without losing
+load-bearing evidence.** If the draft is already tight, say so and do not cut
+mechanically.
+
+Run `make check-filing FILE=<draft>` on the result.
+
+## Report
+
+1. **Claims that did not survive verification** — with what you ran.
+2. **Claims that need a search that has not been run.**
+3. **Layer corrections** — demonstrated / inferred / proposed.
+4. **The edited version.**
+5. **Word count before and after.**
+
+⚠ **If any claim failed verification, say plainly that the draft is not ready to
+file.** Rule 1 gates on this. It is better to lose a filing than to correct one
+in public.
+--- round1-findings.md ---
+The component arithmetic and core wire-format claim survive verification, and the historical Devnet measurement is honestly dated and disclosed. However, the draft is over the word limit, contains a misleading Trail of Bits revision claim, lacks current verification-path references, and omits the current XLS-0096 confirmation; it is not ready to file. The Zellic PR found by the owner-wide search concerns unrelated API hardening and need not be named in the issue.
+
+Full review comments:
+
+- [P1] Correct the Trail of Bits audit note before filing — $USER_TMP/T/f13r1.v6b2o3/draft.md:50-53
+  The linked PDF is a “Comprehensive Report with Fix Review,” and pp. 66–67 mark TOB-RIPCTX-16 resolved. That finding is directly related: it discusses the specification’s shared C1 requirement, although its focus is proof serialization rather than ciphertext-field serialization. Saying it is unrelated and that no later revision was obtained is misleading; replace it with the precise distinction and current fix status. This follows `REVIEW-INSTRUCTIONS.md:78-83`.
+
+- [P2] Scope the totals to the cryptographic payload — $USER_TMP/T/f13r1.v6b2o3/draft.md:6-6
+  The arithmetic is correct for encrypted amounts, two commitments, and the 946-byte proof, but calling 1276/1210 the “real sizes” and “wire format” can imply complete serialized transaction sizes. Account, destination, issuance, signatures, field framing, and other transaction metadata are excluded. Current XLS-0096 §17.1 explicitly makes this exclusion. State that these are cryptographic-payload totals to avoid overstating the defect.
+
+- [P2] Add current refs and the rippled verification path — $USER_TMP/T/f13r1.v6b2o3/draft.md:23-23
+  The shared-C1 check is on rippled’s Send path: current `develop` calls `verifySendProofs`, which calls `mpt_verify_send_proof`, and `conanfile.py` still requires `mpt-crypto/1.0.2`. The draft only links an older preflight commit and does not record current-HEAD permalinks or hashes, so “unchanged ... today” is not reproducible from the filing. Add the current `develop` path and refs, as required by `PROTOCOL.md:126-133`.
+
+- [P1] Cut the body below the filing word limit — $USER_TMP/T/f13r1.v6b2o3/draft.md:31-33
+  Counting the issue body while excluding the fenced table, `<details>` block, block quotes, and disclosure footer gives 334 words, so the draft exceeds the filing gate. Remove the repeated source list and make the historical measurement a brief non-load-bearing note or omit it; the code and specification determine the totals. `PROTOCOL.md:60-74` requires the word limit and one concrete ask.
+
+- [P2] Cite XLS-0096 and narrow the documentation ask — $USER_TMP/T/f13r1.v6b2o3/draft.md:8-8
+  The repository and XLS-0096 searches found no indication that shared-C1 serialization is a planned wire change, while current XLS-0096 §17.1 already documents 66-byte ciphertexts and the corrected 1276/1210 payload totals. The actionable defect is therefore paper/spec consistency, not a missing rippled implementation. Cite that section and state that line 8 is one documentation ask with two acceptable resolutions, consistent with `PROTOCOL.md:70-74`.
+--- round1-rulings.md ---
+# F-13 round one — the author's rulings (2026-10-18)
+
+Round one ran in an isolated repository under `$TMPDIR`, with network. The GitHub check printed 200, there were no DNS failures, and the transcript mentions this project's paths only in the prompt's own instruction. Output: `f13-round-one-output.md`.
+
+| # | Finding | Ruling | Checked how |
+|---|---|---|---|
+| 1 | The Trail of Bits note is misleading: TOB-RIPCTX-16 is related and Resolved | **Upheld, refined.** It is Resolved, and its fix moved the code to the shared-r proof. It does not address the ciphertext field layout or the paper's totals. "The later revision" is now named as the June 2026 report | `pdftotext` of the April report, fix review pp. 66-67 and summary table line 2665 |
+| 2 | Scope the totals to the cryptographic payload | **Upheld** | XLS-0096 §17.1 itself excludes headers and metadata |
+| 3 | Cite the current rippled verification path | **Upheld** | At rippled `develop` `7939339`: `ConfidentialMPTSend.cpp:299` calls `verifySendProofs` (`:101`), which calls `verifySendProof` (`ConfidentialTransfer.cpp:528`), which calls `mpt_verify_send_proof` (`:585`). In mpt-crypto 1.0.2, `mpt_verify_send_proof` (`mpt_utility.cpp:1106`) holds the shared-C1 byte check at `:1140` |
+| 4 | Over the word limit (334, counted by hand) | **Rejected.** `make check-filing` counted 219 before the rewrite and 211 after | the gate |
+| 5 | Cite XLS-0096 §17.1 | **Upheld, and it became the lead evidence.** §17.1 already computes 1276 and 1210, so the paper contradicts the finalized specification | XLS-0096 at `58ccd30`, lines 1010-1015 |
+| — | Zellic need not be named | **Rejected, for consistency** with F-17, which names all three reviews | — |
+
+Found while ruling: `CLAIMS.md` E-304 read XLS-0096 at this same commit and said only that it "never says C₁ is sent once". It missed that §17.1 states the corrected totals outright.
+--- draft.md ---
+TITLE: [Docs] Paper §2.1 says C₁ is sent once, but XLS-0096 and rippled carry it in every ciphertext, so the paper's Send size is 99 bytes low
+REPO: XRPLF/mpt-crypto
+
+---
+
+`paper/cmpt-compact-sigma.tex` §2.1 says *"The shared first component C₁ is transmitted once on-chain"*. On that basis it totals a Send's cryptographic payload at 1177 bytes for n = 4 and 1144 for n = 3. XLS-0096 §17.1 gives 1276 and 1210 bytes for the same payload, because each ciphertext is a full 66 bytes, `C₁` included, and rippled enforces that layout. The paper's figures are incorrect by 99 and 66 bytes.
+
+**Suggested fix:** correct §2.1 and the totals to match XLS-0096 §17.1, or mark the shared-C₁ layout as a proposal that the protocol did not adopt.
+
+**The component sums** (cryptographic payload only, as both documents count it)
+
+```text
+Component           Paper, lines 1002-1017            XLS-0096 §17.1 and rippled
+C1                  1 x 33 = 33                        inside each ciphertext below
+Ciphertexts         n x 33 (C2) = 132 / 99             n x 66 (C1 || C2) = 264 / 198
+Two commitments     66                                 66
+ZKProof             192 + 754 = 946                    946
+Total, n = 4 / 3    1177 / 1144                        1276 / 1210
+Difference                                             (n - 1) x 33 = 99 / 66
+```
+
+**Evidence**
+
+- [XLS-0096 §17.1](https://github.com/XRPLF/XRPL-Standards/blob/58ccd304724d328acd923a3adf11f7fccd707c81/XLS-0096-confidential-mpt/README.md#L1010-L1015):
+
+  > Total crypto size = 264 bytes (ciphertexts) + 66 bytes (Pedersen commitments) + 946 bytes (ZKProof …) = 1276 bytes (with auditor). Without auditor (Nciphers = 3): 198 + 66 + 946 = 1210 bytes.
+
+- rippled's Send preflight requires each encrypted amount to be 66 bytes ([`ConfidentialMPTSend.cpp` lines 51-61](https://github.com/XRPLF/rippled/blob/7939339a65e97d9dc8d3496391d01932e3a0b9fd/src/libxrpl/tx/transactors/token/ConfidentialMPTSend.cpp#L51-L61)).
+- The extra copies carry no information. rippled verifies a Send through [`verifySendProofs`](https://github.com/XRPLF/rippled/blob/7939339a65e97d9dc8d3496391d01932e3a0b9fd/src/libxrpl/tx/transactors/token/ConfidentialMPTSend.cpp#L299) and [`mpt_verify_send_proof`](https://github.com/XRPLF/rippled/blob/7939339a65e97d9dc8d3496391d01932e3a0b9fd/src/libxrpl/protocol/ConfidentialTransfer.cpp#L585). In mpt-crypto 1.0.2, the version rippled requires, that function rejects a Send unless every participant's first 33 bytes match: *"All participants must share the same c1 bytes"* ([`mpt_utility.cpp` lines 1140-1145](https://github.com/XRPLF/mpt-crypto/blob/376691c5fca7898bd1161b0ac6646109d069ceb9/src/utility/mpt_utility.cpp#L1140-L1145)).
+- In the paper: the sentence at [line 220](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/paper/cmpt-compact-sigma.tex#L220). The 1177 total is at [lines 98-100](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/paper/cmpt-compact-sigma.tex#L98-L100), [176-179](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/paper/cmpt-compact-sigma.tex#L176-L179), [1017](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/paper/cmpt-compact-sigma.tex#L1017), [1049](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/paper/cmpt-compact-sigma.tex#L1049) and [1633](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/paper/cmpt-compact-sigma.tex#L1633).
+
+I also measured three Sends on Devnet on 2026-08-17, at rippled 3.3.0. The fields summed to 1210 bytes without an auditor and 1276 with one.
+
+<details>
+<summary>Searches for an existing report</summary>
+
+```text
+# 2026-10-18. Open and closed, issues and PRs.
+gh search issues "transmitted once"   --repo XRPLF/mpt-crypto --include-prs   # 0
+gh search issues "shared C1"          --repo XRPLF/mpt-crypto --include-prs   # 0
+gh search issues "1177"               --repo XRPLF/mpt-crypto --include-prs   # 0
+gh search issues "size breakdown"     --repo XRPLF/mpt-crypto --include-prs   # 0
+gh search issues "cmpt-compact-sigma" --repo XRPLF/mpt-crypto --include-prs   # 10; none discusses
+                                        the ciphertext layout or the size totals
+gh search issues "transmitted once"   --owner XRPLF --include-prs             # 0
+gh search issues "shared C1"          --owner XRPLF --include-prs             # 0
+
+# Audits
+Trail of Bits, April 2026 report: this paper is not among its reference papers.
+  TOB-RIPCTX-16 (Resolved) moved the code to the shared-r proof. It does not address
+  the ciphertext field layout or the paper's totals. I could not obtain the June 2026
+  revision.
+  https://github.com/trailofbits/publications/blob/master/reviews/2026-04-ripple-labs-xrp-ledger-confidential-transfer-securityreview.pdf
+Sherlock XRP Ledger Attackathon: full findings report not found. Its public trail:
+  gh search issues Attackathon --owner XRPLF --include-prs --limit 500    # 88
+  gh search issues Sherlock    --owner XRPLF --include-prs --limit 500    # 19
+  gh pr list -R XRPLF/rippled --state all --base ripple/attackathon-april-2026   # 16
+  106 unique items; bodies, comments and PR review comments read. None concerns the
+  ciphertext layout or the Send size.
+Zellic scan of mpt-crypto@3baaaac: report not found.
+  gh search issues Zellic --owner XRPLF --include-prs   # 1: mpt-crypto#147
+  #147 cites DEFI-1108, -1109 and -1110. None concerns the ciphertext layout.
+```
+
+</details>
+
+---
+
+*Disclosure: prepared with AI assistance. Every quotation and link above was checked on 2026-10-18 at mpt-crypto `3baaaac` (the cited files are unchanged at `main`, `c60a60c`), rippled `develop` `7939339` and XLS-0096 `58ccd30`.*
+
+exec
+/bin/zsh -lc 'tmp=$(mktemp -d /private/tmp/f13r2.XXXXXX)
+printf '"'%s\\n' \"TEMP="'$tmp"
+printf '"'%s\\n' '--- repo ---'
+curl -sS https://api.github.com/repos/XRPLF/mpt-crypto | sed -n '1,80p'
+printf '%s\\n' '--- issue templates ---'
+curl -sS https://api.github.com/repos/XRPLF/mpt-crypto/contents/.github/ISSUE_TEMPLATE | sed -n '1,200p'
+printf '%s\\n' '--- config ---'
+curl -sS https://api.github.com/repos/XRPLF/mpt-crypto/contents/.github/ISSUE_TEMPLATE/config.yml | sed -n '1,80p'" in $USER_TMP/T/f13r2.dGDwTa
+ succeeded in 887ms:
+{
+  "id": 1114779728,
+  "node_id": "R_kgDOQnIwUA",
+  "name": "mpt-crypto",
+  "full_name": "XRPLF/mpt-crypto",
+  "private": false,
+  "owner": {
+    "login": "XRPLF",
+    "id": 67929741,
+    "node_id": "MDEyOk9yZ2FuaXphdGlvbjY3OTI5NzQx",
+    "avatar_url": "https://avatars.githubusercontent.com/u/67929741?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/XRPLF",
+    "html_url": "https://github.com/XRPLF",
+    "followers_url": "https://api.github.com/users/XRPLF/followers",
+    "following_url": "https://api.github.com/users/XRPLF/following{/other_user}",
+    "gists_url": "https://api.github.com/users/XRPLF/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/XRPLF/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/XRPLF/subscriptions",
+    "organizations_url": "https://api.github.com/users/XRPLF/orgs",
+    "repos_url": "https://api.github.com/users/XRPLF/repos",
+    "events_url": "https://api.github.com/users/XRPLF/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/XRPLF/received_events",
+    "type": "Organization",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "html_url": "https://github.com/XRPLF/mpt-crypto",
+  "description": null,
+  "fork": false,
+  "url": "https://api.github.com/repos/XRPLF/mpt-crypto",
+  "forks_url": "https://api.github.com/repos/XRPLF/mpt-crypto/forks",
+  "keys_url": "https://api.github.com/repos/XRPLF/mpt-crypto/keys{/key_id}",
+  "collaborators_url": "https://api.github.com/repos/XRPLF/mpt-crypto/collaborators{/collaborator}",
+  "teams_url": "https://api.github.com/repos/XRPLF/mpt-crypto/teams",
+  "hooks_url": "https://api.github.com/repos/XRPLF/mpt-crypto/hooks",
+  "issue_events_url": "https://api.github.com/repos/XRPLF/mpt-crypto/issues/events{/number}",
+  "events_url": "https://api.github.com/repos/XRPLF/mpt-crypto/events",
+  "assignees_url": "https://api.github.com/repos/XRPLF/mpt-crypto/assignees{/user}",
+  "branches_url": "https://api.github.com/repos/XRPLF/mpt-crypto/branches{/branch}",
+  "tags_url": "https://api.github.com/repos/XRPLF/mpt-crypto/tags",
+  "blobs_url": "https://api.github.com/repos/XRPLF/mpt-crypto/git/blobs{/sha}",
+  "git_tags_url": "https://api.github.com/repos/XRPLF/mpt-crypto/git/tags{/sha}",
+  "git_refs_url": "https://api.github.com/repos/XRPLF/mpt-crypto/git/refs{/sha}",
+  "trees_url": "https://api.github.com/repos/XRPLF/mpt-crypto/git/trees{/sha}",
+  "statuses_url": "https://api.github.com/repos/XRPLF/mpt-crypto/statuses/{sha}",
+  "languages_url": "https://api.github.com/repos/XRPLF/mpt-crypto/languages",
+  "stargazers_url": "https://api.github.com/repos/XRPLF/mpt-crypto/stargazers",
+  "contributors_url": "https://api.github.com/repos/XRPLF/mpt-crypto/contributors",
+  "subscribers_url": "https://api.github.com/repos/XRPLF/mpt-crypto/subscribers",
+  "subscription_url": "https://api.github.com/repos/XRPLF/mpt-crypto/subscription",
+  "commits_url": "https://api.github.com/repos/XRPLF/mpt-crypto/commits{/sha}",
+  "git_commits_url": "https://api.github.com/repos/XRPLF/mpt-crypto/git/commits{/sha}",
+  "comments_url": "https://api.github.com/repos/XRPLF/mpt-crypto/comments{/number}",
+  "issue_comment_url": "https://api.github.com/repos/XRPLF/mpt-crypto/issues/comments{/number}",
+  "contents_url": "https://api.github.com/repos/XRPLF/mpt-crypto/contents/{+path}",
+  "compare_url": "https://api.github.com/repos/XRPLF/mpt-crypto/compare/{base}...{head}",
+  "merges_url": "https://api.github.com/repos/XRPLF/mpt-crypto/merges",
+  "archive_url": "https://api.github.com/repos/XRPLF/mpt-crypto/{archive_format}{/ref}",
+  "downloads_url": "https://api.github.com/repos/XRPLF/mpt-crypto/downloads",
+  "issues_url": "https://api.github.com/repos/XRPLF/mpt-crypto/issues{/number}",
+  "pulls_url": "https://api.github.com/repos/XRPLF/mpt-crypto/pulls{/number}",
+  "milestones_url": "https://api.github.com/repos/XRPLF/mpt-crypto/milestones{/number}",
+  "notifications_url": "https://api.github.com/repos/XRPLF/mpt-crypto/notifications{?since,all,participating}",
+  "labels_url": "https://api.github.com/repos/XRPLF/mpt-crypto/labels{/name}",
+  "releases_url": "https://api.github.com/repos/XRPLF/mpt-crypto/releases{/id}",
+  "deployments_url": "https://api.github.com/repos/XRPLF/mpt-crypto/deployments",
+  "created_at": "2025-12-11T21:52:44Z",
+  "updated_at": "2026-10-05T17:03:45Z",
+  "pushed_at": "2026-10-02T00:59:32Z",
+  "git_url": "git://github.com/XRPLF/mpt-crypto.git",
+  "ssh_url": "git@github.com:XRPLF/mpt-crypto.git",
+  "clone_url": "https://github.com/XRPLF/mpt-crypto.git",
+  "svn_url": "https://github.com/XRPLF/mpt-crypto",
+  "homepage": null,
+  "size": 1218,
+  "stargazers_count": 9,
+  "watchers_count": 9,
+  "language": "C",
+  "has_issues": true,
+--- issue templates ---
+{
+  "message": "Not Found",
+  "documentation_url": "https://docs.github.com/rest/repos/contents#get-repository-content",
+  "status": "404"
+}
+--- config ---
+{
+  "message": "Not Found",
+  "documentation_url": "https://docs.github.com/rest/repos/contents#get-repository-content",
+  "status": "404"
+}
+
+exec
+/bin/zsh -lc 'tmp=/private/tmp/f13r2.zdcf18
+curl -sSLo "$tmp/xls0096.md" https://raw.githubusercontent.com/XRPLF/XRPL-Standards/58ccd304724d328acd923a3adf11f7fccd707c81/XLS-0096-confidential-mpt/README.md
+curl -sSLo "$tmp/ConfidentialMPTSend.cpp" https://raw.githubusercontent.com/XRPLF/rippled/7939339a65e97d9dc8d3496391d01932e3a0b9fd/src/libxrpl/tx/transactors/token/ConfidentialMPTSend.cpp
+curl -sSLo "$tmp/ConfidentialTransfer.cpp" https://raw.githubusercontent.com/XRPLF/rippled/7939339a65e97d9dc8d3496391d01932e3a0b9fd/src/libxrpl/protocol/ConfidentialTransfer.cpp
+curl -sSLo "$tmp/mpt_utility.cpp" https://raw.githubusercontent.com/XRPLF/mpt-crypto/376691c5fca7898bd1161b0ac6646109d069ceb9/src/utility/mpt_utility.cpp
+printf '"'%s\\n' '--- XLS 1008-1020 ---'; nl -ba \""'$tmp/xls0096.md" | sed -n '"'1008,1020p'
+printf '%s\\n' '--- Send 45-65 ---'; nl -ba \""'$tmp/ConfidentialMPTSend.cpp" | sed -n '"'45,65p'
+printf '%s\\n' '--- Send 292-305 ---'; nl -ba \""'$tmp/ConfidentialMPTSend.cpp" | sed -n '"'292,305p'
+printf '%s\\n' '--- Transfer 520-535 ---'; nl -ba \""'$tmp/ConfidentialTransfer.cpp" | sed -n '"'520,535p'
+printf '%s\\n' '--- Transfer 578-590 ---'; nl -ba \""'$tmp/ConfidentialTransfer.cpp" | sed -n '"'578,590p'
+printf '%s\\n' '--- utility 1100-1148 ---'; nl -ba \""'$tmp/mpt_utility.cpp" | sed -n '"'1100,1148p'" in $USER_TMP/T/f13r2.dGDwTa
+ succeeded in 908ms:
+--- XLS 1008-1020 ---
+  1008	We assume the common configuration where the transfer amount is encrypted under four public keys (sender, receiver, issuer mirror, auditor mirror), hence Nciphers = 4 throughout this section. All estimates assume secp256k1, 32-byte scalars, compressed curve points of 33 bytes, and EC–ElGamal ciphertexts of 66 bytes. The cryptographic payload consists of ElGamal ciphertexts, two Pedersen commitments, a compact sigma proof binding all ciphertexts under a single Fiat-Shamir challenge, and an aggregated Bulletproof enforcing range constraints.
+  1009	
+  1010	### 17.1 Cryptographic Payload Structure (Nciphers = 4)
+  1011	
+  1012	Each EC–ElGamal ciphertext contains two compressed curve points, giving 66 bytes per ciphertext and 4 × 66 = 264 bytes in total. Two Pedersen commitments are included, one for the transfer amount m and one for the balance b, contributing 2 × 33 = 66 bytes. The compact sigma proof (`ZKProof` prefix) is a fixed 192 bytes regardless of recipient count, replacing the legacy shared-randomness equality proof. An aggregated Bulletproof proves that both the transfer amount and the post-spend remainder lie in [0, 2^64), though transactors cap accepted amounts at `maxMPTokenAmount` (2^63 − 1); for two aggregated 64-bit values, the proof size is 754 bytes. The `ZKProof` field therefore carries 192 + 754 = 946 bytes total. Combining all components:
+  1013	
+  1014	Total crypto size = 264 bytes (ciphertexts) + 66 bytes (Pedersen commitments) + 946 bytes (ZKProof: 192-byte compact sigma proof + 754 aggregated Bulletproof)
+  1015	= 1276 bytes (with auditor). Without auditor (Nciphers = 3): 198 + 66 + 946 = 1210 bytes. Ledger metadata and transaction headers are excluded from this estimate, as the goal is to isolate the cryptographic overhead.
+  1016	
+  1017	### 17.2 Computational Complexity
+  1018	
+  1019	For `ConfidentialMPTSend`, the dominant cost is verification of the aggregated Bulletproof, whose work grows linearly with the total bit length being proved: the verifier derives a scalar per bit and folds the generator vectors, both proportional to that length. `ConfidentialMPTConvertBack` carries a single Bulletproof over one 64-bit value rather than two, and behaves the same way. The remaining transaction types carry no range proof, and `ConfidentialMPTMergeInbox` carries no proof at all.
+  1020	
+--- Send 45-65 ---
+    45	        return temMALFORMED;
+    46	
+    47	    // Issuer cannot be the destination
+    48	    if (ctx.tx[sfDestination] == issuer)
+    49	        return temMALFORMED;
+    50	
+    51	    // Check the length of the encrypted amounts
+    52	    if (ctx.tx[sfSenderEncryptedAmount].length() != kEcGamalEncryptedTotalLength ||
+    53	        ctx.tx[sfDestinationEncryptedAmount].length() != kEcGamalEncryptedTotalLength ||
+    54	        ctx.tx[sfIssuerEncryptedAmount].length() != kEcGamalEncryptedTotalLength)
+    55	    {
+    56	        return temBAD_CIPHERTEXT;
+    57	    }
+    58	
+    59	    bool const hasAuditor = ctx.tx.isFieldPresent(sfAuditorEncryptedAmount);
+    60	    if (hasAuditor && ctx.tx[sfAuditorEncryptedAmount].length() != kEcGamalEncryptedTotalLength)
+    61	        return temBAD_CIPHERTEXT;
+    62	
+    63	    // Check the length of the ZKProof (fixed size regardless of recipient count)
+    64	    if (ctx.tx[sfZKProof].length() != kEcSendProofLength)
+    65	        return temMALFORMED;
+--- Send 292-305 ---
+   292	    // Check deposit preauth before the expensive ZK proof verification.
+   293	    // Uses read-only view.
+   294	    auto const preauthErr =
+   295	        checkDepositPreauth(ctx.tx, ctx.view, account, destination, sleDst, ctx.j);
+   296	    if (!isTesSuccess(preauthErr))
+   297	        return preauthErr;
+   298	
+   299	    return detail::verifySendProofs(ctx, sleSenderMPToken, sleDestinationMPToken, sleIssuance);
+   300	}
+   301	
+   302	TER
+   303	ConfidentialMPTSend::doApply()
+   304	{
+   305	    auto const mptIssuanceID = ctx_.tx[sfMPTokenIssuanceID];
+--- Transfer 520-535 ---
+   520	    {
+   521	        return tecBAD_PROOF;
+   522	    }
+   523	
+   524	    return tesSUCCESS;
+   525	}
+   526	
+   527	TER
+   528	verifySendProof(
+   529	    Slice const& proof,
+   530	    ConfidentialRecipient const& sender,
+   531	    ConfidentialRecipient const& destination,
+   532	    ConfidentialRecipient const& issuer,
+   533	    std::optional<ConfidentialRecipient> const& auditor,
+   534	    Slice const& spendingBalance,
+   535	    Slice const& amountCommitment,
+--- Transfer 578-590 ---
+   578	        UNREACHABLE(
+   579	            "xrpl::verifySendProof : participant count must match the requested recipient "
+   580	            "count");
+   581	        return tecINTERNAL;
+   582	        // LCOV_EXCL_STOP
+   583	    }
+   584	
+   585	    if (mpt_verify_send_proof(
+   586	            proof.data(),
+   587	            participants.data(),
+   588	            recipientCount,
+   589	            spendingBalance.data(),
+   590	            amountCommitment.data(),
+--- utility 1100-1148 ---
+  1100	    }
+  1101	
+  1102	    return 0;
+  1103	}
+  1104	
+  1105	int
+  1106	mpt_verify_send_proof(
+  1107	    uint8_t const* proof,
+  1108	    mpt_confidential_participant const* participants,
+  1109	    uint8_t const n_participants,
+  1110	    uint8_t const sender_spending_ciphertext[kMPT_ELGAMAL_TOTAL_SIZE],
+  1111	    uint8_t const amount_commitment[kMPT_PEDERSEN_COMMIT_SIZE],
+  1112	    uint8_t const balance_commitment[kMPT_PEDERSEN_COMMIT_SIZE],
+  1113	    uint8_t const context_hash[kMPT_HALF_SHA_SIZE])
+  1114	{
+  1115	    if (!proof || !participants || !sender_spending_ciphertext || !amount_commitment ||
+  1116	        !balance_commitment || !context_hash)
+  1117	        return -1;
+  1118	
+  1119	    if (n_participants != 3 && n_participants != 4)
+  1120	        return -1;
+  1121	
+  1122	    secp256k1_context* ctx = mpt_secp256k1_context();
+  1123	    if (!ctx)
+  1124	        return -1;
+  1125	
+  1126	    secp256k1_pubkey c1;
+  1127	    std::vector<secp256k1_pubkey> c2_vec(n_participants);
+  1128	    std::vector<secp256k1_pubkey> pk_vec(n_participants);
+  1129	
+  1130	    for (uint8_t i = 0; i < n_participants; ++i)
+  1131	    {
+  1132	        if (i == 0)
+  1133	        {
+  1134	            if (secp256k1_ec_pubkey_parse(
+  1135	                    ctx, &c1, participants[i].ciphertext, kMPT_ELGAMAL_CIPHER_SIZE) != 1)
+  1136	                return -1;
+  1137	        }
+  1138	        else
+  1139	        {
+  1140	            // All participants must share the same c1 bytes.
+  1141	            if (!std::equal(
+  1142	                    participants[i].ciphertext,
+  1143	                    participants[i].ciphertext + kMPT_ELGAMAL_CIPHER_SIZE,
+  1144	                    participants[0].ciphertext))
+  1145	                return -1;
+  1146	        }
+  1147	
+  1148	        if (secp256k1_ec_pubkey_parse(
+
+exec
+/bin/zsh -lc "tmp=/private/tmp/f13r2.zdcf18
+printf '%s\\n' '--- Send 80-125 ---'; nl -ba \""'$tmp/ConfidentialMPTSend.cpp" | sed -n '"'80,125p'
+printf '%s\\n' '--- Transfer 528-610 ---'; nl -ba \""'$tmp/ConfidentialTransfer.cpp" | sed -n '"'528,610p'
+printf '%s\\n' '--- Send 299 context ---'; nl -ba \""'$tmp/ConfidentialMPTSend.cpp" | sed -n '"'280,302p'" in $USER_TMP/T/f13r2.dGDwTa
+ succeeded in 0ms:
+--- Send 80-125 ---
+    80	        return temBAD_CIPHERTEXT;
+    81	    }
+    82	
+    83	    if (hasAuditor && !isValidCiphertext(ctx.tx[sfAuditorEncryptedAmount]))
+    84	        return temBAD_CIPHERTEXT;
+    85	
+    86	    if (auto const err = credentials::checkFields(ctx.tx, ctx.rules, ctx.j); !isTesSuccess(err))
+    87	        return err;
+    88	
+    89	    return tesSUCCESS;
+    90	}
+    91	
+    92	XRPAmount
+    93	ConfidentialMPTSend::calculateBaseFee(ReadView const& view, STTx const& tx)
+    94	{
+    95	    return Transactor::calculateBaseFee(view, tx, kConfidentialFeeMultiplier);
+    96	}
+    97	
+    98	namespace detail {
+    99	
+   100	static TER
+   101	verifySendProofs(
+   102	    PreclaimContext const& ctx,
+   103	    std::shared_ptr<SLE const> const& sleSenderMPToken,
+   104	    std::shared_ptr<SLE const> const& sleDestinationMPToken,
+   105	    std::shared_ptr<SLE const> const& sleIssuance)
+   106	{
+   107	    // Sanity check
+   108	    if (!sleSenderMPToken || !sleDestinationMPToken || !sleIssuance)
+   109	    {
+   110	        // LCOV_EXCL_START
+   111	        UNREACHABLE(
+   112	            "xrpl::detail::verifySendProofs : caller must pre-validate sender/destination/"
+   113	            "issuance existence");
+   114	        return tecINTERNAL;
+   115	        // LCOV_EXCL_STOP
+   116	    }
+   117	
+   118	    auto const hasAuditor = ctx.tx.isFieldPresent(sfAuditorEncryptedAmount);
+   119	
+   120	    std::optional<ConfidentialRecipient> auditor;
+   121	    if (hasAuditor)
+   122	    {
+   123	        auditor.emplace(
+   124	            ConfidentialRecipient{
+   125	                .publicKey = (*sleIssuance)[sfAuditorEncryptionKey],
+--- Transfer 528-610 ---
+   528	verifySendProof(
+   529	    Slice const& proof,
+   530	    ConfidentialRecipient const& sender,
+   531	    ConfidentialRecipient const& destination,
+   532	    ConfidentialRecipient const& issuer,
+   533	    std::optional<ConfidentialRecipient> const& auditor,
+   534	    Slice const& spendingBalance,
+   535	    Slice const& amountCommitment,
+   536	    Slice const& balanceCommitment,
+   537	    UInt256 const& contextHash)
+   538	{
+   539	    auto const recipientCount = getConfidentialRecipientCount(auditor.has_value());
+   540	    if (proof.size() != kEcSendProofLength || sender.publicKey.size() != kEcPubKeyLength ||
+   541	        sender.encryptedAmount.size() != kEcGamalEncryptedTotalLength ||
+   542	        destination.publicKey.size() != kEcPubKeyLength ||
+   543	        destination.encryptedAmount.size() != kEcGamalEncryptedTotalLength ||
+   544	        issuer.publicKey.size() != kEcPubKeyLength ||
+   545	        issuer.encryptedAmount.size() != kEcGamalEncryptedTotalLength ||
+   546	        spendingBalance.size() != kEcGamalEncryptedTotalLength ||
+   547	        amountCommitment.size() != kEcPedersenCommitmentLength ||
+   548	        balanceCommitment.size() != kEcPedersenCommitmentLength)
+   549	    {
+   550	        // LCOV_EXCL_START
+   551	        UNREACHABLE(
+   552	            "xrpl::verifySendProof : callers must pre-validate proof/participant/commitment "
+   553	            "lengths");
+   554	        return tecINTERNAL;
+   555	        // LCOV_EXCL_STOP
+   556	    }
+   557	
+   558	    std::vector<mpt_confidential_participant> participants;
+   559	    participants.reserve(recipientCount);
+   560	    participants.push_back(toParticipant(sender));
+   561	    participants.push_back(toParticipant(destination));
+   562	    participants.push_back(toParticipant(issuer));
+   563	    if (auditor)
+   564	    {
+   565	        if (auditor->publicKey.size() != kEcPubKeyLength ||
+   566	            auditor->encryptedAmount.size() != kEcGamalEncryptedTotalLength)
+   567	        {
+   568	            // LCOV_EXCL_START
+   569	            UNREACHABLE("xrpl::verifySendProof : callers must pre-validate auditor field lengths");
+   570	            return tecINTERNAL;
+   571	            // LCOV_EXCL_STOP
+   572	        }
+   573	        participants.push_back(toParticipant(*auditor));
+   574	    }
+   575	    if (participants.size() != recipientCount)
+   576	    {
+   577	        // LCOV_EXCL_START
+   578	        UNREACHABLE(
+   579	            "xrpl::verifySendProof : participant count must match the requested recipient "
+   580	            "count");
+   581	        return tecINTERNAL;
+   582	        // LCOV_EXCL_STOP
+   583	    }
+   584	
+   585	    if (mpt_verify_send_proof(
+   586	            proof.data(),
+   587	            participants.data(),
+   588	            recipientCount,
+   589	            spendingBalance.data(),
+   590	            amountCommitment.data(),
+   591	            balanceCommitment.data(),
+   592	            contextHash.data()) != 0)
+   593	    {
+   594	        return tecBAD_PROOF;
+   595	    }
+   596	
+   597	    return tesSUCCESS;
+   598	}
+   599	
+   600	TER
+   601	verifyConvertBackProof(
+   602	    Slice const& proof,
+   603	    Slice const& pubKeySlice,
+   604	    Slice const& spendingBalance,
+   605	    Slice const& balanceCommitment,
+   606	    uint64_t amount,
+   607	    UInt256 const& contextHash)
+   608	{
+   609	    if (proof.size() != kEcConvertBackProofLength || pubKeySlice.size() != kEcPubKeyLength ||
+   610	        spendingBalance.size() != kEcGamalEncryptedTotalLength ||
+--- Send 299 context ---
+   280	
+   281	    // Check auth
+   282	    if (auto const ter = requireAuth(ctx.view, mptIssue, account); !isTesSuccess(ter))
+   283	        return ter;
+   284	
+   285	    if (auto const ter = requireAuth(ctx.view, mptIssue, destination); !isTesSuccess(ter))
+   286	        return ter;
+   287	
+   288	    if (auto const err = credentials::valid(ctx.tx, ctx.view, ctx.tx[sfAccount], ctx.j);
+   289	        !isTesSuccess(err))
+   290	        return err;
+   291	
+   292	    // Check deposit preauth before the expensive ZK proof verification.
+   293	    // Uses read-only view.
+   294	    auto const preauthErr =
+   295	        checkDepositPreauth(ctx.tx, ctx.view, account, destination, sleDst, ctx.j);
+   296	    if (!isTesSuccess(preauthErr))
+   297	        return preauthErr;
+   298	
+   299	    return detail::verifySendProofs(ctx, sleSenderMPToken, sleDestinationMPToken, sleIssuance);
+   300	}
+   301	
+   302	TER
+
+exec
+/bin/zsh -lc 'tmp=/private/tmp/f13r2.zdcf18
+nl -ba "$tmp/ConfidentialMPTSend.cpp" | sed -n '"'118,220p'" in $USER_TMP/T/f13r2.dGDwTa
+ succeeded in 0ms:
+   118	    auto const hasAuditor = ctx.tx.isFieldPresent(sfAuditorEncryptedAmount);
+   119	
+   120	    std::optional<ConfidentialRecipient> auditor;
+   121	    if (hasAuditor)
+   122	    {
+   123	        auditor.emplace(
+   124	            ConfidentialRecipient{
+   125	                .publicKey = (*sleIssuance)[sfAuditorEncryptionKey],
+   126	                .encryptedAmount = ctx.tx[sfAuditorEncryptedAmount],
+   127	            });
+   128	    }
+   129	
+   130	    auto const contextHash = getSendContextHash(
+   131	        ctx.tx[sfAccount],
+   132	        ctx.tx[sfMPTokenIssuanceID],
+   133	        ctx.tx.getSeqProxy().value(),
+   134	        ctx.tx[sfDestination],
+   135	        (*sleSenderMPToken)[~sfConfidentialBalanceVersion].value_or(0));
+   136	
+   137	    return verifySendProof(
+   138	        ctx.tx[sfZKProof],
+   139	        {
+   140	            .publicKey = (*sleSenderMPToken)[sfHolderEncryptionKey],
+   141	            .encryptedAmount = ctx.tx[sfSenderEncryptedAmount],
+   142	        },
+   143	        {
+   144	            .publicKey = (*sleDestinationMPToken)[sfHolderEncryptionKey],
+   145	            .encryptedAmount = ctx.tx[sfDestinationEncryptedAmount],
+   146	        },
+   147	        {
+   148	            .publicKey = (*sleIssuance)[sfIssuerEncryptionKey],
+   149	            .encryptedAmount = ctx.tx[sfIssuerEncryptedAmount],
+   150	        },
+   151	        auditor,
+   152	        (*sleSenderMPToken)[sfConfidentialBalanceSpending],
+   153	        ctx.tx[sfAmountCommitment],
+   154	        ctx.tx[sfBalanceCommitment],
+   155	        contextHash);
+   156	}
+   157	
+   158	}  // namespace detail
+   159	
+   160	TER
+   161	ConfidentialMPTSend::preclaim(PreclaimContext const& ctx)
+   162	{
+   163	    // Check if sender account exists
+   164	    auto const account = ctx.tx[sfAccount];
+   165	    if (!ctx.view.exists(keylet::account(account)))
+   166	        return terNO_ACCOUNT;
+   167	
+   168	    // Check if destination account exists
+   169	    auto const destination = ctx.tx[sfDestination];
+   170	    auto const sleDst = ctx.view.read(keylet::account(destination));
+   171	    if (!sleDst)
+   172	        return tecNO_TARGET;
+   173	
+   174	    // Check destination tag
+   175	    if (((sleDst->getFlags() & lsfRequireDestTag) != 0u) &&
+   176	        !ctx.tx.isFieldPresent(sfDestinationTag))
+   177	    {
+   178	        return tecDST_TAG_NEEDED;
+   179	    }
+   180	
+   181	    // Check if MPT issuance exists
+   182	    auto const mptIssuanceID = ctx.tx[sfMPTokenIssuanceID];
+   183	    auto const sleIssuance = ctx.view.read(keylet::mptokenIssuance(mptIssuanceID));
+   184	    if (!sleIssuance)
+   185	        return tecOBJECT_NOT_FOUND;
+   186	
+   187	    // Check if the issuance allows transfer
+   188	    if (!sleIssuance->isFlag(lsfMPTCanTransfer))
+   189	        return tecNO_AUTH;
+   190	
+   191	    // Check if issuance allows confidential transfer
+   192	    if (!sleIssuance->isFlag(lsfMPTCanHoldConfidentialBalance))
+   193	        return tecNO_PERMISSION;
+   194	
+   195	    // Sanity check: transfer fee must be 0 for confidential MPTs. This should
+   196	    // be unreachable in valid ledger state because MPTokenIssuanceCreate and
+   197	    // MPTokenIssuanceSet enforce it.
+   198	    if ((*sleIssuance)[~sfTransferFee].value_or(0) > 0)
+   199	        return tecNO_PERMISSION;
+   200	
+   201	    // Check if issuance has issuer ElGamal public key
+   202	    if (!sleIssuance->isFieldPresent(sfIssuerEncryptionKey))
+   203	        return tecNO_PERMISSION;
+   204	
+   205	    bool const hasAuditor = ctx.tx.isFieldPresent(sfAuditorEncryptedAmount);
+   206	    bool const requiresAuditor = sleIssuance->isFieldPresent(sfAuditorEncryptionKey);
+   207	
+   208	    // Tx must include auditor ciphertext if the issuance has enabled
+   209	    // auditing, and must not include it if auditing is not enabled
+   210	    if (requiresAuditor != hasAuditor)
+   211	        return tecNO_PERMISSION;
+   212	
+   213	    // Sanity check: issuer isn't the sender
+   214	    if (sleIssuance->getAccountID(sfIssuer) == ctx.tx[sfAccount])
+   215	    {
+   216	        // LCOV_EXCL_START
+   217	        UNREACHABLE(
+   218	            "xrpl::ConfidentialMPTSend::preclaim : issuer derived from the MPT ID must match "
+   219	            "the ledger's stored issuer");
+   220	        return tefINTERNAL;
+
+exec
+/bin/zsh -lc 'tmp=/private/tmp/f13r2.zdcf18
+curl -sSLo "$tmp/conanfile.py" https://raw.githubusercontent.com/XRPLF/rippled/7939339a65e97d9dc8d3496391d01932e3a0b9fd/conanfile.py
+printf '"'%s\\n' '--- conan mpt references ---'; grep -n -i -C 3 'mpt-crypto\\|mpt_crypto' \""'$tmp/conanfile.py" || true
+printf '"'%s\\n' '--- mpt commit metadata ---'; curl -sS https://api.github.com/repos/XRPLF/mpt-crypto/commits/376691c5fca7898bd1161b0ac6646109d069ceb9 | sed -n '1,100p'
+printf '%s\\n' '--- mpt tags pointing to commit ---'; curl -sS 'https://api.github.com/repos/XRPLF/mpt-crypto/git/refs/tags?per_page=100' | grep -B 3 -A 3 '376691c5fca7898bd1161b0ac6646109d069ceb9' || true" in $USER_TMP/T/f13r2.dGDwTa
+ succeeded in 826ms:
+--- conan mpt references ---
+145-        if self.options.jemalloc:
+146-            self.requires("jemalloc/5.3.1")
+147-        self.requires("lz4/1.10.0", force=True)
+148:        self.requires("mpt-crypto/1.0.2", transitive_headers=True)
+149-        self.requires("protobuf/6.33.5", force=True)
+150-        if self.options.rocksdb:
+151-            self.requires("rocksdb/10.5.1")
+--
+234-            "grpc::grpc++",
+235-            "libarchive::libarchive",
+236-            "lz4::lz4",
+237:            "mpt-crypto::mpt-crypto",
+238-            "nudb::nudb",
+239-            "openssl::crypto",
+240-            "protobuf::libprotobuf",
+--- mpt commit metadata ---
+{
+  "sha": "376691c5fca7898bd1161b0ac6646109d069ceb9",
+  "node_id": "C_kwDOQnIwUNoAKDM3NjY5MWM1ZmNhNzg5OGJkMTE2MWIwYWM2NjQ2MTA5ZDA2OWNlYjk",
+  "commit": {
+    "author": {
+      "name": "pdp2121",
+      "email": "redacted@example.invalid",
+      "date": "2026-07-16T21:11:52Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2026-07-16T21:11:52Z"
+    },
+    "message": "add to artifacts (#134)",
+    "tree": {
+      "sha": "2ad0d89a59032fa886e4d6fca6ed30543baccaa7",
+      "url": "https://api.github.com/repos/XRPLF/mpt-crypto/git/trees/2ad0d89a59032fa886e4d6fca6ed30543baccaa7"
+    },
+    "url": "https://api.github.com/repos/XRPLF/mpt-crypto/git/commits/376691c5fca7898bd1161b0ac6646109d069ceb9",
+    "comment_count": 0,
+    "verification": {
+      "verified": true,
+      "reason": "valid",
+      "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJqWUkYCRC1aQ7uu5UhlAAAw4wQAIIgme09swqIm3eCQisBRlAd\n0m5Ys6n/JLOJGpSrAQ4DJgiC+YUuPfAS0iRZrwgLrR4JAiomhXIr63Hhw7y4nrKb\nQs0g9wJeb9nu/8FYYEew2cAXb8Y6ocIypc8n904T4JWxdRp0Sx3JO5wsSuqJvUKd\nV6XLfh4GeI0lLIz/5cq96zvMZmghWcCCy47g1ziBV3bDBw3X+lmyAgcIKicPvEpS\nR61ZtBxNZE3dhZ0RGCw5X2sslN9bl9cT8gLEFsRyYSWPZaiMV19Gw+9C3vxcN4Jy\nVmfyZYeiJOR/JjqE66ldIPD8jlhCpHDpwAsf/p7H7qwH2cPltqECp/gx/XdvQdrr\ne+KEn6z1sTSLHHTKWpvlbb/5eC7ibz/gPZtKNKjpPojTjcU9ibuybXwjpz8EQP+B\n3k6jJJEJT9B2x4qQx/xgs67H/1hNWYEPyhCPzIJT5aVqgnO7RB2blyKVG4jTZvkq\nQKwkIIcblykGe9OtdGNZQ+QLnHKkUuNGdGerNB2CrLRTmHflZLf6dRCwiKZb97Vl\n2w290Vat7HdI0mQ+HTAW/FXfeJnR3y5Cg01dYAvQiQ2i/bfMPmA54qV+w7XTnfRA\nmJyBrMjdkShjSf5+2AeGh3YXqX3jn2wF8+QLMQhj7n51Qccj5DOXcQLRSYPBnLe6\nQC5iy0qG6OMbjSeAab3k\n=JR30\n-----END PGP SIGNATURE-----\n",
+      "payload": "tree 2ad0d89a59032fa886e4d6fca6ed30543baccaa7\nparent 48a3cfe4be2122b77c2baec079353c5d35cce785\nauthor pdp2121 <redacted@example.invalid> 1784236312 -0400\ncommitter GitHub <noreply@github.com> 1784236312 -0700\n\nadd to artifacts (#134)",
+      "verified_at": "2026-07-16T21:11:53Z"
+    }
+  },
+  "url": "https://api.github.com/repos/XRPLF/mpt-crypto/commits/376691c5fca7898bd1161b0ac6646109d069ceb9",
+  "html_url": "https://github.com/XRPLF/mpt-crypto/commit/376691c5fca7898bd1161b0ac6646109d069ceb9",
+  "comments_url": "https://api.github.com/repos/XRPLF/mpt-crypto/commits/376691c5fca7898bd1161b0ac6646109d069ceb9/comments",
+  "author": {
+    "login": "pdp2121",
+    "id": 71317875,
+    "node_id": "MDQ6VXNlcjcxMzE3ODc1",
+    "avatar_url": "https://avatars.githubusercontent.com/u/71317875?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/pdp2121",
+    "html_url": "https://github.com/pdp2121",
+    "followers_url": "https://api.github.com/users/pdp2121/followers",
+    "following_url": "https://api.github.com/users/pdp2121/following{/other_user}",
+    "gists_url": "https://api.github.com/users/pdp2121/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/pdp2121/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/pdp2121/subscriptions",
+    "organizations_url": "https://api.github.com/users/pdp2121/orgs",
+    "repos_url": "https://api.github.com/users/pdp2121/repos",
+    "events_url": "https://api.github.com/users/pdp2121/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/pdp2121/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "committer": {
+    "login": "web-flow",
+    "id": 19864447,
+    "node_id": "MDQ6VXNlcjE5ODY0NDQ3",
+    "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/web-flow",
+    "html_url": "https://github.com/web-flow",
+    "followers_url": "https://api.github.com/users/web-flow/followers",
+    "following_url": "https://api.github.com/users/web-flow/following{/other_user}",
+    "gists_url": "https://api.github.com/users/web-flow/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/web-flow/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/web-flow/subscriptions",
+    "organizations_url": "https://api.github.com/users/web-flow/orgs",
+    "repos_url": "https://api.github.com/users/web-flow/repos",
+    "events_url": "https://api.github.com/users/web-flow/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/web-flow/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "parents": [
+    {
+      "sha": "48a3cfe4be2122b77c2baec079353c5d35cce785",
+      "url": "https://api.github.com/repos/XRPLF/mpt-crypto/commits/48a3cfe4be2122b77c2baec079353c5d35cce785",
+      "html_url": "https://github.com/XRPLF/mpt-crypto/commit/48a3cfe4be2122b77c2baec079353c5d35cce785"
+    }
+  ],
+  "stats": {
+    "total": 4,
+    "additions": 4,
+    "deletions": 0
+  },
+  "files": [
+    {
+      "sha": "a611d992097e98cf918d480b573e99bd85dfcc96",
+      "filename": ".github/workflows/build-shared-libs.yml",
+      "status": "modified",
+      "additions": 4,
+      "deletions": 0,
+      "changes": 4,
+      "blob_url": "https://github.com/XRPLF/mpt-crypto/blob/376691c5fca7898bd1161b0ac6646109d069ceb9/.github%2Fworkflows%2Fbuild-shared-libs.yml",
+      "raw_url": "https://github.com/XRPLF/mpt-crypto/raw/376691c5fca7898bd1161b0ac6646109d069ceb9/.github%2Fworkflows%2Fbuild-shared-libs.yml",
+      "contents_url": "https://api.github.com/repos/XRPLF/mpt-crypto/contents/.github%2Fworkflows%2Fbuild-shared-libs.yml?ref=376691c5fca7898bd1161b0ac6646109d069ceb9",
+      "patch": "@@ -21,6 +21,7 @@\n #   linux-x86-64/libmpt-crypto.so       (Linux x86_64)\n #   linux-s390x/libmpt-crypto.so        (Linux s390x, IBM Z — QEMU-built)\n #   win32-x86-64/mpt-crypto.dll         (Windows x86_64)\n+#   win32-x86-64/mpt-crypto.lib         (Windows import library, for linking)\n #\n # Platforms without a native GitHub-hosted runner (s390x) are built inside a\n # --platform linux/<arch> Docker container via QEMU user-mode emulation.\n@@ -137,6 +138,9 @@ jobs:\n         run: |\n           mkdir -p \"output/${{ matrix.platform }}\"\n           cp \"${LIB_DIR}/${{ matrix.lib_filename }}\" \"output/${{ matrix.platform }}/\"\n+          if [ \"${{ runner.os }}\" = \"Windows\" ]; then\n+            cp \"${LIB_DIR}/mpt-crypto.lib\" \"output/${{ matrix.platform }}/\"\n+          fi\n \n       - name: Upload artifact\n         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1"
+    }
+  ]
+--- mpt tags pointing to commit ---
+
+exec
+/bin/zsh -lc 'tmp=/private/tmp/f13r2.zdcf18
+curl -sSLo "$tmp/tob.pdf" https://github.com/trailofbits/publications/raw/refs/heads/master/reviews/2026-04-ripple-labs-xrp-ledger-confidential-transfer-securityreview.pdf
+pdfinfo "$tmp/tob.pdf" | sed -n '"'1,20p'
+pdftotext -layout \""'$tmp/tob.pdf" "$tmp/tob.txt"
+printf '"'%s\\n' '--- TOB-RIPCTX-16 occurrences ---'; grep -n -C 12 'TOB-RIPCTX-16' \""'$tmp/tob.txt" | sed -n '"'1,220p'
+printf '%s\\n' '--- shared-r proof occurrences ---'; grep -in -C 3 'shared-r\\|shared r\\|shared randomness' \""'$tmp/tob.txt" | sed -n '"'1,220p'" in $USER_TMP/T/f13r2.dGDwTa
+ succeeded in 1008ms:
+Title:           Ripple Labs - XRP Ledger Confidential Transfer - Code Review - Comprehensive Report with Fix Review - PUBLIC
+Producer:        Skia/PDF m149 Google Docs Renderer
+Custom Metadata: no
+Metadata Stream: no
+Tagged:          yes
+UserProperties:  no
+Suspects:        no
+Form:            none
+JavaScript:      no
+Pages:           71
+Encrypted:       no
+Page size:       612 x 792 pts (letter)
+Page rot:        0
+File size:       1690819 bytes
+Optimized:       no
+PDF version:     1.4
+--- TOB-RIPCTX-16 occurrences ---
+162-(TOB-RIPCTX-12). Because any pending proof encodes the version at generation time, an
+163-incoming transfer from any counterparty silently invalidates precomputed proofs in the
+164-recipient’s wallet, leaving the recipient unable to submit previously prepared transactions.
+165-
+166-Three medium-severity findings reflect narrower deviations from the specification.
+167-ConfidentialClawback resets the version counter to zero rather than incrementing it
+168-(TOB-RIPCTX-11), which can lock a holder out of the confidential system after an
+169-issuer-initiated clawback. The TransactionContextID transcript for Convert and
+170-ConvertBack does not match the notation in the specification (TOB-RIPCTX-15), meaning
+171-any third-party client that implements proof generation according to the specification will
+172-produce proofs that fail on-chain verification. Finally, the multi-ciphertext equality proof
+173-generates per-recipient nonces rather than a shared randomness scalar, as the
+174:specification defines (TOB-RIPCTX-16); this produces proofs roughly twice the expected size
+175-and breaks interoperability with specification-compliant implementations.
+176-
+177-Overall, we found the code to be well documented, particularly in the cryptographic library,
+178-though the coding style across the codebase is inconsistent. We identified several
+179-non-security-related code quality issues, which we document in appendix B. We also
+180-identified several design decisions that unnecessarily complicate the API and contributed to
+181-several of the findings in this report; some opportunities to improve the library design are
+182-further documented in appendix D.
+183-
+184-Recommendations
+185-Based on the findings identified during the security review, Trail of Bits recommends that
+186-Ripple Labs take the following steps before releasing the confidential transfer protocol of
+--
+1780-
+1781-
+1782-
+1783-​
+1784-        Trail of Bits​                                 45​   Ripple Labs XRP Ledger Confidential Transfer​
+1785-        PUBLIC​                                         ​                          Cryptographic Review
+1786-    16. Multi-ciphertext equality proof uses per-recipient nonces instead of
+1787-    shared r
+1788-
+1789-    Severity: Medium                                Difficulty: Low
+1790-
+1791-
+1792:    Type: Cryptography                              Finding ID: TOB-RIPCTX-16
+1793-
+1794-
+1795-    Target: rippled/src/libxrpl/protocol/ConfidentialTransfer.cpp
+1796-
+1797-
+1798-Description
+1799-The ConfidentialSend multi-ciphertext equality proof deviates from the protocol
+1800-specification by generating an independent random nonce for each recipient instead of
+1801-reusing a single shared randomness scalar across all ciphertexts. This structural departure
+1802-produces proofs that are incompatible with any external implementation following the
+1803-specification and increases on-chain proof size by a factor approaching two.
+1804-
+--
+2755-TOB-RIPCTX-13: MergeInbox allows version counter increment without balance
+2756-change
+2757-Unresolved. The Ripple team noted that no change was made to the implementation.
+2758-
+2759-TOB-RIPCTX-14: Discrepancies between specification fields and implementation
+2760-Partially resolved. Credential checks have been integrated into the confidential send
+2761-operation. However, the sfConfidentialBalanceVersion field has not been added to
+2762-the protocol schema.
+2763-
+2764-TOB-RIPCTX-15: Incorrect TransactionContextID for Convert and ConvertBack
+2765-Resolved. The context hash computations have been updated to match the specification.
+2766-
+2767:TOB-RIPCTX-16: Multi-ciphertext equality proof uses per-recipient nonces instead of
+2768-shared r
+2769-Resolved. The confidential transfer code now uses the “shared R” variant of the proof
+2770-provided in the MPT library.
+2771-
+2772-TOB-RIPCTX-17: Missing input length validation in low-level cryptographic helper
+2773-functions
+2774-Resolved. Length checks for all inputs have been added to the identified functions.
+2775-
+2776-
+2777-
+2778-
+2779-​
+--- shared-r proof occurrences ---
+48-        13. MergeInbox allows version counter increment without balance change​                   40
+49-        14. Discrepancies between specification fields and implementation​                        42
+50-        15. Incorrect TransactionContextID for Convert and ConvertBack​                           44
+51:        16. Multi-ciphertext equality proof uses per-recipient nonces instead of shared r​ 46
+52-        17. Missing input length validation in low-level cryptographic helper functions​          48
+53-A. Vulnerability Categories​                                                                      51
+54-B. Code Quality Issues​                                                                           53
+--
+170-ConvertBack does not match the notation in the specification (TOB-RIPCTX-15), meaning
+171-any third-party client that implements proof generation according to the specification will
+172-produce proofs that fail on-chain verification. Finally, the multi-ciphertext equality proof
+173:generates per-recipient nonces rather than a shared randomness scalar, as the
+174-specification defines (TOB-RIPCTX-16); this produces proofs roughly twice the expected size
+175-and breaks interoperability with specification-compliant implementations.
+176-
+--
+477-
+478-
+479-    16    Multi-ciphertext equality proof uses per-recipient        Cryptography        Medium
+480:          nonces instead of shared r
+481-
+482-
+483-    17    Missing input length validation in low-level              Data                Low
+--
+954-Description
+955-Several functions fail to validate their participant count parameter, which could lead to
+956-memory exhaustion and other types of issues. For example, the zero-knowledge proof
+957:implementation for plaintext equality with shared randomness fails to validate the number
+958-of participants before using it for memory allocation and arithmetic operations. This
+959-creates multiple issues.
+960-
+--
+1030-length check immediately after parsing completes in order to fail fast on invalid inputs.
+1031-
+1032-Issue 4: Missing proof_len Validation
+1033:Functions for plaintext equality with shared randomness (in
+1034-proof_same_plaintext_multi_shared_r.c) are missing validation of the proof_len
+1035-parameter, which is properly implemented in the equivalent functions for plaintext equality
+1036:without shared randomness (in proof_same_plaintext_multi.c).
+1037-
+1038-
+1039-​
+1040-      Trail of Bits​                           26​       Ripple Labs XRP Ledger Confidential Transfer​
+1041-      PUBLIC​                                   ​                              Cryptographic Review
+1042:Specifically, the non-shared-randomness
+1043-secp256k1_mpt_prove_same_plaintext_multi function properly validates the proof
+1044-buffer size before any allocation or computation:
+1045-
+--
+1050-    }
+1051-    *proof_len = required_len;
+1052-
+1053:                  Figure 7.4: Proper prover validation in non-shared-randomness variant
+1054-                 (mpt-crypto/src/proof_same_plaintext_multi.c#L147–L152)
+1055-
+1056-And the secp256k1_mpt_verify_same_plaintext_multi function validates the proof
+--
+1058-
+1059-    if (proof_len != secp256k1_mpt_prove_same_plaintext_multi_size(n)) return 0;
+1060-
+1061:                 Figure 7.5: Proper verifier validation in non-shared-randomness variant
+1062-                 (mpt-crypto/src/proof_same_plaintext_multi.c#L260–L260)
+1063-
+1064:However, the equivalent shared-randomness variants of these functions are missing this
+1065-validation.
+1066-
+1067:Note that the non-shared-randomness function
+1068-secp256k1_mpt_prove_same_plaintext_multi_size in
+1069-src/proof_same_plaintext_multi.c also fails to check for overflow.
+1070-
+--
+1784-        Trail of Bits​                                 45​   Ripple Labs XRP Ledger Confidential Transfer​
+1785-        PUBLIC​                                         ​                          Cryptographic Review
+1786-    16. Multi-ciphertext equality proof uses per-recipient nonces instead of
+1787:    shared r
+1788-
+1789-    Severity: Medium                                Difficulty: Low
+1790-
+--
+1798-Description
+1799-The ConfidentialSend multi-ciphertext equality proof deviates from the protocol
+1800-specification by generating an independent random nonce for each recipient instead of
+1801:reusing a single shared randomness scalar across all ciphertexts. This structural departure
+1802-produces proofs that are incompatible with any external implementation following the
+1803-specification and increases on-chain proof size by a factor approaching two.
+1804-
+1805:The specification defines a shared-randomness Sigma protocol over N ciphertexts that all
+1806-use the same ElGamal encryption scalar r. Because all ciphertexts share C1 = r·G, a single
+1807-response scalar sr = k_r + e·r is sufficient to bind the randomness proof across all
+1808-recipients. The resulting proof has size 33(1+N) + 64 bytes (196 bytes for N=3, 229 bytes
+--
+1828-k_r[i] scalars and their corresponding commitments T_rG[i] = k_r[i]·G and T_rP[i]
+1829-= k_r[i]·Pk[i] are produced for each recipient. The verifier reflects this structure by
+1830-checking a per-recipient C1 binding equation (s_r[i]·G = T_rG[i] + e·R[i]) for each i
+1831:rather than a single shared-r equation (sr·G = Tr + e·C1).
+1832-​
+1833-      Trail of Bits​                          46​          Ripple Labs XRP Ledger Confidential Transfer​
+1834-      PUBLIC​                                  ​                                 Cryptographic Review
+1835-The proof is cryptographically sound for proving that all ciphertexts encrypt the same
+1836:message m. However, the shared-randomness constraint (which is a deliberate design
+1837-choice in the specification) is not enforced. The sender can supply ciphertexts with distinct
+1838-C1 components under this construction, whereas the specification requires all C1 values to
+1839-be identical. Because all provers and verifiers in the current codebase share this
+--
+1843-Exploit Scenario
+1844-A developer building a specification-compliant wallet library implements the
+1845-ConfidentialSend multi-ciphertext equality proof according to the specification’s
+1846:shared-randomness construction, producing a proof of 196 bytes for a three-recipient send
+1847-operation. When the wallet submits a ConfidentialSend transaction, the on-chain
+1848-preflight size check, which enforces exactly
+1849-getMultiCiphertextEqualityProofSize(nRecipients) bytes, rejects the transaction
+--
+1851-recovery.
+1852-
+1853-Recommendations
+1854:Short term, replace the per-recipient nonce construction with the shared-randomness
+1855-scheme that is described in the specification and implemented in the mpt-crypto library.
+1856-Update the proof serialization, the size formula, and the
+1857-getMultiCiphertextEqualityProofSize helper accordingly.
+--
+2243-    ●​ Discrepancy between implementation and specification for zero-handling. The
+2244-       underlying function secp256k1_ec_seckey_verify rejects zero, but the
+2245-       specification permits it as randomness. For example, under the prover steps of
+2246:       section 3.3.4, “Proof of Equality of Plaintexts with Shared Randomness,” the random
+2247-       blinding scalar are sampled as the following:
+2248-
+2249-                                             𝑘𝑚, 𝑘𝑟 ← $ ℤ𝑞
+--
+2394-documented in the prover implementation rather than validated at the API boundary:
+2395-
+2396-    /**
+2397:     * Verifies the proof of equality with shared randomness.
+2398-     */
+2399-    int secp256k1_mpt_verify_equality_shared_r(
+2400-            const secp256k1_context* ctx,
+--
+2663-
+2664-
+2665-    16     Multi-ciphertext equality proof uses per-recipient      Medium               Resolved
+2666:           nonces instead of shared r
+2667-
+2668-
+2669-    17     Missing input length validation in low-level            Low                  Resolved
+--
+2683-return values are now checked appropriately.
+2684-
+2685-TOB-RIPCTX-3: Fiat-Shamir domain tag considerations
+2686:Resolved. The same-plaintext proofs have been consolidated to the “shared R” variant, and
+2687-all proofs now use distinct domain tags.
+2688-
+2689-
+--
+2765-Resolved. The context hash computations have been updated to match the specification.
+2766-
+2767-TOB-RIPCTX-16: Multi-ciphertext equality proof uses per-recipient nonces instead of
+2768:shared r
+2769:Resolved. The confidential transfer code now uses the “shared R” variant of the proof
+2770-provided in the MPT library.
+2771-
+2772-TOB-RIPCTX-17: Missing input length validation in low-level cryptographic helper
+
+exec
+/bin/zsh -lc 'tmp=/private/tmp/f13r2.zdcf18
+curl -sSLo "$tmp/paper.tex" https://raw.githubusercontent.com/XRPLF/mpt-crypto/3baaaac33dadec3e649846e487f452c5b6b2d825/paper/cmpt-compact-sigma.tex
+printf '"'%s\\n' '--- paper 90-105 ---'; nl -ba \""'$tmp/paper.tex" | sed -n '"'90,105p'
+printf '%s\\n' '--- paper 170-182 ---'; nl -ba \""'$tmp/paper.tex" | sed -n '"'170,182p'
+printf '%s\\n' '--- paper 214-225 ---'; nl -ba \""'$tmp/paper.tex" | sed -n '"'214,225p'
+printf '%s\\n' '--- paper 1012-1020 ---'; nl -ba \""'$tmp/paper.tex" | sed -n '"'1012,1020p'
+printf '%s\\n' '--- paper 1044-1052 ---'; nl -ba \""'$tmp/paper.tex" | sed -n '"'1044,1052p'
+printf '%s\\n' '--- paper 1628-1636 ---'; nl -ba \""'$tmp/paper.tex" | sed -n '"'1628,1636p'
+printf '%s\\n' '--- paper 1000-1010 ---'; nl -ba \""'$tmp/paper.tex" | sed -n '"'1000,1010p'" in $USER_TMP/T/f13r2.dGDwTa
+ succeeded in 520ms:
+--- paper 90-105 ---
+    90	  Fiat--Shamir challenge~\cite{CramerDamgardSchoenmakers1994} and
+    91	  transmitting the proof in \emph{compact form} (challenge plus
+    92	  response scalars, rather than first-round commitments) reduces the
+    93	  sigma-proof overhead to \textbf{192~bytes}: one $32$-byte challenge
+    94	  and five $32$-byte responses.
+    95	  The verifier reconstructs all commitments algebraically and
+    96	  recomputes the hash.
+    97	  %
+    98	  Combined with the shared-$C_1$ ciphertext layout, this reduces the
+    99	  total \textsf{ConfidentialMPTSend} transaction to
+   100	  $\mathbf{1177}$~bytes for $n = 4$ recipients (the production
+   101	  configuration: sender, receiver, issuer, auditor), or $1144$~bytes
+   102	  for $n = 3$---a $27$--$29\%$ reduction from the $1604$-byte baseline,
+   103	  with no change to security assumptions.
+   104	  %
+   105	  We provide full security proofs (completeness, $2$-special soundness,
+--- paper 170-182 ---
+   170	    $n + 5$ group elements from the proof, leaving only $6$
+   171	    scalars: one challenge and five responses.
+   172	\end{description}
+   173	
+   174	The resulting compact proof is $6 \times 32 = 192$~bytes, regardless
+   175	of the number of recipients~$n$.
+   176	Combined with the shared-$C_1$ ciphertext deduplication,
+   177	the total \textsf{ConfidentialMPTSend} size decreases from $1604$ to
+   178	$1177$~bytes for $n = 4$ (sender, receiver, issuer, auditor---the
+   179	production configuration) or $1144$~bytes for $n = 3$.
+   180	
+   181	\medskip
+   182	\noindent\textbf{Scope and structure.}
+--- paper 214-225 ---
+   214	In production, $n = 4$ (sender, receiver, issuer, auditor);
+   215	we give sizes for both $n = 3$ and $n = 4$ throughout.
+   216	\[
+   217	  C_1 = r \cdot G, \qquad
+   218	  C_{2,i} = m \cdot G + r \cdot P_i, \quad i = 1, \ldots, n.
+   219	\]
+   220	The shared first component~$C_1$ is transmitted once on-chain.
+   221	
+   222	\subsection{Pedersen Commitments}
+   223	
+   224	The same transfer amount is committed using a Pedersen commitment
+   225	that intentionally reuses the ciphertext randomness~$r$:
+--- paper 1012-1020 ---
+  1012	      & $192$ & $192$ & $6 \times 32$ \\
+  1013	    Aggregated Bulletproof
+  1014	      & $754$ & $754$ & unchanged \\
+  1015	    \midrule
+  1016	    \textbf{Total}
+  1017	      & $\mathbf{1177}$ & $\mathbf{1144}$ & $\Delta = 33$ \\
+  1018	    \bottomrule
+  1019	  \end{tabular}
+  1020	\end{table}
+--- paper 1044-1052 ---
+  1044	    (B)\; Shared $C_1$, separate proofs
+  1045	      & $1604$ & $1538$ & $0$/$-66$ & \\
+  1046	    (B${}'$)\; (B) + merged $\Sigma$ (commit.\ form)
+  1047	      & $1442$ & $1376$ & $-162$ & ($10\%$) \\
+  1048	    \textbf{(B${}''$)}\; \textbf{(B) + compact $\boldsymbol{\Sigma}$}
+  1049	      & $\mathbf{1177}$ & $\mathbf{1144}$ & $\mathbf{-427/-460}$ & ($\mathbf{27/29\%}$) \\
+  1050	    \midrule
+  1051	    (C)\; (B${}''$) + Bulletproofs++
+  1052	      & $\sim 905$ & $\sim 872$ & $\sim\!-699/-732$ & ($44/46\%$) \\
+--- paper 1628-1636 ---
+  1628	      & $754$ & $754$
+  1629	      & $754$ & $754$
+  1630	      & $0$ \\
+  1631	    \midrule
+  1632	    \textbf{Total}
+  1633	      & $\mathbf{1177}$ & $\mathbf{1144}$
+  1634	      & $\mathbf{1113}$ & $\mathbf{1080}$
+  1635	      & $\mathbf{-64}$ \\
+  1636	    \midrule
+--- paper 1000-1010 ---
+  1000	    Component & $n = 4$ & $n = 3$ & Notes \\
+  1001	    \midrule
+  1002	    Shared $C_1$
+  1003	      & $33$ & $33$ & $1 \times 33$ \\
+  1004	    Recipient ciphertexts $C_{2,i}$
+  1005	      & $132$ & $99$ & $n \times 33$ \\
+  1006	    Amount commitment $\mathit{PC}_m$
+  1007	      & $33$ & $33$ & $1 \times 33$ \\
+  1008	    Balance commitment $\mathit{PC}_b$
+  1009	      & $33$ & $33$ & $1 \times 33$ \\
+  1010	    \midrule
+
+exec
+/bin/zsh -lc 'tmp=/private/tmp/f13r2.zdcf18
+nl -ba "$tmp/paper.tex" | sed -n '"'992,1018p'
+printf '%s\\n' '--- paper commit metadata ---'; curl -sS https://api.github.com/repos/XRPLF/mpt-crypto/commits/3baaaac33dadec3e649846e487f452c5b6b2d825 | sed -n '1,35p'
+printf '%s\\n' '--- current main commit metadata ---'; curl -sS https://api.github.com/repos/XRPLF/mpt-crypto/branches/main | sed -n '1,25p'" in $USER_TMP/T/f13r2.dGDwTa
+ succeeded in 1280ms:
+{
+  "sha": "3baaaac33dadec3e649846e487f452c5b6b2d825",
+  "node_id": "C_kwDOQnIwUNoAKDNiYWFhYWMzM2RhZGVjM2U2NDk4NDZlNDg3ZjQ1MmM1YjZiMmQ4MjU",
+  "commit": {
+    "author": {
+      "name": "Kuan Lin",
+      "email": "redacted@example.invalid",
+      "date": "2026-08-20T14:33:49Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2026-08-20T14:33:49Z"
+    },
+    "message": "ci: emit a browser-only ESM glue (mpt_crypto.web.mjs)  (#139)",
+    "tree": {
+      "sha": "08544e7f2b0f2357528c76ffb82094040a68ac45",
+      "url": "https://api.github.com/repos/XRPLF/mpt-crypto/git/trees/08544e7f2b0f2357528c76ffb82094040a68ac45"
+    },
+    "url": "https://api.github.com/repos/XRPLF/mpt-crypto/git/commits/3baaaac33dadec3e649846e487f452c5b6b2d825",
+    "comment_count": 0,
+    "verification": {
+      "verified": true,
+      "reason": "valid",
+      "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJqhxBNCRC1aQ7uu5UhlAAADAEQAG/SDUUp2/49eCLJWyj90Q43\ny3/K24NmG5T5ew6vYxPABe+8TuY5pRmmqq/jBqKNj0TzjrZAntnpSg825naGCx9R\nONn/LLiijfuk9D1p8kOpnD3XWiemMUQNvbEeVXRr37yOTC7dAswnkWDdWHtVQlHT\ng56a5DDFDJTIUj1sg7Qq9C7hGZPY30JQWwErOgNc1VE/eoq5ptxvFksga61g9Liq\nBbVqxol8dbDD/6atIu6EEEDMsDuo5F9XvH1X14NjjCYO+3LRRuS4+BhZ3snaRYu2\nbCt/5IZcTwb103Ba6K7fsFI2+6C4tJUkAOnTFaTelc84Gsr1A1B/YuSUS95PCrJW\nghSy/dOKHDEGSjS4YWVs7K0YIq9iI6LM5rGr8l86sAKsC4orBJJ41xs9kEq7GRGr\nE3VgQ0xjisxsaUpmQy1Pe5YxwPR/z5E/MADlEu9nswq+lh13QRhKxOcq5cZ+n5nC\nMyMLHpbpWGtVehL8GsFpFEo4yGbRfaZTj1+CkFVFsFCy9L3RHCuT+g8Jq6wjShtG\njs4ncqotFrLceFWVNV3ALViUsKyiGeZWsBn74pS35bZxX5Nv7K82poOvEI9rS1Gj\ngcJwrIRSpzMM4MJSDLKCHlgvGOCYEH36vp0e23yypClpjPk68jpf1++1ADT8YnVL\nOOwPkeWeHZKAb52NtEyv\n=Dupr\n-----END PGP SIGNATURE-----\n",
+      "payload": "tree 08544e7f2b0f2357528c76ffb82094040a68ac45\nparent 4cf28de0f76bd77583cfc3159e05ab61629b0fcb\nauthor Kuan Lin <redacted@example.invalid> 1787236429 -0400\ncommitter GitHub <noreply@github.com> 1787236429 -0400\n\nci: emit a browser-only ESM glue (mpt_crypto.web.mjs)  (#139)",
+      "verified_at": "2026-08-20T14:33:50Z"
+    }
+  },
+  "url": "https://api.github.com/repos/XRPLF/mpt-crypto/commits/3baaaac33dadec3e649846e487f452c5b6b2d825",
+  "html_url": "https://github.com/XRPLF/mpt-crypto/commit/3baaaac33dadec3e649846e487f452c5b6b2d825",
+  "comments_url": "https://api.github.com/repos/XRPLF/mpt-crypto/commits/3baaaac33dadec3e649846e487f452c5b6b2d825/comments",
+  "author": {
+    "login": "kuan121",
+    "id": 13514933,
+--- current main commit metadata ---
+{
+  "name": "main",
+  "commit": {
+    "sha": "c60a60cc82eac5f7446480e0363105b8ace44631",
+    "node_id": "C_kwDOQnIwUNoAKGM2MGE2MGNjODJlYWM1Zjc0NDY0ODBlMDM2MzEwNWI4YWNlNDQ2MzE",
+    "commit": {
+      "author": {
+        "name": "Tess Dore",
+        "email": "redacted@example.invalid",
+        "date": "2026-10-02T00:59:32Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-10-02T00:59:32Z"
+      },
+      "message": "feat(rotate): ElGamal key-rotation proofs (9 of 9) (#142)\n\nCo-authored-by: Murat Cenk <redacted@example.invalid>",
+      "tree": {
+        "sha": "203bfc1287e4b5dffac1d46220c48831a9bff4e2",
+        "url": "https://api.github.com/repos/XRPLF/mpt-crypto/git/trees/203bfc1287e4b5dffac1d46220c48831a9bff4e2"
+      },
+      "url": "https://api.github.com/repos/XRPLF/mpt-crypto/git/commits/c60a60cc82eac5f7446480e0363105b8ace44631",
+      "comment_count": 0,
+      "verification": {
+        "verified": true,
+
+exec
+/bin/zsh -lc "python3 - <<'PY'
+from pathlib import Path
+import re
+p=Path('draft.md').read_text()
+lines=p.splitlines()
+body=[]
+in_fence=False
+in_details=False
+footer=False
+for line in lines:
+    if line.startswith('TITLE:') or line.startswith('REPO:') or line == '---' and not body:
+        continue
+    if line.startswith('*Disclosure:'):
+        footer=True
+    if footer:
+        continue
+    if line.strip() == '<details>':
+        in_details=True
+    if in_details:
+        if line.strip() == '</details>':
+            in_details=False
+        continue
+    if line.strip().startswith('"'```'"'):
+        in_fence=not in_fence
+        continue
+    if in_fence or line.lstrip().startswith('>'):
+        continue
+    body.append(line)
+text='\\n'.join(body)
+for label, pat in [
+    ('wordlike', r\"\\b[\\w]+(?:['’.-][\\w]+)*\\b\"),
+    ('nonspace', r\"\\S+\")]:
+    print(label, len(re.findall(pat,text)))
+print('--- included prose ---')
+print(text)
+PY" in $USER_TMP/T/f13r2.dGDwTa
+ succeeded in 69ms:
+wordlike 321
+nonspace 218
+--- included prose ---
+
+---
+
+`paper/cmpt-compact-sigma.tex` §2.1 says *"The shared first component C₁ is transmitted once on-chain"*. On that basis it totals a Send's cryptographic payload at 1177 bytes for n = 4 and 1144 for n = 3. XLS-0096 §17.1 gives 1276 and 1210 bytes for the same payload, because each ciphertext is a full 66 bytes, `C₁` included, and rippled enforces that layout. The paper's figures are incorrect by 99 and 66 bytes.
+
+**Suggested fix:** correct §2.1 and the totals to match XLS-0096 §17.1, or mark the shared-C₁ layout as a proposal that the protocol did not adopt.
+
+**The component sums** (cryptographic payload only, as both documents count it)
+
+
+**Evidence**
+
+- [XLS-0096 §17.1](https://github.com/XRPLF/XRPL-Standards/blob/58ccd304724d328acd923a3adf11f7fccd707c81/XLS-0096-confidential-mpt/README.md#L1010-L1015):
+
+
+- rippled's Send preflight requires each encrypted amount to be 66 bytes ([`ConfidentialMPTSend.cpp` lines 51-61](https://github.com/XRPLF/rippled/blob/7939339a65e97d9dc8d3496391d01932e3a0b9fd/src/libxrpl/tx/transactors/token/ConfidentialMPTSend.cpp#L51-L61)).
+- The extra copies carry no information. rippled verifies a Send through [`verifySendProofs`](https://github.com/XRPLF/rippled/blob/7939339a65e97d9dc8d3496391d01932e3a0b9fd/src/libxrpl/tx/transactors/token/ConfidentialMPTSend.cpp#L299) and [`mpt_verify_send_proof`](https://github.com/XRPLF/rippled/blob/7939339a65e97d9dc8d3496391d01932e3a0b9fd/src/libxrpl/protocol/ConfidentialTransfer.cpp#L585). In mpt-crypto 1.0.2, the version rippled requires, that function rejects a Send unless every participant's first 33 bytes match: *"All participants must share the same c1 bytes"* ([`mpt_utility.cpp` lines 1140-1145](https://github.com/XRPLF/mpt-crypto/blob/376691c5fca7898bd1161b0ac6646109d069ceb9/src/utility/mpt_utility.cpp#L1140-L1145)).
+- In the paper: the sentence at [line 220](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/paper/cmpt-compact-sigma.tex#L220). The 1177 total is at [lines 98-100](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/paper/cmpt-compact-sigma.tex#L98-L100), [176-179](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/paper/cmpt-compact-sigma.tex#L176-L179), [1017](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/paper/cmpt-compact-sigma.tex#L1017), [1049](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/paper/cmpt-compact-sigma.tex#L1049) and [1633](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/paper/cmpt-compact-sigma.tex#L1633).
+
+I also measured three Sends on Devnet on 2026-08-17, at rippled 3.3.0. The fields summed to 1210 bytes without an auditor and 1276 with one.
+
+
+---
+
+
+exec
+/bin/zsh -lc "curl -sS https://api.github.com/repos/XRPLF/XRPL-Standards/commits/58ccd304724d328acd923a3adf11f7fccd707c81 | sed -n '1,45p'
+printf '%s\\n' '--- rippled commit metadata ---'; curl -sS https://api.github.com/repos/XRPLF/rippled/commits/7939339a65e97d9dc8d3496391d01932e3a0b9fd | sed -n '1,45p'" in $USER_TMP/T/f13r2.dGDwTa
+ succeeded in 722ms:
+{
+  "sha": "58ccd304724d328acd923a3adf11f7fccd707c81",
+  "node_id": "C_kwDOCkE7yNoAKDU4Y2NkMzA0NzI0ZDMyOGFjZDkyM2EzYWRmMTFmN2ZjY2Q3MDdjODE",
+  "commit": {
+    "author": {
+      "name": "yinyiqian1",
+      "email": "redacted@example.invalid",
+      "date": "2026-09-10T22:00:09Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2026-09-10T22:00:09Z"
+    },
+    "message": "XLS-96: more updates (#628)",
+    "tree": {
+      "sha": "38264f1152158070f362ad03f2119606540c8e8c",
+      "url": "https://api.github.com/repos/XRPLF/XRPL-Standards/git/trees/38264f1152158070f362ad03f2119606540c8e8c"
+    },
+    "url": "https://api.github.com/repos/XRPLF/XRPL-Standards/git/commits/58ccd304724d328acd923a3adf11f7fccd707c81",
+    "comment_count": 0,
+    "verification": {
+      "verified": true,
+      "reason": "valid",
+      "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJqoyhpCRC1aQ7uu5UhlAAAdzkQACZX0ZkfdK0d2rPz5V3rlNKA\nYSI6K+vOxUkdc/um+fZQkBWiBYvt4QM8aBgcMsNcJqCQoZU1jHWMUD2M3QwMegWl\nvT+aZ2+P5D+blHuMqgdYYTzPoJMku2lnl+MRjLWyBPUDD8Q7n0QbU4Zr3hodFuQY\nkK2tR0HyhCurhuVPdn2+ARW0jODwIe+8NksNKn6LvPeBZZ98scPK7ERdunCfU23m\nAM2H4Iri7MBEHhSYomHPV+JDwHKMQ5U3/royOBZnHwLtzq9kpoPBHT94tLNueKxV\naRVusw+sricQq40u/BgxO/fWTBHghLS8ew1Kwqewin/l8dUYwjGnuh8ZFq7Y6Rwq\ndKx3rdBk0g4U0YsHhSzn653LcMqeLNJSYgCIagOFHgsIgphbl7m9XcmMiFQVXc1l\nmOtDpFNJYpYkgz+2VTX4wYAz4wblMCgXv2ZTOoHVlTbUIJ1jyAVv5cb/KC1d89or\nKqG7Gbll6XDrIpOcbOaySO6U5TYWr1nFjzf6J9J0vnK5dpaNTDWJzQujew+v2cd5\nDx+z0I9acQI0waIKF91hQe6T5cYtE+a0RHJuNh+M1OsuSXfU3s2kqlRyIwRElghS\nnhjeK2/G3u7jFhsX/VUtlJkORx8YejB5CZN+zAVsBwkz8CJdPRfKFq+Zg4ab0prn\npYLFLSHQalWZTqWev6yZ\n=x+4P\n-----END PGP SIGNATURE-----\n",
+      "payload": "tree 38264f1152158070f362ad03f2119606540c8e8c\nparent ffab4382485ad080f913ff307175abf20d6032f9\nauthor yinyiqian1 <redacted@example.invalid> 1789077609 -0400\ncommitter GitHub <noreply@github.com> 1789077609 -0400\n\nXLS-96: more updates (#628)",
+      "verified_at": "2026-09-10T22:00:10Z"
+    }
+  },
+  "url": "https://api.github.com/repos/XRPLF/XRPL-Standards/commits/58ccd304724d328acd923a3adf11f7fccd707c81",
+  "html_url": "https://github.com/XRPLF/XRPL-Standards/commit/58ccd304724d328acd923a3adf11f7fccd707c81",
+  "comments_url": "https://api.github.com/repos/XRPLF/XRPL-Standards/commits/58ccd304724d328acd923a3adf11f7fccd707c81/comments",
+  "author": {
+    "login": "yinyiqian1",
+    "id": 171949508,
+    "node_id": "U_kgDOCj-9xA",
+    "avatar_url": "https://avatars.githubusercontent.com/u/171949508?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/yinyiqian1",
+    "html_url": "https://github.com/yinyiqian1",
+    "followers_url": "https://api.github.com/users/yinyiqian1/followers",
+    "following_url": "https://api.github.com/users/yinyiqian1/following{/other_user}",
+    "gists_url": "https://api.github.com/users/yinyiqian1/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/yinyiqian1/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/yinyiqian1/subscriptions",
+--- rippled commit metadata ---
+{
+  "sha": "7939339a65e97d9dc8d3496391d01932e3a0b9fd",
+  "node_id": "C_kwDOACmRR9oAKDc5MzkzMzlhNjVlOTdkOWRjOGQzNDk2MzkxZDAxOTMyZTNhMGI5ZmQ",
+  "commit": {
+    "author": {
+      "name": "Nik Bougalis",
+      "email": "redacted@example.invalid",
+      "date": "2026-10-17T22:43:53Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2026-10-17T22:43:53Z"
+    },
+    "message": "chore: Fix an issue that breaks CLion (#8619)",
+    "tree": {
+      "sha": "3ba66d1b6416cf6a456927e0c8036cc7359f6ec3",
+      "url": "https://api.github.com/repos/XRPLF/rippled/git/trees/3ba66d1b6416cf6a456927e0c8036cc7359f6ec3"
+    },
+    "url": "https://api.github.com/repos/XRPLF/rippled/git/commits/7939339a65e97d9dc8d3496391d01932e3a0b9fd",
+    "comment_count": 0,
+    "verification": {
+      "verified": true,
+      "reason": "valid",
+      "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJq0/o4CRC1aQ7uu5UhlAAACtcQAH5N+q2XgQ52kqIMpA43ZVr6\ncclHwtCa/9lLgy0V8rI+MpJQVvP35RRJvg9fz9uC1ucP7EfhuyZ5BjkFulh/yO7m\nXwLARriGeQpb3SwW0MYrfFzs3YE9nm/ZFcJAC43wASOkFLg5YjAdenFuu/jevRQi\nrPwXRr/Dc2pL3gjCC6t2u/nMJ2kijYu9TPIKrIPIyePeMChvA/nlvry2Sp0S0z6U\nS4x8rOvrUdgHNRfRSe5ljDtj++EGRgr/W4rITMl9krEO/ARCqgy0ceDaA7dfCWrU\nl/TM3iTgC8L7sg6Aj4UvYOXWCjvaCV1PFkD0CDW0Sa1Cev3LzyPUiIOtN2eALptW\n7NmEGeSSLrodARvwAziQxLSZZkuAbRDCmcwJ+NF8IjBcW99tDUtOMQUp7iNE8BNl\nXLCtDvNTG7V6xfLKI0Xy9jM4nx0PiSyWAw6W7OZ7d0xCl3UGp6HbwVryK3xWuW+k\nMSo3SLdQP++cyBgX6iSyIJKU40If3Uzx/XVdFe4bGXobWCvjd41SN1oX7p/DGX/H\nP1zG/Q7np/HKVllSQPekdt7gRsgVpAiEfbvb7L0pXUgGEKLYeuToznQdoRG3i7BY\nF8oFLQ7hXGH1x0a4nZpkfDow7mvZE/W5TWc4irwJfyXHTOuBfbuN7QvT5OzmqJPt\nJZpQuctOJQkycCA9ZQoV\n=4Hnv\n-----END PGP SIGNATURE-----\n",
+      "payload": "tree 3ba66d1b6416cf6a456927e0c8036cc7359f6ec3\nparent 4ea2db2eda5d556dea14e273bee0dd4c43c7cb03\nauthor Nik Bougalis <redacted@example.invalid> 1792277033 +0000\ncommitter GitHub <noreply@github.com> 1792277033 +0000\n\nchore: Fix an issue that breaks CLion (#8619)",
+      "verified_at": "2026-10-17T22:44:09Z"
+    }
+  },
+  "url": "https://api.github.com/repos/XRPLF/rippled/commits/7939339a65e97d9dc8d3496391d01932e3a0b9fd",
+  "html_url": "https://github.com/XRPLF/rippled/commit/7939339a65e97d9dc8d3496391d01932e3a0b9fd",
+  "comments_url": "https://api.github.com/repos/XRPLF/rippled/commits/7939339a65e97d9dc8d3496391d01932e3a0b9fd/comments",
+  "author": {
+    "login": "nbougalis",
+    "id": 5085415,
+    "node_id": "MDQ6VXNlcjUwODU0MTU=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/5085415?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/nbougalis",
+    "html_url": "https://github.com/nbougalis",
+    "followers_url": "https://api.github.com/users/nbougalis/followers",
+    "following_url": "https://api.github.com/users/nbougalis/following{/other_user}",
+    "gists_url": "https://api.github.com/users/nbougalis/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/nbougalis/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/nbougalis/subscriptions",
+
+exec
+/bin/zsh -lc "nl -ba draft.md | sed -n '1,140p'" in $USER_TMP/T/f13r2.dGDwTa
+ succeeded in 0ms:
+     1	TITLE: [Docs] Paper §2.1 says C₁ is sent once, but XLS-0096 and rippled carry it in every ciphertext, so the paper's Send size is 99 bytes low
+     2	REPO: XRPLF/mpt-crypto
+     3	
+     4	---
+     5	
+     6	`paper/cmpt-compact-sigma.tex` §2.1 says *"The shared first component C₁ is transmitted once on-chain"*. On that basis it totals a Send's cryptographic payload at 1177 bytes for n = 4 and 1144 for n = 3. XLS-0096 §17.1 gives 1276 and 1210 bytes for the same payload, because each ciphertext is a full 66 bytes, `C₁` included, and rippled enforces that layout. The paper's figures are incorrect by 99 and 66 bytes.
+     7	
+     8	**Suggested fix:** correct §2.1 and the totals to match XLS-0096 §17.1, or mark the shared-C₁ layout as a proposal that the protocol did not adopt.
+     9	
+    10	**The component sums** (cryptographic payload only, as both documents count it)
+    11	
+    12	```text
+    13	Component           Paper, lines 1002-1017            XLS-0096 §17.1 and rippled
+    14	C1                  1 x 33 = 33                        inside each ciphertext below
+    15	Ciphertexts         n x 33 (C2) = 132 / 99             n x 66 (C1 || C2) = 264 / 198
+    16	Two commitments     66                                 66
+    17	ZKProof             192 + 754 = 946                    946
+    18	Total, n = 4 / 3    1177 / 1144                        1276 / 1210
+    19	Difference                                             (n - 1) x 33 = 99 / 66
+    20	```
+    21	
+    22	**Evidence**
+    23	
+    24	- [XLS-0096 §17.1](https://github.com/XRPLF/XRPL-Standards/blob/58ccd304724d328acd923a3adf11f7fccd707c81/XLS-0096-confidential-mpt/README.md#L1010-L1015):
+    25	
+    26	  > Total crypto size = 264 bytes (ciphertexts) + 66 bytes (Pedersen commitments) + 946 bytes (ZKProof …) = 1276 bytes (with auditor). Without auditor (Nciphers = 3): 198 + 66 + 946 = 1210 bytes.
+    27	
+    28	- rippled's Send preflight requires each encrypted amount to be 66 bytes ([`ConfidentialMPTSend.cpp` lines 51-61](https://github.com/XRPLF/rippled/blob/7939339a65e97d9dc8d3496391d01932e3a0b9fd/src/libxrpl/tx/transactors/token/ConfidentialMPTSend.cpp#L51-L61)).
+    29	- The extra copies carry no information. rippled verifies a Send through [`verifySendProofs`](https://github.com/XRPLF/rippled/blob/7939339a65e97d9dc8d3496391d01932e3a0b9fd/src/libxrpl/tx/transactors/token/ConfidentialMPTSend.cpp#L299) and [`mpt_verify_send_proof`](https://github.com/XRPLF/rippled/blob/7939339a65e97d9dc8d3496391d01932e3a0b9fd/src/libxrpl/protocol/ConfidentialTransfer.cpp#L585). In mpt-crypto 1.0.2, the version rippled requires, that function rejects a Send unless every participant's first 33 bytes match: *"All participants must share the same c1 bytes"* ([`mpt_utility.cpp` lines 1140-1145](https://github.com/XRPLF/mpt-crypto/blob/376691c5fca7898bd1161b0ac6646109d069ceb9/src/utility/mpt_utility.cpp#L1140-L1145)).
+    30	- In the paper: the sentence at [line 220](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/paper/cmpt-compact-sigma.tex#L220). The 1177 total is at [lines 98-100](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/paper/cmpt-compact-sigma.tex#L98-L100), [176-179](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/paper/cmpt-compact-sigma.tex#L176-L179), [1017](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/paper/cmpt-compact-sigma.tex#L1017), [1049](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/paper/cmpt-compact-sigma.tex#L1049) and [1633](https://github.com/XRPLF/mpt-crypto/blob/3baaaac33dadec3e649846e487f452c5b6b2d825/paper/cmpt-compact-sigma.tex#L1633).
+    31	
+    32	I also measured three Sends on Devnet on 2026-08-17, at rippled 3.3.0. The fields summed to 1210 bytes without an auditor and 1276 with one.
+    33	
+    34	<details>
+    35	<summary>Searches for an existing report</summary>
+    36	
+    37	```text
+    38	# 2026-10-18. Open and closed, issues and PRs.
+    39	gh search issues "transmitted once"   --repo XRPLF/mpt-crypto --include-prs   # 0
+    40	gh search issues "shared C1"          --repo XRPLF/mpt-crypto --include-prs   # 0
+    41	gh search issues "1177"               --repo XRPLF/mpt-crypto --include-prs   # 0
+    42	gh search issues "size breakdown"     --repo XRPLF/mpt-crypto --include-prs   # 0
+    43	gh search issues "cmpt-compact-sigma" --repo XRPLF/mpt-crypto --include-prs   # 10; none discusses
+    44	                                        the ciphertext layout or the size totals
+    45	gh search issues "transmitted once"   --owner XRPLF --include-prs             # 0
+    46	gh search issues "shared C1"          --owner XRPLF --include-prs             # 0
+    47	
+    48	# Audits
+    49	Trail of Bits, April 2026 report: this paper is not among its reference papers.
+    50	  TOB-RIPCTX-16 (Resolved) moved the code to the shared-r proof. It does not address
+    51	  the ciphertext field layout or the paper's totals. I could not obtain the June 2026
+    52	  revision.
+    53	  https://github.com/trailofbits/publications/blob/master/reviews/2026-04-ripple-labs-xrp-ledger-confidential-transfer-securityreview.pdf
+    54	Sherlock XRP Ledger Attackathon: full findings report not found. Its public trail:
+    55	  gh search issues Attackathon --owner XRPLF --include-prs --limit 500    # 88
+    56	  gh search issues Sherlock    --owner XRPLF --include-prs --limit 500    # 19
+    57	  gh pr list -R XRPLF/rippled --state all --base ripple/attackathon-april-2026   # 16
+    58	  106 unique items; bodies, comments and PR review comments read. None concerns the
+    59	  ciphertext layout or the Send size.
+    60	Zellic scan of mpt-crypto@3baaaac: report not found.
+    61	  gh search issues Zellic --owner XRPLF --include-prs   # 1: mpt-crypto#147
+    62	  #147 cites DEFI-1108, -1109 and -1110. None concerns the ciphertext layout.
+    63	```
+    64	
+    65	</details>
+    66	
+    67	---
+    68	
+    69	*Disclosure: prepared with AI assistance. Every quotation and link above was checked on 2026-10-18 at mpt-crypto `3baaaac` (the cited files are unchanged at `main`, `c60a60c`), rippled `develop` `7939339` and XLS-0096 `58ccd30`.*
+
+exec
+/bin/zsh -lc 'tmp=/private/tmp/f13r2.zdcf18
+curl -sSLo "$tmp/mpt_utility_3ba.cpp" https://raw.githubusercontent.com/XRPLF/mpt-crypto/3baaaac33dadec3e649846e487f452c5b6b2d825/src/utility/mpt_utility.cpp
+curl -sSLo "$tmp/mpt_utility_main.cpp" https://raw.githubusercontent.com/XRPLF/mpt-crypto/c60a60cc82eac5f7446480e0363105b8ace44631/src/utility/mpt_utility.cpp
+printf '"'%s\\n' '--- hashes ---'; shasum \""'$tmp/mpt_utility.cpp" "$tmp/mpt_utility_3ba.cpp" "$tmp/mpt_utility_main.cpp"
+printf '"'%s\\n' '--- current main shared-C1 references ---'; grep -n -C 4 'All participants must share' \""'$tmp/mpt_utility_main.cpp" || true
+printf '"'%s\\n' '--- paper current main ---'; curl -sSLo \""'$tmp/paper_main.tex" https://raw.githubusercontent.com/XRPLF/mpt-crypto/c60a60cc82eac5f7446480e0363105b8ace44631/paper/cmpt-compact-sigma.tex; shasum "$tmp/paper.tex" "$tmp/paper_main.tex"; grep -n -C 1 '"'transmitted once' \""'$tmp/paper_main.tex" || true' in $USER_TMP/T/f13r2.dGDwTa
+ succeeded in 818ms:
+--- hashes ---
+4eefd1ec1e03ebd8a5ec326151c87b555586d99a  /private/tmp/f13r2.zdcf18/mpt_utility.cpp
+4eefd1ec1e03ebd8a5ec326151c87b555586d99a  /private/tmp/f13r2.zdcf18/mpt_utility_3ba.cpp
+4eefd1ec1e03ebd8a5ec326151c87b555586d99a  /private/tmp/f13r2.zdcf18/mpt_utility_main.cpp
+--- current main shared-C1 references ---
+1136-                return -1;
+1137-        }
+1138-        else
+1139-        {
+1140:            // All participants must share the same c1 bytes.
+1141-            if (!std::equal(
+1142-                    participants[i].ciphertext,
+1143-                    participants[i].ciphertext + kMPT_ELGAMAL_CIPHER_SIZE,
+1144-                    participants[0].ciphertext))
+--- paper current main ---
+efbaa797dd6086642220a9038617d53ef3e2588a  /private/tmp/f13r2.zdcf18/paper.tex
+efbaa797dd6086642220a9038617d53ef3e2588a  /private/tmp/f13r2.zdcf18/paper_main.tex
+219-\]
+220:The shared first component~$C_1$ is transmitted once on-chain.
+221-
+
+exec
+/bin/zsh -lc "printf '%s\\n' '--- Trail of Bits 2026 review paths ---'; curl -sS https://api.github.com/repos/trailofbits/publications/git/trees/master?recursive=1 | grep -o '\"path\": \"["'^"]*2026[''^"]*"'"' | sed -n '1,200p'" in $USER_TMP/T/f13r2.dGDwTa
+ succeeded in 0ms:
+--- Trail of Bits 2026 review paths ---
+zsh:1: no matches found: https://api.github.com/repos/trailofbits/publications/git/trees/master?recursive=1
+
+exec
+/bin/zsh -lc "printf '%s\\n' '--- Trail of Bits 2026 review paths ---'; curl -sS 'https://api.github.com/repos/trailofbits/publications/git/trees/master?recursive=1' | grep -o '\"path\": \"["'^"]*2026[''^"]*"'"' | sed -n '1,200p'" in $USER_TMP/T/f13r2.dGDwTa
+ succeeded in 943ms:
+"path": "reviews/2026-01-anza-token-2022-confidential-transfer-blockchain-securityreview.pdf"
+"path": "reviews/2026-01-anza-token-2022-confidential-transfer-cryptography-securityreview.pdf"
+"path": "reviews/2026-01-bron-mcp-securityreview.pdf"
+"path": "reviews/2026-01-bsv-association-ts-sdk-securityreview.pdf"
+"path": "reviews/2026-01-calyx-hsm-provisioning-ceremony-scripts-securityreview.pdf"
+"path": "reviews/2026-01-nearone-nearintentsteesolverregistryandammsolver-securityreview.pdf"
+"path": "reviews/2026-01-offchain-nitro-external-da-securityreview.pdf"
+"path": "reviews/2026-02-aave-v4-securityreview.pdf"
+"path": "reviews/2026-02-chainlink-llamariskllamaguardnavcre-securityreview.pdf"
+"path": "reviews/2026-02-dv-labs-charon-pedersen-dkg-securityreview.pdf"
+"path": "reviews/2026-02-near-one-robust-ecdsa-securityreview.pdf"
+"path": "reviews/2026-02-offchain-arbitrum-quorum-changes-securityreview.pdf"
+"path": "reviews/2026-02-tonco-clamm-securityreview.pdf"
+"path": "reviews/2026-03-Zoo-TextToCad-security-review.pdf"
+"path": "reviews/2026-03-anza-blssignatures-securityreview.pdf"
+"path": "reviews/2026-03-ethstaker-deposit-cli-securityreview.pdf"
+"path": "reviews/2026-03-hyperlink-awsnitrotee-securityreview.pdf"
+"path": "reviews/2026-03-open-home-foundation-securetar-v3-securityreview.pdf"
+"path": "reviews/2026-03-propellerheads-turbine-securityreview.pdf"
+"path": "reviews/2026-03-propellerheads-turbinefrontendsdk-securityreview.pdf"
+"path": "reviews/2026-03-shape-tokenlock-securityreview.pdf"
+"path": "reviews/2026-04-franklintempleton-benjiswapdifferentialreview-securityreview.pdf"
+"path": "reviews/2026-04-gensyn-bridged-gensyn-token-securityreview.pdf"
+"path": "reviews/2026-04-gensyn-buyback-and-burn-vault-securityreview.pdf"
+"path": "reviews/2026-04-gensyn-delphidynamicparamutuelmarkets-securityreview.pdf"
+"path": "reviews/2026-04-gensyn-erc-20-token-securityreview.pdf"
+"path": "reviews/2026-04-offchain-stylus-sdk-securityreview.pdf"
+"path": "reviews/2026-04-pypi-warehouse-securityreview.pdf"
+"path": "reviews/2026-04-ripple-labs-xrp-ledger-confidential-transfer-securityreview.pdf"
+"path": "reviews/2026-05-kiln-lagoonvaultdiffreview-securityreview.pdf"
+"path": "reviews/2026-05-personaidentities-claimsverification-securityreview.pdf"
+"path": "reviews/2026-06-arcuslabs-rootchain-securityreview.pdf"
+"path": "reviews/2026-06-iverify-securityreview.pdf"
+"path": "reviews/2026-06-mina-decentralizedtreasury-securityreview.pdf"
+"path": "reviews/2026-06-nearone-foreigntransactionvalidation-securityreview.pdf"
+"path": "reviews/2026-06-pytorch-executorch-securityreview.pdf"
+"path": "reviews/2026-06-telcoin-solanapegstabilityvault-securityreview.pdf"
+"path": "reviews/2026-06-turnkey-keymanagementsystem-securityreview.pdf"
+"path": "reviews/2026-07-magicgrants-monerofcmp++crypto-securityreview.pdf"
+"path": "reviews/2026-07-offchainlabs-3.2.0-upgradeactioncontract-securityreview.pdf"
+"path": "reviews/2026-07-offchainlabs-arbitrumarbos6061-securityreview.pdf"
+"path": "reviews/2026-07-offchainlabs-sequencerfeedticketing-securityreview.pdf"
+"path": "reviews/2026-07-thequantumresistantledger-go-qrlliblibrarysecurityreview.pdf"
+"path": "reviews/2026-08-gensyn-automated-settlement-permit-securityreview.pdf"
+"path": "reviews/2026-08-offchain-genesis-file-generator-securityreview.pdf"
+"path": "reviews/2026-08-offchain-yield-bearing-bridge-securityreview.pdf"
+"path": "reviews/2026-08-offchainlabs-tipcollectiontoggler-securityreview.pdf"
+"path": "reviews/2026-08-wikimediafoundation-oathauthmediawikimodule-securityreview.pdf"
+"path": "reviews/2026-09-amazonbeeprivatecompute-securityreview.pdf"
+"path": "reviews/2026-09-cnear-securityreview.pdf"
+"path": "reviews/2026-09-gensyn-delphi-lmsr-markets-automated-settlement-securityreview.pdf"
+"path": "reviews/2026-09-gensyn-token-minting-cap-securityreview.pdf"
+"path": "reviews/2026-09-google-secure-memory-securityreview.pdf"
+"path": "reviews/2026-09-offchain-osp-guard-securityreview.pdf"
+"path": "reviews/2026-09-openai-openclaw-securityreview.pdf"
+"path": "reviews/2026-09-yonlabs-whitepaper-letterofattestation.pdf"
+"path": "reviews/2026-10-sigstore-rust-securityreview.pdf"
+"path": "reviews/2026.03-jobcoin-clockinprogram-securityreview.pdf"
+"path": "reviews/2026.06-offchainlabs-rewarddistributorfixes-securityreview.pdf"
+
+exec
+/bin/zsh -lc "tmp=/private/tmp/f13r2.zdcf18
+printf '%s\\n' '--- paper references in TOB report ---'; grep -in -C 2 'cmpt\\|compact sigma\\|MPT-crypto\\|mpt-crypto' \""'$tmp/tob.txt" | sed -n '"'1,240p'" in $USER_TMP/T/f13r2.dGDwTa
+ succeeded in 174ms:
+--- paper references in TOB report ---
+118-Ripple Labs engaged Trail of Bits to review the security of its XRP Ledger confidential
+119-transfer implementation. The XRP Ledger confidential transfer system provides confidential
+120:multipurpose tokens (CMPTs), allowing users to maintain accounts with balances hidden
+121-from other users and to make transactions that keep transfer amounts confidential. The
+122-implementation introduces new transaction types; a dedicated cryptographic library
+123:(mpt-crypto) providing ElGamal encryption, Pedersen commitments, and Bulletproof
+124-range proofs; and several new zero-knowledge proof systems.
+125-
+--
+135-protocol conformance, data validation, and configuration. Three overarching issues
+136-account for the majority of these findings: a Bulletproof range proof component not yet
+137:integrated into the protocol layer, repeated deviations from the CMPT protocol
+138-specification, and insufficient input validation and edge-case handling.
+139-
+--
+142-transaction amount (TOB-RIPCTX-10). Without this proof, any account holder can claim
+143-more tokens than their confidential balance holds, effectively minting unbacked plaintext
+144:tokens and draining the issuance pool. The mpt-crypto library already implements the
+145-required Bulletproof range proof, but at the time of the review, that library had not been
+146-integrated as a dependency; its functions were instead copied directly into the rippled
+--
+197-    ●​ Match the implementation more closely with the specification. As mentioned in
+198-       the “Observations and Impact” section, several of the findings in this report stem
+199:       from a failure to closely adhere to the CMPT specification provided by Ripple Labs.
+200-       Ongoing code reviews to ensure full compliance with the specification should be an
+201-       integral part of the development process. Incorporating portions of the protocol
+--
+276-The engagement involved reviewing and testing the following targets.
+277-
+278:mpt-crypto
+279:Repository ​         https://github.com/XRPLF/mpt-crypto
+280-
+281-Version ​            f196bdb25b39330f905b57e7b69449b2f38b7932
+--
+304-       ConfidentialMPT_20260201.pdf and ConfidentialMPT_20260106.pdf
+305-
+306:    ●​ Manual review of the files in the mpt-crypto codebase
+307-
+308-    ●​ Manual review of the relevant files in the rippled codebase, specifically the
+--
+336-    ●​ The security of the private ledger protocol itself
+337-
+338:    ●​ The security of the secp256k1 library used by the mpt-crypto module
+339-
+340-    ●​ The security of other dependencies, such as OpenSSL
+--
+500-
+501-
+502:    Target: mpt-crypto/src/elgamal.c, mpt-crypto/include/secp256k1_mpt.h
+503-
+504-
+--
+527-
+528-                   Figure 1.1: Decryption loop in function secp256k1_elgamal_decrypt
+529:                                (mpt-crypto/src/elgamal.c#L146–L159)
+530-
+531-Neither the API documentation nor function signatures indicate this limitation. The header
+--
+567-
+568-
+569:    Target: mpt-crypto/src/commitments.c,
+570:    mpt-crypto/src/bulletproof_aggregated.c,
+571:    mpt-crypto/src/equality_proof.c,
+572:    mpt-crypto/src/proof_same_plaintext.c,
+573:    mpt-crypto/src/proof_same_plaintext_multi.c,
+574:    mpt-crypto/src/proof_same_plaintext_multi_shared_r.c,
+575:    mpt-crypto/src/proof_link.c, mpt-crypto/src/proof_pok_sk.c
+576-
+577-
+578-Description
+579:The mpt-crypto codebase uses OpenSSL’s deprecated SHA-256 API functions and fails to
+580-validate their return values. The functions SHA256_Init, SHA256_Update, and
+581-SHA256_Final were deprecated in OpenSSL 3.0 and are marked with the
+--
+603-
+604-                       Figure 2.1: Deprecated SHA-256 API usage without error checking
+605:                               (mpt-crypto/src/commitments.c#L71–L82)
+606-
+607-
+--
+640-maintain acceptable performance characteristics. Alternatively, consider dropping the
+641-OpenSSL dependency altogether, since only the SHA-256 implementation and the
+642:OPENSSL_cleanse function are currently used by the mpt-crypto library.
+643-
+644-
+--
+656-
+657-
+658:    Target: mpt-crypto/src/proof_same_plaintext.c,
+659:    mpt-crypto/src/proof_same_plaintext_multi.c,
+660:    mpt-crypto/src/proof_link.c
+661-
+662-
+--
+677-    const char* domain = "MPT_POK_SAME_PLAINTEXT_PROOF";
+678-
+679:    Figure 3.1: Domain tag in 1-to-1 proof (mpt-crypto/src/proof_same_plaintext.c#L84)
+680-
+681-    const char* domain = "MPT_POK_SAME_PLAINTEXT_PROOF";
+682-
+683-                              Figure 3.2: Identical domain tag in 1-to-N proof
+684:                       (mpt-crypto/src/proof_same_plaintext_multi.c#L84)
+685-
+686-Second, as shown in figure 3.3, the ElGamal-Pedersen link proof in proof_link.c uses the
+--
+705-
+706-                       Figure 3.3: Generic domain tag without variant differentiation
+707:                                 (mpt-crypto/src/proof_link.c#L76)
+708-
+709-Recommendations
+--
+731-
+732-
+733:    Target: mpt-crypto/src/elgamal.c
+734-
+735-
+--
+751-    }
+752-
+753:         Figure 4.1: Early exit on zero amount (mpt-crypto/src/elgamal.c#L127–L132)
+754-
+755-When the plaintext is zero, decryption completes after a single point comparison, skipping
+--
+769-
+770-                       Figure 4.2: Early exit in discrete logarithm computation
+771:                           (mpt-crypto/src/elgamal.c#L146–L151)
+772-
+773-
+--
+807-
+808-
+809:    Target: mpt-crypto/src/bulletproof_aggregated.c
+810-
+811-
+--
+841-
+842-                   Figure 5.1: Early exit for zero-value vectors with variable-time memcmp call
+843:                          (mpt-crypto/src/bulletproof_aggregated.c#L202)
+844-
+845-However, this code is used in the Bulletproof prover, via the msm_try_add function, under
+--
+856-                           Figure 5.2: Calls to variable-time msm_try_add in
+857-                            secp256k1_bulletproof_ipa_compute_LR
+858:                       (mpt-crypto/src/bulletproof_aggregated.c#L541)
+859-
+860-The conditional additions and multiplications leak information about the Hamming weight
+--
+902-
+903-
+904:    Target: mpt-crypto/src/bulletproof_aggregated.c
+905-
+906-
+--
+930-
+931-Recommendations
+932:Short term, improve point-at-infinity handling in the mpt-crypto library.
+933-
+934-Long term, expand the test suite to include extreme values such as zero and UINT64_MAX
+--
+949-
+950-
+951:    Target: mpt-crypto/src/proof_same_plaintext_multi_shared_r.c
+952-
+953-
+--
+960-
+961-Issue 1: Unbounded Memory Allocations
+962:In total, the mpt-crypto library contains six functions with unbounded memory allocations
+963-that accept user-controlled size parameters without validation or overflow checking. These
+964-allocations are based on the parameter n (number of ciphertexts/recipients) or m (number
+--
+967-
+968-      ●​ Function secp256k1_mpt_prove_same_plaintext_multi in
+969:         mpt-crypto/src/proof_same_plaintext_multi.c
+970-      ●​ Function secp256k1_mpt_verify_same_plaintext_multi in
+971:         mpt-crypto/src/proof_same_plaintext_multi.c
+972-      ●​ Function secp256k1_mpt_prove_equality_shared_r in
+973:         mpt-crypto/src/proof_same_plaintext_multi_shared_r.c
+974-      ●​ Function secp256k1_mpt_verify_equality_shared_r in
+975:         mpt-crypto/src/proof_same_plaintext_multi_shared_r.c
+976-      ●​ Function secp256k1_bulletproof_prove_agg in
+977:         mpt-crypto/src/bulletproof_aggregated.c
+978-      ●​ Function secp256k1_bulletproof_verify_agg in
+979:         mpt-crypto/src/bulletproof_aggregated.c
+980-
+981-For example, the verification function secp256k1_mpt_verify_equality_shared_r
+--
+991-      PUBLIC​                                  ​                                 Cryptographic Review
+992-          Figure 7.1: Unbounded memory allocation based on unvalidated participant count
+993:         (mpt-crypto/src/proof_same_plaintext_multi_shared_r.c#L255–L257)
+994-
+995-An attacker can provide an extremely large value for n, causing memory exhaustion. While
+--
+1008-
+1009-                     Figure 7.2: Size calculation vulnerable to integer overflow
+1010:           (mpt-crypto/src/proof_same_plaintext_multi_shared_r.c#L61–L64)
+1011-
+1012-For large values of n_recipients, the multiplication 33 * (n_recipients + 1) can
+--
+1023-
+1024-             Figure 7.3: Length validation performed after all cryptographic operations
+1025:         (mpt-crypto/src/proof_same_plaintext_multi_shared_r.c#L324–L325)
+1026-
+1027-If the proof buffer is malformed or truncated, the function performs extensive point
+--
+1052-
+1053-                  Figure 7.4: Proper prover validation in non-shared-randomness variant
+1054:                 (mpt-crypto/src/proof_same_plaintext_multi.c#L147–L152)
+1055-
+1056-And the secp256k1_mpt_verify_same_plaintext_multi function validates the proof
+--
+1060-
+1061-                 Figure 7.5: Proper verifier validation in non-shared-randomness variant
+1062:                 (mpt-crypto/src/proof_same_plaintext_multi.c#L260–L260)
+1063-
+1064-However, the equivalent shared-randomness variants of these functions are missing this
+--
+1074-    }
+1075-
+1076:          Figure 7.6: mpt-crypto/src/proof_same_plaintext_multi.c#L130–L133
+1077-
+1078-Exploit Scenario
+--
+1118-
+1119-
+1120:    Target: mpt-crypto/src/bulletproof_aggregated.c,
+1121:    mpt-crypto/src/equality_proof.c, mpt-crypto/src/proof_link.c,
+1122:    mpt-crypto/src/proof_pok_sk.c, src/proof_same_plaintext.c
+1123-
+1124-
+--
+1150-
+1151-                    Figure 8.1: Unchecked commitment creation and serialization length
+1152:                   (mpt-crypto/src/bulletproof_aggregated.c#L1281–L1289)
+1153-
+1154-While compressed public keys should always serialize to exactly 33 bytes with the
+--
+1192-
+1193-
+1194:    Target: mpt-crypto/CMakeLists.txt
+
+exec
+/bin/zsh -lc "python3 - <<'PY'
+import json, urllib.parse, urllib.request
+queries = [
+    '\"transmitted once\" repo:XRPLF/mpt-crypto',
+    '\"shared C1\" repo:XRPLF/mpt-crypto',
+    '1177 repo:XRPLF/mpt-crypto',
+    '\"size breakdown\" repo:XRPLF/mpt-crypto',
+    '\"cmpt-compact-sigma\" repo:XRPLF/mpt-crypto',
+    '\"transmitted once\" org:XRPLF',
+    '\"shared C1\" org:XRPLF',
+]
+for q in queries:
+    url='https://api.github.com/search/issues?'+urllib.parse.urlencode({'q':q,'per_page':100})
+    req=urllib.request.Request(url,headers={'Accept':'application/vnd.github+json','User-Agent':'reviewer'})
+    try:
+        with urllib.request.urlopen(req) as r:
+            d=json.load(r)
+        print(f'{q}: {d.get(\"total_count\")}')
+        if q.startswith('\"cmpt'):
+            for x in d.get('items',[]): print('  ',x['repository_url'].split('/')[-2:], x['number'], x['title'])
+    except Exception as e:
+        print(f'{q}: ERROR {e}')
+PY" in $USER_TMP/T/f13r2.dGDwTa
+ succeeded in 2517ms:
+"transmitted once" repo:XRPLF/mpt-crypto: 0
+"shared C1" repo:XRPLF/mpt-crypto: 1
+1177 repo:XRPLF/mpt-crypto: 0
+"size breakdown" repo:XRPLF/mpt-crypto: 0
+"cmpt-compact-sigma" repo:XRPLF/mpt-crypto: 5
+   ['XRPLF', 'mpt-crypto'] 101 [Enhancement] Extend ElGamal decryption range beyond 10^6 (BSGS or Pollard's kangaroo)
+   ['XRPLF', 'mpt-crypto'] 102 [Bug] secp256k1_elgamal_add fails on identity point — enables MergeInbox griefing
+   ['XRPLF', 'mpt-crypto'] 18 feat: compact AND-composed sigma proof for standard EC-ElGamal (192 bytes)
+   ['XRPLF', 'mpt-crypto'] 98 docs(paper): bind ΔP_i into Fiat--Shamir challenge in shared-r Schnorr
+   ['XRPLF', 'mpt-crypto'] 106 perf(sigma): VT scalar mul for sigma reconstruction — measurement / discussion (#88 sigma side)
+"transmitted once" org:XRPLF: 0
+"shared C1" org:XRPLF: 2
+
+exec
+/bin/zsh -lc "python3 - <<'PY'
+import json,urllib.parse,urllib.request
+for q in ['\"shared C1\" repo:XRPLF/mpt-crypto','\"shared C1\" org:XRPLF','\"cmpt-compact-sigma\" repo:XRPLF/mpt-crypto']:
+ u='https://api.github.com/search/issues?'+urllib.parse.urlencode({'q':q,'per_page':100})
+ req=urllib.request.Request(u,headers={'Accept':'application/vnd.github+json','User-Agent':'reviewer'})
+ with urllib.request.urlopen(req) as r:d=json.load(r)
+ print('---',q,d['total_count'])
+ for x in d['items']:
+  print(x['html_url'],x['title'])
+  print(x['body'][:500].replace('\\n',' '))
+PY" in $USER_TMP/T/f13r2.dGDwTa
+ succeeded in 598ms:
+--- "shared C1" repo:XRPLF/mpt-crypto 1
+https://github.com/XRPLF/mpt-crypto/issues/115 [API Hardening] Avoid partial state changes before failure in utility wrappers and elgamal
+**Severity:** Informational; defensive. **Source:** TOB May 2026 revision, Appendix E — "Partial State Changes Before Failure" (pp. 66-68). mpt-crypto side only; the rippled-side recommendations live in that repo.  ## Problem  Several `mpt_*` utility wrappers and ElGamal primitives write to caller-provided output buffers before a downstream check or operation can still fail. On the failing path, the caller sees a half-populated output buffer and a failure return code — easy to misuse, and harder
+--- "shared C1" org:XRPLF 2
+https://github.com/XRPLF/mpt-crypto/issues/115 [API Hardening] Avoid partial state changes before failure in utility wrappers and elgamal
+**Severity:** Informational; defensive. **Source:** TOB May 2026 revision, Appendix E — "Partial State Changes Before Failure" (pp. 66-68). mpt-crypto side only; the rippled-side recommendations live in that repo.  ## Problem  Several `mpt_*` utility wrappers and ElGamal primitives write to caller-provided output buffers before a downstream check or operation can still fail. On the failing path, the caller sees a half-populated output buffer and a failure return code — easy to misuse, and harder
+https://github.com/XRPLF/rippled/issues/2483 [need help] Can't build develop version 1.0.0-b4
+Hi.  My development rippled stopped again so I wanted to build a new version.  Before it worked just fine with `scons`. Now you switched to `cmake` and it no longer works.  1) scons building no longer works so I had to learn that you need to build with cmake now 2) I'm using boost-1.66 3) rippled is building but not linking in the final stage:  here is what **cmake** gives me: ``` **cmake -Dtarget=clang.debug.nounity -Dassert=On ../..** -- The C compiler identification is Clang 3.8.
+--- "cmpt-compact-sigma" repo:XRPLF/mpt-crypto 5
+https://github.com/XRPLF/mpt-crypto/issues/101 [Enhancement] Extend ElGamal decryption range beyond 10^6 (BSGS or Pollard's kangaroo)
+## Summary  `secp256k1_elgamal_decrypt` brute-forces $i \in [1, 10^6]$ only.  The Bulletproof range proof attests $v \in [0, 2^{64})$ and the protocol's `maxMPTokenAmount` is $2^{63} - 1$, so the decryptable range is roughly $10^{13}\times$ smaller than the proof / protocol range.  For any issuance with `sfAssetScale >= 6` (e.g. a USD-pegged stablecoin where 1 USD = $10^6$ atomic units), normal balances exceed the decryptable range.  Cumulative homomorphic addition can also push a spending balan
+https://github.com/XRPLF/mpt-crypto/issues/102 [Bug] secp256k1_elgamal_add fails on identity point — enables MergeInbox griefing
+## Summary  `secp256k1_elgamal_add` in `src/elgamal.c` calls `secp256k1_ec_pubkey_combine` for both ciphertext components (lines 202, 207).  Per libsecp256k1's API, that function returns 0 when the result is the group identity (the point at infinity, which has no compressed serialization).  The library propagates the failure as `nullopt` to the rippled caller, and `ConfidentialMPTMergeInbox::doApply` exits with `tecINTERNAL` without applying any state change.  This is reachable from public, well
+https://github.com/XRPLF/mpt-crypto/pull/18 feat: compact AND-composed sigma proof for standard EC-ElGamal (192 bytes)
+## Summary  Adds a compact, AND-composed sigma proof (`SECP256K1_COMPACT_STANDARD_PROOF_SIZE = 192 bytes`) that ties together the full set of constraints for a confidential multi-recipient transfer under standard EC-ElGamal:  | Constraint | Proves | |---|---| | `C1 = r·G` | Correct ephemeral key | | `C2_i = r·pk_i + m·G` for all i | Correct encryption to each recipient | | `PC_m = r·G + m·H` | Amount commitment binds to encrypted amount | | `pk_A = sk_A·G` | Prover knows sender secret key | | `P
+https://github.com/XRPLF/mpt-crypto/pull/98 docs(paper): bind ΔP_i into Fiat--Shamir challenge in shared-r Schnorr
+Strengthens the Fiat–Shamir transcript of the shared-r Schnorr proof in `paper/cmpt-compact-sigma.tex` by including the public bases $\Delta P_2, \dots, \Delta P_n$ in the challenge hash, alongside the existing inputs $\Delta D_2, \dots, \Delta D_n$ and the announcements $R_G, R_2, \dots, R_n$.  ## Why  Omitting $\Delta P_i$ lets a malicious prover, after seeing the challenge $c$, choose $$\Delta P_i = s^{-1}(R_i + c \cdot \Delta D_i)$$ for arbitrary $R_i$ so that the verifier's reconstruction e
+https://github.com/XRPLF/mpt-crypto/pull/106 perf(sigma): VT scalar mul for sigma reconstruction — measurement / discussion (#88 sigma side)
+**Draft / measurement PR.** The empirical win is small (~1.5–2% per verifier). Posted for visibility and to document why the literal #88 ask ("cross-proof MSM amortisation on the reconstruction step") isn't achievable with the current MSM surface. Stacked on **#89** (vendor MSM); orthogonal to #104 / #105.  See #88 for the parallel discussion comment.  ## TL;DR  | Verifier | Baseline (CT) | After VT-mul | Delta | |---|---:|---:|---:| | compact_standard (n=3) | 0.220 ms | 0.215 ms | **−2.3%** | |
+
+exec
+/bin/zsh -lc "python3 - <<'PY'
+import urllib.request,json
+u='https://api.github.com/repos/XRPLF/mpt-crypto/issues/115'
+req=urllib.request.Request(u,headers={'Accept':'application/vnd.github+json','User-Agent':'reviewer'})
+with urllib.request.urlopen(req) as r:d=json.load(r)
+for i,line in enumerate(d.get('body','').splitlines(),1):
+ if 'shared C1' in line or 'shared c1' in line or 'C1' in line:
+  print(i, line)
+PY" in $USER_TMP/T/f13r2.dGDwTa
+ succeeded in 892ms:
+exec
+/bin/zsh -lc "python3 - <<'PY'
+import urllib.request,json
+u='https://api.github.com/repos/XRPLF/mpt-crypto/issues/115/comments'
+req=urllib.request.Request(u,headers={'Accept':'application/vnd.github+json','User-Agent':'reviewer'})
+with urllib.request.urlopen(req) as r:d=json.load(r)
+print('comments',len(d))
+for c in d:
+ for i,line in enumerate(c.get('body','').splitlines(),1):
+  if 'shared C1' in line or 'shared c1' in line or 'C1' in line:
+   print(c['html_url'],i,line)
+PY" in $USER_TMP/T/f13r2.dGDwTa
+ succeeded in 759ms:
+comments 0
+
+exec
+/bin/zsh -lc "python3 - <<'PY'
+import urllib.request,json
+u='https://api.github.com/repos/XRPLF/mpt-crypto/issues/115'
+req=urllib.request.Request(u,headers={'Accept':'application/vnd.github+json','User-Agent':'reviewer'})
+with urllib.request.urlopen(req) as r:d=json.load(r)
+print(d['title'])
+print(d['body'])
+PY" in $USER_TMP/T/f13r2.dGDwTa
+ succeeded in 688ms:
+[API Hardening] Avoid partial state changes before failure in utility wrappers and elgamal
+**Severity:** Informational; defensive.
+**Source:** TOB May 2026 revision, Appendix E — "Partial State
+Changes Before Failure" (pp. 66-68). mpt-crypto side only; the
+rippled-side recommendations live in that repo.
+
+## Problem
+
+Several `mpt_*` utility wrappers and ElGamal primitives write to
+caller-provided output buffers before a downstream check or
+operation can still fail. On the failing path, the caller sees a
+half-populated output buffer and a failure return code — easy to
+misuse, and harder to audit than a strict "compute everything in
+temporaries, then commit" pattern.
+
+## Specific sites (line numbers from TOB May 2026; verify by
+function name during sweep)
+
+**`mpt-crypto` utility wrappers (`src/utility/mpt_utility.cpp`):**
+
+- `mpt_get_confidential_send_proof` (~L554): calls
+  `secp256k1_compact_standard_prove` (which can `return -1`) before
+  the `amount > balance_params->amount` check, and before the
+  bulletproof generation at `mpt_get_bulletproof_agg` which can
+  fail and `return rc`. A failing path can leave the compact-proof
+  prefix written to `out_proof`.
+- `mpt_get_convert_back_proof` (~L689): writes the compact
+  ConvertBack proof to `out_proof` before computing the BP and
+  appending it. If BP generation fails, the compact prefix remains
+  in the caller buffer.
+- `mpt_get_bulletproof_agg` (~L82): may update `*out_len` and write
+  to `out_proof` before a later expected-size check fails; on
+  failure `*out_len` is left at whatever the prover wrote, not
+  restored to the original value.
+- `mpt_serialize_ec_pair` (~L255): writes the first point into `out`
+  before serializing the second; if the second serialization fails,
+  the function returns false with the first 33 bytes already
+  written.
+- `mpt_generate_keypair` (~L365): calls
+  `secp256k1_elgamal_generate_keypair` (which writes
+  `out_privkey`) before serializing the public key to `out_pubkey`.
+  If pubkey serialization fails, the function returns -1 while
+  leaving the private-key output populated.
+
+**ElGamal primitives (`src/elgamal.c`):**
+
+- `secp256k1_elgamal_encrypt` (~L72): writes `c1` before computing
+  and writing `c2`. If the shared-secret multiplication returns 0
+  or the later point combination returns 0, `c1` is already
+  modified.
+- `secp256k1_elgamal_add` (~L183): writes `sum_c1` before
+  computing `sum_c2`. If the second combine fails, the function
+  returns 0 with `sum_c1` already modified.
+- `secp256k1_elgamal_subtract` (~L213): same pattern with
+  `diff_c1`.
+
+## Recommended pattern
+
+Compute all derived outputs in local temporaries first, perform all
+checks, and **only then** copy into caller-provided buffers. Where
+that is infeasible, document at the API boundary that partial
+output may exist on failure and require the caller to treat the
+buffer as undefined.
+
+## Acceptance
+
+- Each site listed above either uses the temporary-then-copy
+  pattern, or its public doxygen explicitly documents that the
+  output buffer may be partially written on failure.
+- Negative tests cover the partial-write path: deliberately
+  trigger the inner failure and assert that either (a) the output
+  buffer is unchanged from its pre-call state, or (b) the
+  function's documented behavior is honored.
+
+## References
+
+- TOB May 2026 Appendix E, pp. 66-68 (mpt-crypto + elgamal
+  subsection). The rippled-side recommendations are out of scope
+  for this issue.
+
+exec
+/bin/zsh -lc "curl -sS -H 'Accept: application/vnd.github.text-match+json' -A reviewer 'https://api.github.com/search/issues?q=%22shared%20C1%22%20repo%3AXRPLF%2Fmpt-crypto' | sed -n '1,220p'" in $USER_TMP/T/f13r2.dGDwTa
+ succeeded in 712ms:
+{"total_count":1,"incomplete_results":false,"items":[{"url":"https://api.github.com/repos/XRPLF/mpt-crypto/issues/115","repository_url":"https://api.github.com/repos/XRPLF/mpt-crypto","labels_url":"https://api.github.com/repos/XRPLF/mpt-crypto/issues/115/labels{/name}","comments_url":"https://api.github.com/repos/XRPLF/mpt-crypto/issues/115/comments","events_url":"https://api.github.com/repos/XRPLF/mpt-crypto/issues/115/events","html_url":"https://github.com/XRPLF/mpt-crypto/issues/115","id":4575584519,"node_id":"I_kwDOQnIwUM8AAAABELnhBw","number":115,"title":"[API Hardening] Avoid partial state changes before failure in utility wrappers and elgamal","user":{"login":"tesseract-ripple","id":242300492,"node_id":"U_kgDODnE2TA","avatar_url":"https://avatars.githubusercontent.com/u/242300492?v=4","gravatar_id":"","url":"https://api.github.com/users/tesseract-ripple","html_url":"https://github.com/tesseract-ripple","followers_url":"https://api.github.com/users/tesseract-ripple/followers","following_url":"https://api.github.com/users/tesseract-ripple/following{/other_user}","gists_url":"https://api.github.com/users/tesseract-ripple/gists{/gist_id}","starred_url":"https://api.github.com/users/tesseract-ripple/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/tesseract-ripple/subscriptions","organizations_url":"https://api.github.com/users/tesseract-ripple/orgs","repos_url":"https://api.github.com/users/tesseract-ripple/repos","events_url":"https://api.github.com/users/tesseract-ripple/events{/privacy}","received_events_url":"https://api.github.com/users/tesseract-ripple/received_events","type":"User","user_view_type":"public","site_admin":false},"labels":[],"state":"open","locked":false,"assignees":[],"milestone":null,"comments":0,"created_at":"2026-06-02T23:06:26Z","updated_at":"2026-06-02T23:06:26Z","closed_at":null,"assignee":null,"author_association":"COLLABORATOR","issue_field_values":[],"type":null,"active_lock_reason":null,"sub_issues_summary":{"total":0,"completed":0,"percent_completed":0},"issue_dependencies_summary":{"blocked_by":0,"total_blocked_by":0,"blocking":0,"total_blocking":0},"body":"**Severity:** Informational; defensive.\n**Source:** TOB May 2026 revision, Appendix E — \"Partial State\nChanges Before Failure\" (pp. 66-68). mpt-crypto side only; the\nrippled-side recommendations live in that repo.\n\n## Problem\n\nSeveral `mpt_*` utility wrappers and ElGamal primitives write to\ncaller-provided output buffers before a downstream check or\noperation can still fail. On the failing path, the caller sees a\nhalf-populated output buffer and a failure return code — easy to\nmisuse, and harder to audit than a strict \"compute everything in\ntemporaries, then commit\" pattern.\n\n## Specific sites (line numbers from TOB May 2026; verify by\nfunction name during sweep)\n\n**`mpt-crypto` utility wrappers (`src/utility/mpt_utility.cpp`):**\n\n- `mpt_get_confidential_send_proof` (~L554): calls\n  `secp256k1_compact_standard_prove` (which can `return -1`) before\n  the `amount > balance_params->amount` check, and before the\n  bulletproof generation at `mpt_get_bulletproof_agg` which can\n  fail and `return rc`. A failing path can leave the compact-proof\n  prefix written to `out_proof`.\n- `mpt_get_convert_back_proof` (~L689): writes the compact\n  ConvertBack proof to `out_proof` before computing the BP and\n  appending it. If BP generation fails, the compact prefix remains\n  in the caller buffer.\n- `mpt_get_bulletproof_agg` (~L82): may update `*out_len` and write\n  to `out_proof` before a later expected-size check fails; on\n  failure `*out_len` is left at whatever the prover wrote, not\n  restored to the original value.\n- `mpt_serialize_ec_pair` (~L255): writes the first point into `out`\n  before serializing the second; if the second serialization fails,\n  the function returns false with the first 33 bytes already\n  written.\n- `mpt_generate_keypair` (~L365): calls\n  `secp256k1_elgamal_generate_keypair` (which writes\n  `out_privkey`) before serializing the public key to `out_pubkey`.\n  If pubkey serialization fails, the function returns -1 while\n  leaving the private-key output populated.\n\n**ElGamal primitives (`src/elgamal.c`):**\n\n- `secp256k1_elgamal_encrypt` (~L72): writes `c1` before computing\n  and writing `c2`. If the shared-secret multiplication returns 0\n  or the later point combination returns 0, `c1` is already\n  modified.\n- `secp256k1_elgamal_add` (~L183): writes `sum_c1` before\n  computing `sum_c2`. If the second combine fails, the function\n  returns 0 with `sum_c1` already modified.\n- `secp256k1_elgamal_subtract` (~L213): same pattern with\n  `diff_c1`.\n\n## Recommended pattern\n\nCompute all derived outputs in local temporaries first, perform all\nchecks, and **only then** copy into caller-provided buffers. Where\nthat is infeasible, document at the API boundary that partial\noutput may exist on failure and require the caller to treat the\nbuffer as undefined.\n\n## Acceptance\n\n- Each site listed above either uses the temporary-then-copy\n  pattern, or its public doxygen explicitly documents that the\n  output buffer may be partially written on failure.\n- Negative tests cover the partial-write path: deliberately\n  trigger the inner failure and assert that either (a) the output\n  buffer is unchanged from its pre-call state, or (b) the\n  function's documented behavior is honored.\n\n## References\n\n- TOB May 2026 Appendix E, pp. 66-68 (mpt-crypto + elgamal\n  subsection). The rippled-side recommendations are out of scope\n  for this issue.","reactions":{"url":"https://api.github.com/repos/XRPLF/mpt-crypto/issues/115/reactions","total_count":0,"+1":0,"-1":0,"laugh":0,"hooray":0,"confused":0,"heart":0,"rocket":0,"eyes":0},"timeline_url":"https://api.github.com/repos/XRPLF/mpt-crypto/issues/115/timeline","performed_via_github_app":null,"state_reason":null,"pinned_comment":null,"score":1.0,"text_matches":[{"object_url":"https://api.github.com/repositories/1114779728/issues/115","object_type":"Issue","property":"body","fragment":"):\n\n  - secp256k1_elgamal_encrypt (~L72): writes c1 before computing and writing c2. If the shared-secret multiplication\n    returns 0 or the later point combination returns 0, c1 is already modified.\n  - secp256k1_elgamal_add","matches":[{"text":"c1","indices":[49,51]},{"text":"shared","indices":[92,98]}]}]}],"search_type":"lexical"}
+exec
+/bin/zsh -lc "command -v gh || true; if command -v gh >/dev/null; then gh search issues 'shared C1' --repo XRPLF/mpt-crypto --include-prs --limit 100 --json number,title,url; gh search issues 'cmpt-compact-sigma' --repo XRPLF/mpt-crypto --include-prs --limit 100 --json number,title,url; fi" in $USER_TMP/T/f13r2.dGDwTa
+ succeeded in 3245ms:
+/opt/homebrew/bin/gh
+[]
+[{"number":88,"title":"*_verify_batch: batched verification for compact sigma + aggregated BP","url":"https://github.com/XRPLF/mpt-crypto/issues/88"},{"number":106,"title":"perf(sigma): VT scalar mul for sigma reconstruction — measurement / discussion (#88 sigma side)","url":"https://github.com/XRPLF/mpt-crypto/pull/106"},{"number":89,"title":"feat(msm): vendor libsecp256k1 ecmult_multi_var as mpt_msm_variable_time","url":"https://github.com/XRPLF/mpt-crypto/pull/89"},{"number":101,"title":"[Enhancement] Extend ElGamal decryption range beyond 10^6 (BSGS or Pollard's kangaroo)","url":"https://github.com/XRPLF/mpt-crypto/issues/101"},{"number":105,"title":"perf(bp): batched verify_batch_agg via BBB+18 RLC stacking (part of #88)","url":"https://github.com/XRPLF/mpt-crypto/pull/105"},{"number":112,"title":"[API Hardening] Decide and document zero / point-at-infinity handling at every API boundary","url":"https://github.com/XRPLF/mpt-crypto/issues/112"},{"number":102,"title":"[Bug] secp256k1_elgamal_add fails on identity point — enables MergeInbox griefing","url":"https://github.com/XRPLF/mpt-crypto/issues/102"},{"number":18,"title":"feat: compact AND-composed sigma proof for standard EC-ElGamal (192 bytes)","url":"https://github.com/XRPLF/mpt-crypto/pull/18"},{"number":98,"title":"docs(paper): bind ΔP_i into Fiat--Shamir challenge in shared-r Schnorr","url":"https://github.com/XRPLF/mpt-crypto/pull/98"},{"number":107,"title":"fix(crypto): self-describing IKM for generate_deterministic_nonces (closes #92, RIPCTXR-10)","url":"https://github.com/XRPLF/mpt-crypto/pull/107"}]
+
+exec
+/bin/zsh -lc "gh search issues 'transmitted once' --owner XRPLF --include-prs --limit 100 --json number,title,url; gh search issues 'shared C1' --owner XRPLF --include-prs --limit 100 --json number,title,url" in $USER_TMP/T/f13r2.dGDwTa
+ succeeded in 3572ms:
+[]
+[]
+
+exec
+/bin/zsh -lc "gh search issues Zellic --owner XRPLF --include-prs --limit 500 --json repository,number,title,url; gh search issues Attackathon --owner XRPLF --include-prs --limit 500 --json repository,number,title,url | python3 -c 'import sys,json; print(len(json.load(sys.stdin)))'; gh search issues Sherlock --owner XRPLF --include-prs --limit 500 --json repository,number,title,url | python3 -c 'import sys,json; print(len(json.load(sys.stdin)))'" in $USER_TMP/T/f13r2.dGDwTa
+ succeeded in 4656ms:
+[{"number":147,"repository":{"name":"mpt-crypto","nameWithOwner":"XRPLF/mpt-crypto"},"title":"fix: honour proof_out capacity and validate required pointers (Zellic DEFI-1108/1109/1110)","url":"https://github.com/XRPLF/mpt-crypto/pull/147"}]
+88
+19
+
+codex
+Q1: the upheld fixes are materially present, and both rejections are acceptable. Q2: the arithmetic, call chain, 1.0.2 check, Trail of Bits status, and component table are correct; the XLS quote is not verbatim. Q3: “incorrect” should be softened because the paper may describe an earlier design. Q4: the draft is concise but has one safe optional cut. Verdict: not ready because of the historical overclaim and non-verbatim quotation.
+
+Full review comments:
+
+- [P1] Soften the historical “incorrect” claim — $USER_TMP/T/f13r2.dGDwTa/draft.md:6-6
+  The paper commit predates the XLS-0096 and rippled commits, so the evidence establishes a mismatch with the later adopted protocol, not that the earlier design was intrinsically incorrect. Replace “The paper's figures are incorrect by 99 and 66 bytes” with “The figures do not match the current protocol: they are 99 and 66 bytes below the adopted payload totals,” and similarly qualify the title.
+
+- [P2] Quote the XLS-0096 passage verbatim — $USER_TMP/T/f13r2.dGDwTa/draft.md:26-26
+  The linked §17.1 text says “ZKProof: 192-byte compact sigma proof + 754 aggregated Bulletproof,” while the draft inserts “ZKProof …” inside a blockquote. The totals are correct, but this is not a verbatim quotation; restore the exact text or label it as an excerpt.
+
+- [P3] Trim the optional Devnet measurement — $USER_TMP/T/f13r2.dGDwTa/draft.md:32-32
+  The draft is already below the 300-word limit at roughly 218 whitespace-delimited prose words after the stated exclusions, so the word-limit rejection is acceptable. For a tighter filing, replace “I also measured three Sends on Devnet on 2026-08-17, at rippled 3.3.0. The fields summed to 1210 bytes without an auditor and 1276 with one.” with “Devnet measurements on 2026-08-17 matched these totals.” This loses the sample count and version, but the measurement is non-load-bearing because the specification and code already establish the totals.

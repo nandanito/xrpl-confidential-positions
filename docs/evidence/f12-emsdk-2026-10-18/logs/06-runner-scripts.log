@@ -1,0 +1,148 @@
+==== runner scripts used for every run (verbatim) 2026-10-18T01:09:18Z
+======== install-emsdk.sh
+c0a64dccb35a06d13c863b531fb4a0c97591302391d38c0672c19dec62963a8e  $USER_TMP/T/f12b.epIe0s/scripts/install-emsdk.sh
+#!/bin/bash
+# install-emsdk.sh <W> <version>: one emsdk clone per version, CI-style install+activate.
+set -u
+W="$1"; v="$2"; d="$W/emsdk-$v"
+printf '%s\n' "==== emsdk install $v  start $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+git clone https://github.com/emscripten-core/emsdk.git "$d"; printf '%s\n' "clone exit $?"
+printf '%s\n' "---- emsdk clone HEAD (main at clone time)"
+git -C "$d" log -1 --format='%H %ci %s'
+printf '%s\n' "---- emsdk tag $v resolves to"
+git -C "$d" rev-parse "refs/tags/$v^{commit}"
+cd "$d" || exit 99
+./emsdk install "$v"; rc=$?; printf '%s\n' "install exit $rc"
+[ $rc -eq 0 ] || exit $rc
+./emsdk activate "$v"; rc=$?; printf '%s\n' "activate exit $rc"
+[ $rc -eq 0 ] || exit $rc
+printf '%s\n' "---- .emscripten (embedded config)"
+cat "$d/.emscripten"
+. "$d/emsdk_env.sh"
+printf '%s\n' "---- emcc --version"; emcc --version
+printf '%s\n' "---- emsdk list (installed)"; ./emsdk list 2>&1 | grep -E 'INSTALLED|\*' | head -n 40
+printf '%s\n' "---- emscripten-version.txt"; cat "$d/upstream/emscripten/emscripten-version.txt"
+printf '%s\n' "==== emsdk install $v  end $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+exit 0
+======== run-group.sh
+0b8683281505aebb11211a60041b1d51cefdd77db8f4cfa44f3352a4e443cac8  $USER_TMP/T/f12b.epIe0s/scripts/run-group.sh
+#!/bin/bash
+# run-group.sh <W> <emsdk-version> <variant>...: sequential runs for one emsdk version.
+set -u
+W="$1"; v="$2"; shift 2
+for variant in "$@"; do
+  label="v${v}-${variant}"
+  log="$W/logs/${label}.log"
+  /bin/bash "$W/scripts/run-build.sh" "$W" "$label" "$v" "$variant" > "$log" 2>&1
+  rc=$?
+  printf 'exit %s\n' "$rc" >> "$log"
+  printf '%s\n' "$label build exit $rc"
+  if [ "$rc" -eq 0 ]; then
+    tlog="$W/logs/${label}-test.log"
+    /bin/bash "$W/scripts/run-test.sh" "$W" "$label" "$v" > "$tlog" 2>&1
+    trc=$?
+    printf 'exit %s\n' "$trc" >> "$tlog"
+    printf '%s\n' "$label test exit $trc"
+  else
+    xlog="$W/logs/${label}-xtrace.log"
+    /bin/bash "$W/scripts/run-xtrace.sh" "$W" "$label" "$v" > "$xlog" 2>&1
+    xrc=$?
+    printf 'exit %s\n' "$xrc" >> "$xlog"
+    printf '%s\n' "$label xtrace exit $xrc"
+  fi
+done
+======== run-build.sh
+1c955f69e09662f844730fbd74fbc971bbb111fc1f6c115e43218cfd3736d07a  $USER_TMP/T/f12b.epIe0s/scripts/run-build.sh
+#!/bin/bash
+# run-build.sh <W> <label> <emsdk-version> <variant>
+# variant: unpatched | empp | dcxx | partial
+set -u
+W="$1"; label="$2"; v="$3"; variant="$4"
+R="$W/mpt-crypto"; WT="$W/wt/$label"; E="$W/emsdk-$v"
+COMMIT=3baaaac33dadec3e649846e487f452c5b6b2d825
+NODE22=$HOME/.nvm/versions/node/v22.22.3/bin
+S=.github/scripts/build-wasm.sh
+printf '%s\n' "==== run $label  (emsdk $v, variant $variant)  start $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+if [ -d "$WT" ]; then printf '%s\n' "worktree pre-created (see 04-worktrees.log): $WT"; else git -C "$R" worktree add --detach "$WT" "$COMMIT"; printf '%s\n' "worktree add exit $?"; fi
+printf '%s\n' "---- git worktree list entry"; git -C "$R" worktree list --porcelain | grep -A2 "/wt/$label\$"
+cd "$WT" || exit 98
+case "$variant" in
+  unpatched) ;;
+  empp)    sed -i '' -e '363s/^emcc "/em++ "/' -e '365s/^emcc "/em++ "/' -e '374s/^emcc "/em++ "/' "$S" ;;
+  dcxx)    sed -i '' -e '363s/^emcc "/emcc -sDEFAULT_TO_CXX "/' -e '365s/^emcc "/emcc -sDEFAULT_TO_CXX "/' -e '374s/^emcc "/emcc -sDEFAULT_TO_CXX "/' "$S" ;;
+  partial) sed -i '' -e '363s/^emcc "/em++ "/' -e '365s/^emcc "/em++ "/' "$S" ;;
+  *) printf '%s\n' "unknown variant $variant"; exit 97 ;;
+esac
+printf '%s\n' "---- git rev-parse HEAD"; git rev-parse HEAD
+printf '%s\n' "---- git status"; git status
+printf '%s\n' "---- git diff --numstat"; git diff --numstat
+printf '%s\n' "---- git diff"; git diff
+printf '%s\n' "---- link lines in $S now (grep -nE '^(emcc|em\+\+) ')"; grep -nE '^(emcc|em\+\+) ' "$S"
+. "$E/emsdk_env.sh"
+export PATH="$NODE22:$PATH"
+printf '%s\n' "---- PATH"; printf '%s\n' "$PATH"
+printf '%s\n' "---- which"; command -v emcc em++ emcmake emmake node cmake bash
+printf '%s\n' "---- emcc --version"; emcc --version
+printf '%s\n' "---- em++ --version"; em++ --version
+printf '%s\n' "---- node --version"; node --version
+printf '%s\n' "---- cmake --version"; cmake --version
+printf '%s\n' "==== BUILD: ./.github/scripts/build-wasm.sh  start $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+./.github/scripts/build-wasm.sh
+rc=$?
+printf '%s\n' "==== BUILD EXIT: $rc  end $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+printf '%s\n' "---- emcc_out listing"; ls -la emcc_out
+printf '%s\n' "---- emcc_out sizes (wc -c)"; wc -c emcc_out/* 2>&1
+printf '%s\n' "---- emcc_out sha256"; shasum -a 256 emcc_out/* 2>&1
+if [ "$rc" -eq 0 ]; then
+  printf '%s\n' "---- Stage WASM bundle (CI step: mkdir -p output; cp emcc_out/{js,mjs,web.mjs,wasm} output/)"
+  mkdir -p output && cp emcc_out/mpt_crypto.js emcc_out/mpt_crypto.mjs emcc_out/mpt_crypto.web.mjs emcc_out/mpt_crypto.wasm output/
+  printf '%s\n' "stage exit $?"
+  printf '%s\n' "---- output sha256"; shasum -a 256 output/*
+fi
+printf '%s\n' "---- git status after build"; git status --short
+printf '%s\n' "==== run $label  end $(date -u +%Y-%m-%dT%H:%M:%SZ)  build-exit $rc"
+exit "$rc"
+======== run-test.sh
+358b9a7771e45a8a67956d5b989eca4447dee1383a07949932bae70eaab534a9  $USER_TMP/T/f12b.epIe0s/scripts/run-test.sh
+#!/bin/bash
+# run-test.sh <W> <label> <emsdk-version>: CI's "Test WASM module" step against the staged bundle.
+set -u
+W="$1"; label="$2"; v="$3"; WT="$W/wt/$label"; E="$W/emsdk-$v"
+NODE22=$HOME/.nvm/versions/node/v22.22.3/bin
+printf '%s\n' "==== test $label (emsdk $v)  start $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+cd "$WT" || exit 98
+printf '%s\n' "---- git rev-parse HEAD"; git rev-parse HEAD
+printf '%s\n' "---- git status"; git status --short
+printf '%s\n' "---- git diff --numstat"; git diff --numstat
+. "$E/emsdk_env.sh"
+export PATH="$NODE22:$PATH"
+printf '%s\n' "---- emcc --version"; emcc --version
+printf '%s\n' "---- node"; command -v node; node --version
+export GLUE_DIR="$WT/output"
+printf '%s\n' "---- GLUE_DIR=$GLUE_DIR"; ls -la "$GLUE_DIR"
+printf '%s\n' "==== TEST: GLUE_DIR=\$WT/output ./.github/scripts/test-wasm.sh  start $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+./.github/scripts/test-wasm.sh
+rc=$?
+printf '%s\n' "==== TEST EXIT: $rc  end $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+exit "$rc"
+======== run-xtrace.sh
+98f2afb3516c651d1be4d061102518ef58970e012bdacd698d2b1890ebb23ba3  $USER_TMP/T/f12b.epIe0s/scripts/run-xtrace.sh
+#!/bin/bash
+# run-xtrace.sh <W> <label> <emsdk-version>: DIAGNOSTIC re-run of a failed build in its own
+# worktree with bash -x and line numbers, to identify the failing line. Deps/objects are reused.
+set -u
+W="$1"; label="$2"; v="$3"; WT="$W/wt/$label"; E="$W/emsdk-$v"
+NODE22=$HOME/.nvm/versions/node/v22.22.3/bin
+printf '%s\n' "==== DIAGNOSTIC xtrace re-run of $label (emsdk $v)  start $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+cd "$WT" || exit 98
+printf '%s\n' "---- git rev-parse HEAD"; git rev-parse HEAD
+printf '%s\n' "---- git diff --numstat"; git diff --numstat
+. "$E/emsdk_env.sh"
+export PATH="$NODE22:$PATH"
+printf '%s\n' "---- emcc --version"; emcc --version
+export PS4='+ ${BASH_SOURCE}:${LINENO}: '
+/bin/bash -x ./.github/scripts/build-wasm.sh
+rc=$?
+printf '%s\n' "==== XTRACE BUILD EXIT: $rc  end $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+printf '%s\n' "---- emcc_out listing"; ls -la emcc_out
+exit "$rc"

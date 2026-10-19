@@ -1,0 +1,53 @@
+node_modules/
+dist/
+
+# TanStack Start / Vite build output (architecture §6 step 8)
+# ⚠ `web/app/src/routeTree.gen.ts` is generated but IS committed: the
+# repository type-check needs it and CI has no dev server to regenerate it.
+.tanstack/
+.output/
+.nitro/
+.env
+.env.*
+*.log
+# ⚠ The F-12 build logs ARE committed (2026-10-18): the README beside them cites
+# them by name, and evidence a reader cannot open is not evidence. They passed
+# make check-no-secrets after tools/scrub-personal-data.ts replaced the home and
+# per-user temp paths. Only this one directory is un-ignored; logs-unscrubbed/
+# beside it stays ignored and local.
+!docs/evidence/f12-emsdk-2026-10-18/logs/*.log
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Secrets — never commit key material of any kind
+*.seed
+*.secret
+secrets/
+signer-state/
+
+# Manually retrieved papers: check redistribution terms before committing.
+# Remove this rule deliberately if you confirm they may be redistributed.
+docs/references/*.pdf
+
+# Amendment snapshots are committed on purpose — they are dated evidence
+# for claims in CLAIMS.md. Do not add docs/task-zero/amendments-*.json here.
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Rust signer build artefacts
+signer/target/
+
+# ⚠⚠ The Observed section of UPSTREAM-FEEDBACK.md, WITHHELD FROM THE PUBLIC TREE.
+# Ruled 2026-09-05 on REVIEW-039b and REVIEW-039c: a "not yet verified, do not
+# send" heading does not survive publication — it constrains a reader who reads
+# it, not a search engine or a screenshot. Withheld, NOT retracted; these remain
+# working notes. Promote a row by verifying, grading and citing it (CLAIMS.md E-240).
+docs/upstream-observed-WITHHELD.md
+
+# break-no-secrets-gate.ts writes a mutated copy of the gate beside it, so its
+# relative imports resolve. Never tracked, and so never scanned.
+tools/.mutant-*

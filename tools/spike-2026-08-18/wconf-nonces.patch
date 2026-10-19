@@ -1,0 +1,1657 @@
+diff --git a/src/mpt_internal.h b/src/mpt_internal.h
+index 60a6ed3..d0216e6 100644
+--- a/src/mpt_internal.h
++++ b/src/mpt_internal.h
+@@ -175,235 +175,428 @@ compute_sigma_response(
+     OPENSSL_cleanse(term, 32);
+ }
+ 
+-/**
+- * Generate k deterministic nonces via HMAC-SHA256 (synthetic RFC 6979 style).
++/*
++ * ============================================================================
++ * W-CONF PATCH — nonce derivation. See WCONF-PATCH.md.
++ *
++ * Upstream's generate_deterministic_nonces() is DELETED, not wrapped, so that
++ * no call site can reach it by accident. This is its replacement.
++ *
++ * Why it was replaced (docs/reviews/REVIEW-005c-...-2026-08-17.md section 2):
++ * two independent cryptography reviewers agreed on nine properties. Upstream
++ * satisfies four of them. The five it does not:
++ *
++ *   required                     upstream 85dbac7
++ *   ---------------------------  ------------------------------------------
++ *   HKDF-SHA-512                 HMAC-SHA-256
++ *   the transcript BYTES bound   only statement_hash, a 32-byte digest that
++ *     in, shared with the          the prover derives with a SECOND encoder
++ *     Fiat-Shamir challenge        that can drift from the challenge's
++ *   wide 64-byte reduction       reduce32 of a 32-byte HMAC output
++ *   no rejection sampling        retries with an appended sub_counter byte
++ *   abort on zero, never retry   retries, up to 256 times
++ *
++ * The last two matter more than they look. A retry loop is a branch whose
++ * taken-ness depends on a secret, and the condition it exists to handle has
++ * probability ~2^-256 — it is untestable code guarding an event that will not
++ * occur. Aborting is strictly safer and is what both legs asked for.
++ *
++ * ---------------------------------------------------------------------------
++ * PREIMAGE. Length-framed throughout; every variable-length field is preceded
++ * by its u32 big-endian length, so no two distinct input tuples can produce
++ * the same byte string.
+  *
+- * IKM = witness || statement_hash || domain
+- * PRK = HMAC-SHA256(salt, IKM)                             [Extract]
+- * nonce_i = HMAC-SHA256(PRK, prev || i)                    [Expand]
++ *   IKM = "WCONF-NONCE-v1"
++ *      || u32be(k)
++ *      || u32be(domain_len)  || domain
++ *      || u32be(witness_len) || witness'
++ *      || u32be(stmt_len)    || stmt_bytes
++ *      || u32be(ctx_len)     || context_id      (ctx_len = 0, no bytes, if NULL)
+  *
+- * salt = 32 bytes of fresh randomness (defense-in-depth).
+- * Each output is reduced mod secp256k1 order; if zero, the function fails.
++ *   PRK   = HMAC-SHA512(WCONF_NONCE_SALT, IKM)              [HKDF-Extract]
++ *   T(i)  = HMAC-SHA512(PRK, T(i-1) || domain || i)         [HKDF-Expand]
++ *   n_i   = reduce64(T(i))                                  [wide, unbiased]
+  *
+- * IKM layout (HKDF-Extract input; self-describing per TOB-RIPCTXR-10):
++ * `stmt_bytes` are THE BYTES THE FIAT-SHAMIR CHALLENGE HASHES, passed in by
++ * the caller, not re-serialised here. That is leg B's section 1.1 rule and it
++ * is the whole reason this function takes a buffer where upstream took a
++ * digest. Adjudication section 5 shows why it is load-bearing: a zero-amount
++ * Clawback encodes m*G as 33 zero bytes, a deliberate sentinel that a
++ * re-derivation would get wrong. Mirror the bytes; do not re-derive them.
+  *
+- *     IKM = version_tag (4) || k (4 BE) || witness_len (4 BE) ||
+- *           domain_len (4 BE) || witness || statement_hash || domain
++ * ---------------------------------------------------------------------------
++ * THE MASK IS A FLAG, AND DELIBERATELY SO.
+  *
+- * The 16-byte length-prefix preamble makes the IKM unambiguous under
+- * future witness/domain layout changes: two proof modules with
+- * different witness packings or domain widths cannot construct the
+- * same IKM from semantically distinct inputs, even if their
+- * concatenated `witness || statement_hash || domain` tails happen to
+- * coincide. version_tag ("MPT1") reserves a future-proof switch-over
+- * point if the layout ever needs to evolve further. The TOB May 2026
+- * revision audit (RIPCTXR-10, Informational) flagged the prior
+- * unprefixed layout as a brittle-API concern, not a present-day
+- * exploit (current call sites use distinct domains and fixed-width
+- * witnesses, so no concrete collision exists).
++ * REVIEW-005c section 2 could not settle deterministic (leg B) versus hedged
++ * (leg A), because the question reduces to whether a same-host adversary is in
++ * ADR-0001 section (a)'s threat model, and that finding is open — issue #1.
++ * The two constructions differ ONLY in whether a 32-byte mask is XORed over
++ * the long-lived secret before hashing, so that is exactly one branch here.
+  *
+- * This is a wire-format-breaking change: every existing transcript
+- * derived through this helper rederives with new nonce material.
++ *   aux32 == NULL  -> leg B. Fully deterministic. No entropy is drawn.
++ *   aux32 != NULL  -> leg A. BIP-340 style: the long-lived secret at
++ *                     witness[sk_offset] is XORed with a tagged hash of aux
++ *                     before entering the preimage. Degrades to the
++ *                     deterministic core if aux is all-zero or predictable.
+  *
+- * @param[in]  ctx             secp256k1 context (for seckey_verify).
+- * @param[out] nonces_out      Buffer of k*32 bytes to receive nonces.
+- * @param[in]  k               Number of nonces to generate (max 8).
+- * @param[in]  witness         Concatenated witness scalars.
+- * @param[in]  witness_len     Length of witness buffer.
+- * @param[in]  statement_hash  32-byte hash of all public statement elements.
+- * @param[in]  domain          Domain separation tag string.
+- * @param[in]  domain_len      Length of domain string.
+- * @return 1 on success, 0 on failure.
++ * DEFAULT IS NULL. Picking a side is Nandan's call on issue #1, not this
++ * file's. Do not change the default here — change the caller.
++ * ============================================================================
+  */
++
++/* W-CONF PATCH: serialise one compressed point into a buffer. Used by the
++ * per-proof statement encoders so that the nonce preimage and the Fiat-Shamir
++ * challenge consume one construction of the bytes, not two. */
+ static inline int
+-generate_deterministic_nonces(
++wconf_put_point(
++    secp256k1_context const* ctx,
++    unsigned char* out,
++    secp256k1_pubkey const* pk)
++{
++    size_t len = 33;
++    return secp256k1_ec_pubkey_serialize(ctx, out, &len, pk, SECP256K1_EC_COMPRESSED) && len == 33;
++}
++
++/* ---------------------------------------------------------------------------
++ * THE FLAG — RULED 2026-08-18. Default is now HEDGED.
++ *
++ * Issue #1 asked whether a hostile same-host process is in ADR-0001 section
++ * (a)'s threat model. It is. Nandan ruled it IN SCOPE, which selects leg A's
++ * construction: 32 bytes of auxiliary randomness XORed over the long-lived
++ * secret before hashing, BIP-340 style.
++ *
++ * The same ruling answers REVIEW-003b's open MEDIUM on section (a) — these were
++ * never two questions — and it obliges the localhost boundary to gain real
++ * defences rather than an origin allowlist and a pasted token. That part is
++ * architecture, not this file.
++ *
++ *     cc ...                  hedged. THE DEFAULT, and the ruling.
++ *     cc -DWCONF_HEDGE=0 ...  deterministic (leg B). Retained ONLY so the
++ *                             T-9 harness can measure both arms and so the
++ *                             ruling stays reversible without a code rewrite.
++ *
++ * The two constructions differ in exactly one XOR. Everything else -- the
++ * HKDF-SHA-512, the transcript binding, the wide reduction, abort-on-zero --
++ * is shared and was agreed by both cryptography legs.
++ *
++ * wconf_hedge_aux() is the ONLY place in the patched tree that can draw entropy
++ * during proof generation, which is what makes T-9 an exact assertion: exactly
++ * one draw per proof under the default, zero under -DWCONF_HEDGE=0. Do not add
++ * a second entropy source anywhere.
++ *
++ * WHY HEDGING IS SAFE HERE, since the default now depends on it: the mask is a
++ * TAGGED hash of aux, so a degraded RNG returning constant or attacker-chosen
++ * bytes cannot steer individual bits of the masked secret, and a total RNG
++ * failure falls back to NULL -- which is the deterministic construction, not a
++ * broken one. The hedge can only add entropy; it cannot subtract it.
++ * ------------------------------------------------------------------------- */
++#ifndef WCONF_HEDGE
++#define WCONF_HEDGE 1
++#endif
++
++/**
++ * Returns NULL for the deterministic construction, or `buf` filled with 32
++ * fresh bytes for the hedged one. Callers pass the result straight to
++ * wconf_generate_nonces()'s aux32 parameter.
++ *
++ * On RAND_bytes failure under -DWCONF_HEDGE=1 this returns NULL, which
++ * degrades to the deterministic core rather than failing the proof. That is
++ * leg A's own stated property — "masking degrades safely to the deterministic
++ * core; never worse" (REVIEW-005c section 2) — and it is why the hedge is
++ * allowed to be best-effort.
++ */
++static inline unsigned char const*
++wconf_hedge_aux(unsigned char buf[32])
++{
++#if WCONF_HEDGE
++    if (RAND_bytes(buf, 32) != 1)
++    {
++        memset(buf, 0, 32);
++        return NULL;
++    }
++    return buf;
++#else
++    memset(buf, 0, 32);
++    return NULL;
++#endif
++}
++
++#define WCONF_NONCE_LABEL "WCONF-NONCE-v1"
++#define WCONF_NONCE_SALT "WCONF-NONCE-v1/HKDF-Extract-salt"
++#define WCONF_NONCE_AUX_TAG "WCONF-NONCE-v1/aux"
++#define WCONF_NONCE_MAX_K 8
++
++/* Wide reduction, defined in mpt_scalar.c (W-CONF patch). */
++void
++secp256k1_mpt_scalar_reduce64(unsigned char out32[32], unsigned char const in64[64]);
++
++/** Append a u32 big-endian length tag to an EVP_MAC context. */
++static inline int
++wconf_mac_u32be(EVP_MAC_CTX* mctx, size_t v)
++{
++    unsigned char b[4];
++    b[0] = (unsigned char)((v >> 24) & 0xff);
++    b[1] = (unsigned char)((v >> 16) & 0xff);
++    b[2] = (unsigned char)((v >> 8) & 0xff);
++    b[3] = (unsigned char)(v & 0xff);
++    return EVP_MAC_update(mctx, b, 4);
++}
++
++/** One-shot HMAC-SHA512. out must have room for 64 bytes. */
++static inline int
++wconf_hmac_sha512(
++    unsigned char const* key,
++    size_t key_len,
++    unsigned char const* const* chunks,
++    size_t const* chunk_lens,
++    size_t n_chunks,
++    unsigned char out[64])
++{
++    EVP_MAC* mac = EVP_MAC_fetch(NULL, "HMAC", NULL);
++    EVP_MAC_CTX* mctx = NULL;
++    size_t mac_len = 64;
++    int ok = 0;
++
++    if (!mac)
++        return 0;
++    mctx = EVP_MAC_CTX_new(mac);
++    if (!mctx)
++    {
++        EVP_MAC_free(mac);
++        return 0;
++    }
++    {
++        OSSL_PARAM params[] = {
++            OSSL_PARAM_construct_utf8_string("digest", "SHA512", 0), OSSL_PARAM_construct_end()};
++        if (!EVP_MAC_init(mctx, key, key_len, params))
++            goto done;
++        for (size_t i = 0; i < n_chunks; i++)
++        {
++            if (chunk_lens[i] == 0)
++                continue;
++            if (!EVP_MAC_update(mctx, chunks[i], chunk_lens[i]))
++                goto done;
++        }
++        if (!EVP_MAC_final(mctx, out, &mac_len, 64) || mac_len != 64)
++            goto done;
++        ok = 1;
++    }
++done:
++    EVP_MAC_CTX_free(mctx);
++    EVP_MAC_free(mac);
++    if (!ok)
++        OPENSSL_cleanse(out, 64);
++    return ok;
++}
++
++/**
++ * Derive k nonces. See the block comment above for the construction.
++ *
++ * @param[in]  ctx          secp256k1 context (for seckey_verify).
++ * @param[out] nonces_out   Buffer of k*32 bytes.
++ * @param[in]  k            Number of nonces, 1..8.
++ * @param[in]  witness      Concatenated 32-byte big-endian witness scalars.
++ * @param[in]  witness_len  Length of witness; must be a multiple of 32.
++ * @param[in]  domain       Per-proof-type domain separation tag.
++ * @param[in]  domain_len   Length of domain.
++ * @param[in]  stmt_bytes   The serialised public statement — the SAME bytes
++ *                          the Fiat-Shamir challenge hashes. Not re-derived.
++ * @param[in]  stmt_len     Length of stmt_bytes.
++ * @param[in]  context_id   32-byte transaction context, or NULL.
++ * @param[in]  aux32        32 bytes of auxiliary randomness for the hedged
++ *                          construction, or NULL for fully deterministic.
++ *                          NULL is the default; see the block comment.
++ * @param[in]  sk_offset    Byte offset of the long-lived secret within
++ *                          `witness`. Only read when aux32 != NULL.
++ * @return 1 on success, 0 on failure. Failure includes a derived nonce of
++ *         zero, which is NOT retried.
++ */
++static inline int
++wconf_generate_nonces(
+     secp256k1_context const* ctx,
+     unsigned char* nonces_out,
+     size_t k,
+     unsigned char const* witness,
+     size_t witness_len,
+-    unsigned char const* statement_hash,
+     char const* domain,
+-    size_t domain_len)
++    size_t domain_len,
++    unsigned char const* stmt_bytes,
++    size_t stmt_len,
++    unsigned char const* context_id,
++    unsigned char const* aux32,
++    size_t sk_offset)
+ {
+-    unsigned char salt[32];
+-    unsigned char prk[32];
++    unsigned char prk[64];
++    unsigned char masked[WCONF_NONCE_MAX_K * 32];
++    unsigned char const* witness_eff = witness;
++    size_t const ctx_len = context_id ? 32 : 0;
++    int ok = 0;
+ 
+-    if (k == 0 || k > 8)
++    if (k == 0 || k > WCONF_NONCE_MAX_K)
+         return 0;
+-
+-    /* Caller bounds guard for the BE-32 length-tag encoding below. The
+-     * call sites use small fixed widths (witness <= 8*32 = 256 bytes,
+-     * domain <= 32 bytes) so this is defensive, not a real constraint. */
+-    if (witness_len > 0xFFFFFFFFu || domain_len > 0xFFFFFFFFu)
++    if (!nonces_out || !witness || !domain || !stmt_bytes)
+         return 0;
+-
+-    /* Fresh entropy for defense-in-depth.
+-     *
+-     * The HKDF Extract step here uses a random `salt` rather than the more
+-     * common all-zero salt. The deterministic-nonce derivation
+-     * (`HMAC(prk, witness || statement_hash || domain)`) is already collision-
+-     * resistant under HMAC's PRF assumption, so the salt is not load-bearing
+-     * for soundness. Its purpose is purely defense-in-depth:
+-     *
+-     *  - If a witness scalar were ever reused across two proofs (e.g., a
+-     *    duplicate amount + same blinding factor due to a caller bug), an
+-     *    all-zero-salt construction would produce identical `prk` and
+-     *    identical nonce streams. The fresh per-call salt instead randomizes
+-     *    `prk` so colliding (witness, statement_hash) inputs still yield
+-     *    independent nonce streams.
+-     *  - It also provides a hedge against any future weakness in the witness/
+-     *    statement encoding that would otherwise allow an attacker to predict
+-     *    or correlate `prk` across proofs.
+-     *
+-     * Note that the salt itself is NOT included in the proof; it only affects
+-     * the prover's nonce derivation. The Fiat-Shamir transcript binds the
+-     * resulting commitment values, so verifier soundness is unaffected. */
+-    if (RAND_bytes(salt, 32) != 1)
++    /* Fixed-width 32-byte big-endian witness encoding is a requirement of the
++     * ruling, not a convenience. Enforce it rather than trusting call sites. */
++    if (witness_len == 0 || witness_len % 32 != 0)
++        return 0;
++    if (witness_len > sizeof(masked))
++        return 0;
++    if (stmt_len == 0)
+         return 0;
++    if (domain_len == 0 || domain_len > 0xFFFFFFFFu)
++        return 0;
++    if (stmt_len > 0xFFFFFFFFu || witness_len > 0xFFFFFFFFu)
++        return 0;
++
++    /* --- Optional hedge (issue #1). Default path does not enter here. --- */
++    if (aux32)
++    {
++        unsigned char aux_hash[64];
++        unsigned char const* ch[2];
++        size_t cl[2];
++        unsigned char const tag[] = WCONF_NONCE_AUX_TAG;
++
++        /* Underflow-safe. `sk_offset + 32 > witness_len` wraps for a
++         * sk_offset near SIZE_MAX, passes the guard, and the XOR loop below
++         * then writes out of bounds. Not reachable from the four in-tree call
++         * sites, which pass literal 0 or 64, but this function's contract
++         * accepts any size_t. Found by adversarial review (Gemini leg,
++         * 2026-08-18). */
++        if (sk_offset > witness_len || witness_len - sk_offset < 32)
++            return 0;
++
++        /* Tagged hash of aux, BIP-340 style, so that a caller supplying
++         * structured or low-entropy aux cannot steer individual key bits. */
++        ch[0] = tag;
++        cl[0] = sizeof(tag) - 1;
++        ch[1] = aux32;
++        cl[1] = 32;
++        if (!wconf_hmac_sha512(
++                (unsigned char const*)WCONF_NONCE_SALT,
++                sizeof(WCONF_NONCE_SALT) - 1,
++                ch,
++                cl,
++                2,
++                aux_hash))
++            return 0;
+ 
+-    /* IKM layout preamble: 4-byte version tag + 3 * uint32-BE = 16 bytes.
+-     * Kept on the stack as a single contiguous buffer so the HKDF-Extract
+-     * MAC sees it as one chunk before the witness/statement/domain tail. */
+-    unsigned char ikm_preamble[16];
+-    memcpy(ikm_preamble, "MPT1", 4);
+-    ikm_preamble[4] = (unsigned char)((k >> 24) & 0xff);
+-    ikm_preamble[5] = (unsigned char)((k >> 16) & 0xff);
+-    ikm_preamble[6] = (unsigned char)((k >> 8) & 0xff);
+-    ikm_preamble[7] = (unsigned char)(k & 0xff);
+-    ikm_preamble[8] = (unsigned char)((witness_len >> 24) & 0xff);
+-    ikm_preamble[9] = (unsigned char)((witness_len >> 16) & 0xff);
+-    ikm_preamble[10] = (unsigned char)((witness_len >> 8) & 0xff);
+-    ikm_preamble[11] = (unsigned char)(witness_len & 0xff);
+-    ikm_preamble[12] = (unsigned char)((domain_len >> 24) & 0xff);
+-    ikm_preamble[13] = (unsigned char)((domain_len >> 16) & 0xff);
+-    ikm_preamble[14] = (unsigned char)((domain_len >> 8) & 0xff);
+-    ikm_preamble[15] = (unsigned char)(domain_len & 0xff);
+-
+-    /* Extract: PRK = HMAC-SHA256(salt,
+-     *   version_tag || k || witness_len || domain_len ||
+-     *   witness || statement_hash || domain) */
++        memcpy(masked, witness, witness_len);
++        for (size_t i = 0; i < 32; i++)
++            masked[sk_offset + i] ^= aux_hash[i];
++        witness_eff = masked;
++        OPENSSL_cleanse(aux_hash, sizeof(aux_hash));
++    }
++
++    /* --- HKDF-Extract: PRK = HMAC-SHA512(salt, IKM) ---
++     *
++     * The salt is a FIXED LABEL, not entropy. Upstream drew 32 bytes from
++     * RAND_bytes here; that is the randomness this construction removes.
++     * Under aux32 == NULL this function makes no entropy call of any kind,
++     * which is the property T-9 asserts. */
+     {
+         EVP_MAC* mac = EVP_MAC_fetch(NULL, "HMAC", NULL);
++        EVP_MAC_CTX* mctx = NULL;
++        size_t prk_len = 64;
++        unsigned char const label[] = WCONF_NONCE_LABEL;
++
+         if (!mac)
+-        {
+-            OPENSSL_cleanse(salt, 32);
+-            return 0;
+-        }
+-        EVP_MAC_CTX* mctx = EVP_MAC_CTX_new(mac);
++            goto cleanup;
++        mctx = EVP_MAC_CTX_new(mac);
+         if (!mctx)
+         {
+             EVP_MAC_free(mac);
+-            OPENSSL_cleanse(salt, 32);
+-            return 0;
++            goto cleanup;
+         }
+-        OSSL_PARAM params[] = {
+-            OSSL_PARAM_construct_utf8_string("digest", "SHA256", 0), OSSL_PARAM_construct_end()};
+-        size_t mac_len = 32;
+-        if (!EVP_MAC_init(mctx, salt, 32, params) ||
+-            !EVP_MAC_update(mctx, ikm_preamble, sizeof(ikm_preamble)) ||
+-            !EVP_MAC_update(mctx, witness, witness_len) ||
+-            !EVP_MAC_update(mctx, statement_hash, 32) ||
+-            !EVP_MAC_update(mctx, (unsigned char const*)domain, domain_len) ||
+-            !EVP_MAC_final(mctx, prk, &mac_len, 32))
+         {
++            OSSL_PARAM params[] = {
++                OSSL_PARAM_construct_utf8_string("digest", "SHA512", 0),
++                OSSL_PARAM_construct_end()};
++            int step =
++                EVP_MAC_init(
++                    mctx,
++                    (unsigned char const*)WCONF_NONCE_SALT,
++                    sizeof(WCONF_NONCE_SALT) - 1,
++                    params) &&
++                EVP_MAC_update(mctx, label, sizeof(label) - 1) && wconf_mac_u32be(mctx, k) &&
++                wconf_mac_u32be(mctx, domain_len) &&
++                EVP_MAC_update(mctx, (unsigned char const*)domain, domain_len) &&
++                wconf_mac_u32be(mctx, witness_len) &&
++                EVP_MAC_update(mctx, witness_eff, witness_len) &&
++                wconf_mac_u32be(mctx, stmt_len) && EVP_MAC_update(mctx, stmt_bytes, stmt_len) &&
++                wconf_mac_u32be(mctx, ctx_len) &&
++                (ctx_len == 0 || EVP_MAC_update(mctx, context_id, ctx_len)) &&
++                EVP_MAC_final(mctx, prk, &prk_len, 64) && prk_len == 64;
++
+             EVP_MAC_CTX_free(mctx);
+             EVP_MAC_free(mac);
+-            OPENSSL_cleanse(salt, 32);
+-            OPENSSL_cleanse(prk, 32);
+-            return 0;
++            if (!step)
++                goto cleanup;
+         }
+-        EVP_MAC_CTX_free(mctx);
+-        EVP_MAC_free(mac);
+     }
+ 
+-    /* Expand: nonce_i = HMAC-SHA256(PRK, prev || counter [|| sub_counter])
++    /* --- HKDF-Expand: T(i) = HMAC-SHA512(PRK, T(i-1) || domain || i) ---
+      *
+-     * If the reduced output happens to be 0 mod n (negligible ~1/2^256), retry
+-     * by appending an extra sub_counter byte to the MAC input and re-deriving.
+-     * sub_counter == 0 skips the extra update so the no-retry path is byte-
+-     * identical to the prior derivation. Cap retries at 256 (~1/2^65536) before
+-     * giving up. */
++     * Each block is 64 bytes and feeds exactly one wide reduction, so there
++     * is one nonce per block and no rejection-sampling branch anywhere. */
+     {
+-        unsigned char prev[32];
+-        memset(prev, 0, 32);
++        /* Zero-initialised: cl[0] == 0 on the first iteration means the
++         * contents are never read, but passing a pointer to uninitialised
++         * stack memory trips MemorySanitizer and static analysers for no
++         * reason. */
++        unsigned char prev[64] = {0};
++        size_t prev_len = 0;
+ 
+         for (size_t i = 0; i < k; i++)
+         {
+             unsigned char counter = (unsigned char)(i + 1);
+-            unsigned char out[32];
+-            int sub_counter;
+-            int accepted = 0;
++            unsigned char block[64];
++            unsigned char const* ch[3];
++            size_t cl[3];
++
++            ch[0] = prev;
++            cl[0] = prev_len;
++            ch[1] = (unsigned char const*)domain;
++            cl[1] = domain_len;
++            ch[2] = &counter;
++            cl[2] = 1;
+ 
+-            for (sub_counter = 0; sub_counter < 256; sub_counter++)
++            if (!wconf_hmac_sha512(prk, 64, ch, cl, 3, block))
+             {
+-                EVP_MAC* mac = EVP_MAC_fetch(NULL, "HMAC", NULL);
+-                if (!mac)
+-                {
+-                    OPENSSL_cleanse(prev, 32);
+-                    OPENSSL_cleanse(prk, 32);
+-                    OPENSSL_cleanse(nonces_out, k * 32);
+-                    return 0;
+-                }
+-                EVP_MAC_CTX* mctx = EVP_MAC_CTX_new(mac);
+-                if (!mctx)
+-                {
+-                    EVP_MAC_free(mac);
+-                    OPENSSL_cleanse(prev, 32);
+-                    OPENSSL_cleanse(prk, 32);
+-                    OPENSSL_cleanse(nonces_out, k * 32);
+-                    return 0;
+-                }
+-                OSSL_PARAM params[] = {
+-                    OSSL_PARAM_construct_utf8_string("digest", "SHA256", 0),
+-                    OSSL_PARAM_construct_end()};
+-                size_t mac_len = 32;
+-                unsigned char sub = (unsigned char)sub_counter;
+-                if (!EVP_MAC_init(mctx, prk, 32, params) ||
+-                    (i > 0 && !EVP_MAC_update(mctx, prev, 32)) ||
+-                    !EVP_MAC_update(mctx, &counter, 1) ||
+-                    (sub_counter > 0 && !EVP_MAC_update(mctx, &sub, 1)) ||
+-                    !EVP_MAC_final(mctx, out, &mac_len, 32))
+-                {
+-                    EVP_MAC_CTX_free(mctx);
+-                    EVP_MAC_free(mac);
+-                    OPENSSL_cleanse(out, 32);
+-                    OPENSSL_cleanse(prev, 32);
+-                    OPENSSL_cleanse(prk, 32);
+-                    OPENSSL_cleanse(nonces_out, k * 32);
+-                    return 0;
+-                }
+-                EVP_MAC_CTX_free(mctx);
+-                EVP_MAC_free(mac);
+-
+-                secp256k1_mpt_scalar_reduce32(out, out);
+-                if (secp256k1_ec_seckey_verify(ctx, out))
+-                {
+-                    accepted = 1;
+-                    break;
+-                }
++                OPENSSL_cleanse(prev, sizeof(prev));
++                OPENSSL_cleanse(nonces_out, k * 32);
++                goto cleanup;
+             }
+ 
+-            if (!accepted)
++            secp256k1_mpt_scalar_reduce64(nonces_out + i * 32, block);
++
++            /* ABORT ON ZERO, NEVER RETRY. After a wide reduction the value is
++             * already < n, so seckey_verify can only fail on zero, and zero
++             * has probability ~2^-256. If it ever happens the honest response
++             * is to stop, not to derive a second nonce from the same
++             * witness — which is the failure mode this whole review exists to
++             * prevent. */
++            if (!secp256k1_ec_seckey_verify(ctx, nonces_out + i * 32))
+             {
+-                OPENSSL_cleanse(out, 32);
+-                OPENSSL_cleanse(prev, 32);
+-                OPENSSL_cleanse(prk, 32);
++                OPENSSL_cleanse(block, sizeof(block));
++                OPENSSL_cleanse(prev, sizeof(prev));
+                 OPENSSL_cleanse(nonces_out, k * 32);
+-                return 0;
++                goto cleanup;
+             }
+ 
+-            memcpy(nonces_out + i * 32, out, 32);
+-            memcpy(prev, out, 32);
+-            OPENSSL_cleanse(out, 32);
++            memcpy(prev, block, 64);
++            prev_len = 64;
++            OPENSSL_cleanse(block, sizeof(block));
+         }
+-
+-        OPENSSL_cleanse(prev, 32);
++        OPENSSL_cleanse(prev, sizeof(prev));
+     }
+ 
+-    OPENSSL_cleanse(salt, 32);
+-    OPENSSL_cleanse(prk, 32);
+-    return 1;
++    ok = 1;
++
++cleanup:
++    OPENSSL_cleanse(prk, sizeof(prk));
++    OPENSSL_cleanse(masked, sizeof(masked));
++    return ok;
+ }
+ 
+ #endif /* MPT_INTERNAL_H */
+diff --git a/src/mpt_scalar.c b/src/mpt_scalar.c
+index db934f0..fe507bd 100644
+--- a/src/mpt_scalar.c
++++ b/src/mpt_scalar.c
+@@ -125,6 +125,48 @@ void secp256k1_mpt_scalar_negate(unsigned char *res, const unsigned char *in)
+   OPENSSL_cleanse(&s, sizeof(s));
+ }
+ 
++/* W-CONF PATCH (see WCONF-PATCH.md). Wide reduction of a 512-bit big-endian
++ * integer modulo n, for the nonce derivation in wconf_generate_nonces().
++ *
++ * Upstream has no wide reduce: generate_deterministic_nonces() folded a
++ * 32-byte HMAC output with secp256k1_mpt_scalar_reduce32, which is biased by
++ * ~2^-128 against a uniform scalar, and handled the out-of-range case by
++ * re-deriving with an extra counter byte. REVIEW-005c section 2 requires a
++ * wide reduction precisely so that no rejection-sampling branch exists.
++ *
++ * Computed as (hi * 2^128 * 2^128 + lo) mod n rather than with a hardcoded
++ * 2^256 mod n constant: every step is an operation in the scalar field, so
++ * the result is correct by construction and there is no transcribed
++ * curve-order-derived magic number to get wrong. Residual bias over a
++ * uniform 512-bit input is ~2^-256.
++ */
++void secp256k1_mpt_scalar_reduce64(unsigned char out32[32],
++                                   const unsigned char in64[64])
++{
++  secp256k1_scalar s_hi, s_lo, s_shift;
++  /* 2^128 as a scalar: byte 15 (big-endian) set to 1. */
++  unsigned char shift_be[32];
++  memset(shift_be, 0, 32);
++  shift_be[15] = 1;
++
++  /* Overflow outputs discarded: reduction mod n is the contract here, as in
++   * secp256k1_mpt_scalar_reduce32 below. */
++  secp256k1_scalar_set_b32(&s_hi, in64, NULL);
++  secp256k1_scalar_set_b32(&s_lo, in64 + 32, NULL);
++  secp256k1_scalar_set_b32(&s_shift, shift_be, NULL);
++
++  /* s_hi <- s_hi * 2^256 == (s_hi * 2^128) * 2^128 */
++  secp256k1_scalar_mul(&s_hi, &s_hi, &s_shift);
++  secp256k1_scalar_mul(&s_hi, &s_hi, &s_shift);
++  secp256k1_scalar_add(&s_hi, &s_hi, &s_lo);
++  secp256k1_scalar_get_b32(out32, &s_hi);
++
++  /* SECURE CLEANUP */
++  OPENSSL_cleanse(&s_hi, sizeof(s_hi));
++  OPENSSL_cleanse(&s_lo, sizeof(s_lo));
++  OPENSSL_cleanse(&s_shift, sizeof(s_shift));
++}
++
+ void secp256k1_mpt_scalar_reduce32(unsigned char out32[32],
+                                    const unsigned char in32[32])
+ {
+diff --git a/src/proof_compact_clawback.c b/src/proof_compact_clawback.c
+index ebc8083..4eb4451 100644
+--- a/src/proof_compact_clawback.c
++++ b/src/proof_compact_clawback.c
+@@ -37,32 +37,49 @@ static const char DOMAIN_COMPACT_CLAWBACK[] = "CMPT_CLAWBACK_SIGMA";
+  * compressed-point encoding (the valid prefixes are 0x02 and 0x03), so the
+  * sentinel is unambiguous and cannot collide with a real m*G. Prover and
+  * verifier must both use this helper so the transcript stays consistent. */
+-static int digest_update_amount_point(const secp256k1_context *ctx,
+-                                      EVP_MD_CTX *mdctx, uint64_t amount)
++/* W-CONF PATCH: buffer-writing form of the same helper. REVIEW-005c section 5
++ * turns on this sentinel: leg A's "abort if any statement element is the
++ * identity" rule would abort on a legal zero-amount clawback, because the
++ * identity has no encoding and upstream substitutes 33 zero bytes here. The
++ * bytes are mirrored, never re-derived — this stays the ONE place that decides
++ * what m*G looks like, for the challenge and the nonce KDF alike. */
++static int put_amount_point(const secp256k1_context *ctx, unsigned char *out,
++                            uint64_t amount)
+ {
+-  unsigned char buf[kMPT_PUBKEY_SIZE];
+   if (amount == 0)
+   {
+-    memset(buf, 0, kMPT_PUBKEY_SIZE);
++    memset(out, 0, kMPT_PUBKEY_SIZE);
++    return 1;
+   }
+-  else
+   {
+     secp256k1_pubkey mG;
+-    size_t len = kMPT_PUBKEY_SIZE;
+     if (!compute_amount_point(ctx, &mG, amount))
+       return 0;
+-    if (!secp256k1_ec_pubkey_serialize(ctx, buf, &len, &mG,
+-                                       SECP256K1_EC_COMPRESSED) ||
+-        len != kMPT_PUBKEY_SIZE)
+-      return 0;
++    return wconf_put_point(ctx, out, &mG);
+   }
+-  return EVP_DigestUpdate(mdctx, buf, kMPT_PUBKEY_SIZE);
+ }
+ 
++/* Statement: P_iss || C1 || C2 || m*G (33 zero bytes when amount == 0). */
++#define CLAW_STMT_LEN (4 * kMPT_PUBKEY_SIZE)
++
++static int claw_serialize_statement(const secp256k1_context *ctx,
++                                    unsigned char *out,
++                                    const secp256k1_pubkey *P_iss,
++                                    const secp256k1_pubkey *C1,
++                                    const secp256k1_pubkey *C2,
++                                    uint64_t amount)
++{
++  return wconf_put_point(ctx, out, P_iss) &&
++         wconf_put_point(ctx, out + 33, C1) &&
++         wconf_put_point(ctx, out + 66, C2) &&
++         put_amount_point(ctx, out + 99, amount);
++}
++
++/* W-CONF PATCH: statement arrives as bytes. Hashed bytes unchanged from
++ * upstream 85dbac7, sentinel included. */
+ static int compute_compact_clawback_challenge(
+     const secp256k1_context *ctx, unsigned char *e_out,
+-    const secp256k1_pubkey *P_iss, const secp256k1_pubkey *C1,
+-    const secp256k1_pubkey *C2, uint64_t amount, const secp256k1_pubkey *T1,
++    const unsigned char *stmt_bytes, const secp256k1_pubkey *T1,
+     const secp256k1_pubkey *T2, const unsigned char *context_id)
+ {
+   EVP_MD_CTX *mdctx = EVP_MD_CTX_new();
+@@ -93,10 +110,7 @@ static int compute_compact_clawback_challenge(
+   } while (0)
+ 
+   /* Statement: P_iss || C1 || C2 || m*G (33 zero bytes when amount=0) */
+-  SER(P_iss);
+-  SER(C1);
+-  SER(C2);
+-  if (!digest_update_amount_point(ctx, mdctx, amount))
++  if (EVP_DigestUpdate(mdctx, stmt_bytes, CLAW_STMT_LEN) != 1)
+     goto cleanup;
+ 
+   /* Commitments: T1 || T2 */
+@@ -141,6 +155,7 @@ int secp256k1_compact_clawback_prove(const secp256k1_context *ctx,
+   unsigned char t_sk[kMPT_SCALAR_SIZE];
+   unsigned char e[kMPT_SCALAR_SIZE], z_sk[kMPT_SCALAR_SIZE];
+   secp256k1_pubkey T1, T2;
++  unsigned char stmt_bytes[CLAW_STMT_LEN];
+   int ok = 0;
+ 
+   if (!secp256k1_ec_seckey_verify(ctx, sk_iss))
+@@ -151,80 +166,32 @@ int secp256k1_compact_clawback_prove(const secp256k1_context *ctx,
+     unsigned char witness_buf[kMPT_SCALAR_SIZE];
+     memcpy(witness_buf, sk_iss, kMPT_SCALAR_SIZE);
+ 
+-    unsigned char stmt_hash[kMPT_HALF_SHA_SIZE];
++    unsigned char nonces[kMPT_SCALAR_SIZE];
++    unsigned char aux_buf[32];
++    const unsigned char *aux = wconf_hedge_aux(aux_buf);
++
++    /* W-CONF PATCH: witness is sk_iss, the long-lived secret, at offset 0. */
++    if (!claw_serialize_statement(ctx, stmt_bytes, P_iss, C1, C2, amount))
+     {
+-      EVP_MD_CTX *sh = EVP_MD_CTX_new();
+-      unsigned char sbuf[kMPT_PUBKEY_SIZE];
+-      size_t slen;
+-      if (!sh)
+-      {
+-        OPENSSL_cleanse(witness_buf, sizeof(witness_buf));
+-        goto cleanup;
+-      }
+-      if (EVP_DigestInit_ex(sh, EVP_sha256(), NULL) != 1)
+-      {
+-        EVP_MD_CTX_free(sh);
+-        OPENSSL_cleanse(witness_buf, sizeof(witness_buf));
+-        goto cleanup;
+-      }
+-#define SHASH(pk_ptr)                                                          \
+-  do                                                                           \
+-  {                                                                            \
+-    slen = kMPT_PUBKEY_SIZE;                                                   \
+-    if (!secp256k1_ec_pubkey_serialize(ctx, sbuf, &slen, pk_ptr,               \
+-                                       SECP256K1_EC_COMPRESSED) ||             \
+-        slen != kMPT_PUBKEY_SIZE)                                              \
+-    {                                                                          \
+-      EVP_MD_CTX_free(sh);                                                     \
+-      OPENSSL_cleanse(witness_buf, sizeof(witness_buf));                       \
+-      goto cleanup;                                                            \
+-    }                                                                          \
+-    if (EVP_DigestUpdate(sh, sbuf, kMPT_PUBKEY_SIZE) != 1)                     \
+-    {                                                                          \
+-      EVP_MD_CTX_free(sh);                                                     \
+-      OPENSSL_cleanse(witness_buf, sizeof(witness_buf));                       \
+-      goto cleanup;                                                            \
+-    }                                                                          \
+-  } while (0)
+-      SHASH(P_iss);
+-      SHASH(C1);
+-      SHASH(C2);
+-      if (!digest_update_amount_point(ctx, sh, amount))
+-      {
+-        EVP_MD_CTX_free(sh);
+-        OPENSSL_cleanse(witness_buf, sizeof(witness_buf));
+-        goto cleanup;
+-      }
+-      if (context_id)
+-      {
+-        if (EVP_DigestUpdate(sh, context_id, kMPT_HALF_SHA_SIZE) != 1)
+-        {
+-          EVP_MD_CTX_free(sh);
+-          OPENSSL_cleanse(witness_buf, sizeof(witness_buf));
+-          goto cleanup;
+-        }
+-      }
+-      if (EVP_DigestFinal_ex(sh, stmt_hash, NULL) != 1)
+-      {
+-        EVP_MD_CTX_free(sh);
+-        OPENSSL_cleanse(witness_buf, sizeof(witness_buf));
+-        goto cleanup;
+-      }
+-      EVP_MD_CTX_free(sh);
+-#undef SHASH
++      OPENSSL_cleanse(witness_buf, sizeof(witness_buf));
++      OPENSSL_cleanse(aux_buf, sizeof(aux_buf));
++      goto cleanup;
+     }
+ 
+-    unsigned char nonces[kMPT_SCALAR_SIZE];
+-    if (!generate_deterministic_nonces(
+-            ctx, nonces, 1, witness_buf, sizeof(witness_buf), stmt_hash,
+-            DOMAIN_COMPACT_CLAWBACK, strlen(DOMAIN_COMPACT_CLAWBACK)))
++    if (!wconf_generate_nonces(ctx, nonces, 1, witness_buf,
++                               sizeof(witness_buf), DOMAIN_COMPACT_CLAWBACK,
++                               strlen(DOMAIN_COMPACT_CLAWBACK), stmt_bytes,
++                               CLAW_STMT_LEN, context_id, aux, 0))
+     {
+       OPENSSL_cleanse(witness_buf, sizeof(witness_buf));
++      OPENSSL_cleanse(nonces, sizeof(nonces));
++      OPENSSL_cleanse(aux_buf, sizeof(aux_buf));
+       goto cleanup;
+     }
+     memcpy(t_sk, nonces, kMPT_SCALAR_SIZE);
+     OPENSSL_cleanse(witness_buf, sizeof(witness_buf));
+     OPENSSL_cleanse(nonces, sizeof(nonces));
++    OPENSSL_cleanse(aux_buf, sizeof(aux_buf));
+   }
+ 
+   /* 2. Commitments: T1 = t_sk*G, T2 = t_sk*C1 */
+@@ -236,8 +203,8 @@ int secp256k1_compact_clawback_prove(const secp256k1_context *ctx,
+     goto cleanup;
+ 
+   /* 3. Challenge */
+-  if (!compute_compact_clawback_challenge(ctx, e, P_iss, C1, C2, amount, &T1,
+-                                          &T2, context_id))
++  if (!compute_compact_clawback_challenge(ctx, e, stmt_bytes, &T1, &T2,
++                                          context_id))
+     goto cleanup;
+ 
+   /* 4. Response: z_sk = t_sk + e*sk_iss */
+@@ -271,6 +238,7 @@ int secp256k1_compact_clawback_verify(
+ 
+   unsigned char e[kMPT_SCALAR_SIZE], z_sk[kMPT_SCALAR_SIZE];
+   unsigned char e_prime[kMPT_SCALAR_SIZE], neg_e[kMPT_SCALAR_SIZE];
++  unsigned char stmt_bytes[CLAW_STMT_LEN];
+   secp256k1_pubkey T1, T2;
+ 
+   /* 1. Deserialize: e || z_sk */
+@@ -337,8 +305,11 @@ int secp256k1_compact_clawback_verify(
+   }
+ 
+   /* 3. Recompute challenge */
+-  if (!compute_compact_clawback_challenge(ctx, e_prime, P_iss, C1, C2, amount,
+-                                          &T1, &T2, context_id))
++  /* W-CONF PATCH: same encoder as the prover, sentinel included. */
++  if (!claw_serialize_statement(ctx, stmt_bytes, P_iss, C1, C2, amount))
++    return 0;
++  if (!compute_compact_clawback_challenge(ctx, e_prime, stmt_bytes, &T1, &T2,
++                                          context_id))
+     return 0;
+ 
+   /* 4. Accept iff e' == e */
+diff --git a/src/proof_compact_convertback.c b/src/proof_compact_convertback.c
+index a6783e1..d58e69e 100644
+--- a/src/proof_compact_convertback.c
++++ b/src/proof_compact_convertback.c
+@@ -28,10 +28,27 @@
+ 
+ static const char DOMAIN_COMPACT_CONVERTBACK[] = "CMPT_CONVERTBACK_SIGMA";
+ 
++/* W-CONF PATCH: statement (pk_A || B1 || B2 || PC_b) arrives as bytes rather
++ * than being re-serialised here, so the prover feeds the identical bytes to
++ * the nonce KDF. Hashed bytes unchanged from upstream 85dbac7. */
++#define CB_STMT_LEN (4 * kMPT_PUBKEY_SIZE)
++
++static int cb_serialize_statement(const secp256k1_context *ctx,
++                                  unsigned char *out,
++                                  const secp256k1_pubkey *pk_A,
++                                  const secp256k1_pubkey *B1,
++                                  const secp256k1_pubkey *B2,
++                                  const secp256k1_pubkey *PC_b)
++{
++  return wconf_put_point(ctx, out, pk_A) &&
++         wconf_put_point(ctx, out + 33, B1) &&
++         wconf_put_point(ctx, out + 66, B2) &&
++         wconf_put_point(ctx, out + 99, PC_b);
++}
++
+ static int compute_compact_convertback_challenge(
+     const secp256k1_context *ctx, unsigned char *e_out,
+-    const secp256k1_pubkey *pk_A, const secp256k1_pubkey *B1,
+-    const secp256k1_pubkey *B2, const secp256k1_pubkey *PC_b,
++    const unsigned char *stmt_bytes,
+     const secp256k1_pubkey *T_sk1, const secp256k1_pubkey *T_sk2,
+     const secp256k1_pubkey *T_b, const unsigned char *context_id)
+ {
+@@ -63,10 +80,8 @@ static int compute_compact_convertback_challenge(
+   } while (0)
+ 
+   /* Statement */
+-  SER(pk_A);
+-  SER(B1);
+-  SER(B2);
+-  SER(PC_b);
++  if (EVP_DigestUpdate(mdctx, stmt_bytes, CB_STMT_LEN) != 1)
++    goto cleanup;
+ 
+   /* Commitments */
+   SER(T_sk1);
+@@ -116,6 +131,7 @@ int secp256k1_compact_convertback_prove(
+   unsigned char z_sk[kMPT_SCALAR_SIZE], z_rho[kMPT_SCALAR_SIZE];
+   secp256k1_pubkey T_sk1, T_sk2, T_b;
+   secp256k1_pubkey H;
++  unsigned char stmt_bytes[CB_STMT_LEN];
+   int ok = 0;
+ 
+   if (!secp256k1_ec_seckey_verify(ctx, sk_A))
+@@ -137,70 +153,28 @@ int secp256k1_compact_convertback_prove(
+     memcpy(witness_buf + 64, sk_A, kMPT_SCALAR_SIZE);
+ 
+     /* Hash public statement elements */
+-    unsigned char stmt_hash[kMPT_HALF_SHA_SIZE];
++    unsigned char nonces[3 * kMPT_SCALAR_SIZE];
++    unsigned char aux_buf[32];
++    const unsigned char *aux = wconf_hedge_aux(aux_buf);
++
++    /* W-CONF PATCH: witness order is (b, rho, sk_A) — verified against
++     * upstream 85dbac7 and matching REVIEW-005c C-1. sk_A, the long-lived
++     * secret, is therefore at offset 64, NOT 0. */
++    if (!cb_serialize_statement(ctx, stmt_bytes, pk_A, B1, B2, PC_b))
+     {
+-      EVP_MD_CTX *sh = EVP_MD_CTX_new();
+-      unsigned char sbuf[kMPT_PUBKEY_SIZE];
+-      size_t slen;
+-      if (!sh)
+-      {
+-        OPENSSL_cleanse(witness_buf, sizeof(witness_buf));
+-        goto cleanup;
+-      }
+-      if (EVP_DigestInit_ex(sh, EVP_sha256(), NULL) != 1)
+-      {
+-        EVP_MD_CTX_free(sh);
+-        OPENSSL_cleanse(witness_buf, sizeof(witness_buf));
+-        goto cleanup;
+-      }
+-#define SHASH(pk_ptr)                                                          \
+-  do                                                                           \
+-  {                                                                            \
+-    slen = kMPT_PUBKEY_SIZE;                                                   \
+-    if (!secp256k1_ec_pubkey_serialize(ctx, sbuf, &slen, pk_ptr,               \
+-                                       SECP256K1_EC_COMPRESSED) ||             \
+-        slen != kMPT_PUBKEY_SIZE)                                              \
+-    {                                                                          \
+-      EVP_MD_CTX_free(sh);                                                     \
+-      OPENSSL_cleanse(witness_buf, sizeof(witness_buf));                       \
+-      goto cleanup;                                                            \
+-    }                                                                          \
+-    if (EVP_DigestUpdate(sh, sbuf, kMPT_PUBKEY_SIZE) != 1)                     \
+-    {                                                                          \
+-      EVP_MD_CTX_free(sh);                                                     \
+-      OPENSSL_cleanse(witness_buf, sizeof(witness_buf));                       \
+-      goto cleanup;                                                            \
+-    }                                                                          \
+-  } while (0)
+-      SHASH(pk_A);
+-      SHASH(B1);
+-      SHASH(B2);
+-      SHASH(PC_b);
+-      if (context_id)
+-      {
+-        if (EVP_DigestUpdate(sh, context_id, kMPT_HALF_SHA_SIZE) != 1)
+-        {
+-          EVP_MD_CTX_free(sh);
+-          OPENSSL_cleanse(witness_buf, sizeof(witness_buf));
+-          goto cleanup;
+-        }
+-      }
+-      if (EVP_DigestFinal_ex(sh, stmt_hash, NULL) != 1)
+-      {
+-        EVP_MD_CTX_free(sh);
+-        OPENSSL_cleanse(witness_buf, sizeof(witness_buf));
+-        goto cleanup;
+-      }
+-      EVP_MD_CTX_free(sh);
+-#undef SHASH
++      OPENSSL_cleanse(witness_buf, sizeof(witness_buf));
++      OPENSSL_cleanse(aux_buf, sizeof(aux_buf));
++      goto cleanup;
+     }
+ 
+-    unsigned char nonces[3 * kMPT_SCALAR_SIZE];
+-    if (!generate_deterministic_nonces(
+-            ctx, nonces, 3, witness_buf, sizeof(witness_buf), stmt_hash,
+-            DOMAIN_COMPACT_CONVERTBACK, strlen(DOMAIN_COMPACT_CONVERTBACK)))
++    if (!wconf_generate_nonces(ctx, nonces, 3, witness_buf,
++                               sizeof(witness_buf), DOMAIN_COMPACT_CONVERTBACK,
++                               strlen(DOMAIN_COMPACT_CONVERTBACK), stmt_bytes,
++                               CB_STMT_LEN, context_id, aux, 64))
+     {
+       OPENSSL_cleanse(witness_buf, sizeof(witness_buf));
++      OPENSSL_cleanse(nonces, sizeof(nonces));
++      OPENSSL_cleanse(aux_buf, sizeof(aux_buf));
+       goto cleanup;
+     }
+     memcpy(t_b, nonces, kMPT_SCALAR_SIZE);
+@@ -208,6 +182,7 @@ int secp256k1_compact_convertback_prove(
+     memcpy(t_rho, nonces + 64, kMPT_SCALAR_SIZE);
+     OPENSSL_cleanse(witness_buf, sizeof(witness_buf));
+     OPENSSL_cleanse(nonces, sizeof(nonces));
++    OPENSSL_cleanse(aux_buf, sizeof(aux_buf));
+   }
+ 
+   /* 2. Compute commitments */
+@@ -243,7 +218,7 @@ int secp256k1_compact_convertback_prove(
+   }
+ 
+   /* 3. Challenge */
+-  if (!compute_compact_convertback_challenge(ctx, e, pk_A, B1, B2, PC_b, &T_sk1,
++  if (!compute_compact_convertback_challenge(ctx, e, stmt_bytes, &T_sk1,
+                                              &T_sk2, &T_b, context_id))
+     goto cleanup;
+ 
+@@ -292,6 +267,7 @@ int secp256k1_compact_convertback_verify(const secp256k1_context *ctx,
+   unsigned char e[kMPT_SCALAR_SIZE], z_b[kMPT_SCALAR_SIZE];
+   unsigned char z_sk[kMPT_SCALAR_SIZE], z_rho[kMPT_SCALAR_SIZE];
+   unsigned char e_prime[kMPT_SCALAR_SIZE], neg_e[kMPT_SCALAR_SIZE];
++  unsigned char stmt_bytes[CB_STMT_LEN];
+   secp256k1_pubkey T_sk1, T_sk2, T_b;
+   secp256k1_pubkey H;
+ 
+@@ -362,9 +338,11 @@ int secp256k1_compact_convertback_verify(const secp256k1_context *ctx,
+       return 0;
+   }
+ 
+-  /* 3. Recompute challenge */
+-  if (!compute_compact_convertback_challenge(ctx, e_prime, pk_A, B1, B2, PC_b,
+-                                             &T_sk1, &T_sk2, &T_b, context_id))
++  /* 3. Recompute challenge. W-CONF PATCH: same encoder as the prover. */
++  if (!cb_serialize_statement(ctx, stmt_bytes, pk_A, B1, B2, PC_b))
++    return 0;
++  if (!compute_compact_convertback_challenge(ctx, e_prime, stmt_bytes, &T_sk1,
++                                             &T_sk2, &T_b, context_id))
+     return 0;
+ 
+   /* 4. Accept iff e' == e */
+diff --git a/src/proof_compact_standard.c b/src/proof_compact_standard.c
+index 134fed8..5c48c90 100644
+--- a/src/proof_compact_standard.c
++++ b/src/proof_compact_standard.c
+@@ -35,75 +35,179 @@
+ 
+ static const char DOMAIN_COMPACT_STANDARD[] = "CMPT_SEND_SIGMA";
+ 
++/* Statement is 2n+6 compressed points; commitments are n+5. */
++#define STD_STMT_POINTS(n) (2 * (n) + 6)
++#define STD_COMMIT_POINTS(n) ((n) + 5)
++
++/* W-CONF PATCH — defensive upper bound on the participant count.
++ *
++ * REQUIRED, not hygiene. This patch computes byte lengths from n and mallocs
++ * them, where upstream hashed points one at a time into a fixed 33-byte stack
++ * buffer. That makes n arithmetic load-bearing in a way it was not before:
++ * with only upstream's `n > 0` check, n = 2^63 - 2 wraps STD_STMT_POINTS(n) to
++ * 2, so malloc(66) succeeds and std_serialize_statement then writes n points
++ * into a 66-byte heap buffer.
++ *
++ * Found by adversarial review (Codex leg, 2026-08-18), severity High, and
++ * confirmed by static trace before being accepted.
++ *
++ * 64 is far above anything the protocol produces — a Send carries sender,
++ * destination, issuer and an optional auditor, so n is 3 or 4 — and it leaves
++ * (2*64+6)*33 = 4422 bytes, nowhere near a size_t boundary. The bound exists to
++ * make the arithmetic unwrappable, not to encode a protocol limit.
++ *
++ * Note for anyone raising it: upstream's own `malloc(sizeof(secp256k1_pubkey) *
++ * n)` for T2_vec has the same unbounded-n exposure and is NOT fixed here,
++ * because this fork changes one function and asserts the rest is byte-identical
++ * to 85dbac7. This guard happens to cover that allocation too, since it rejects
++ * n before either malloc is reached. */
++#define STD_MAX_PARTICIPANTS 64
++
++/**
++ * W-CONF PATCH — the single statement encoder. See WCONF-PATCH.md.
++ *
++ * Upstream had two encoders for these bytes: one inside
++ * compute_compact_std_challenge() and a second, separately written copy in the
++ * prover that produced `stmt_hash` for the nonce derivation. They agreed at
++ * 85dbac7, but nothing made them agree, and REVIEW-005b section 1.1 requires
++ * that the nonce preimage and the Fiat-Shamir challenge consume the SAME
++ * bytes, constructed once. This is that one encoder.
++ *
++ * THE OUTPUT ORDER IS UPSTREAM'S AND MUST NOT CHANGE. rippled's verifier
++ * recomputes this challenge; any reordering here rejects on chain. The order
++ * is: Pk_1..Pk_n, pk_A, C1, C_{2,1}..C_{2,n}, PC_m, PC_b, B1, B2.
++ */
++static int std_serialize_statement(const secp256k1_context *ctx,
++                                   unsigned char *out, size_t n,
++                                   const secp256k1_pubkey *Pk_vec,
++                                   const secp256k1_pubkey *pk_A,
++                                   const secp256k1_pubkey *C1,
++                                   const secp256k1_pubkey *C2_vec,
++                                   const secp256k1_pubkey *PC_m,
++                                   const secp256k1_pubkey *PC_b,
++                                   const secp256k1_pubkey *B1,
++                                   const secp256k1_pubkey *B2)
++{
++  size_t off = 0;
++  size_t len;
++
++#define STD_PUT(pk_ptr)                                                        \
++  do                                                                           \
++  {                                                                            \
++    len = kMPT_PUBKEY_SIZE;                                                    \
++    if (!secp256k1_ec_pubkey_serialize(ctx, out + off, &len, pk_ptr,           \
++                                       SECP256K1_EC_COMPRESSED) ||             \
++        len != kMPT_PUBKEY_SIZE)                                               \
++      return 0;                                                                \
++    off += kMPT_PUBKEY_SIZE;                                                   \
++  } while (0)
++
++  for (size_t i = 0; i < n; i++)
++    STD_PUT(&Pk_vec[i]);
++  STD_PUT(pk_A);
++  STD_PUT(C1);
++  for (size_t i = 0; i < n; i++)
++    STD_PUT(&C2_vec[i]);
++  STD_PUT(PC_m);
++  STD_PUT(PC_b);
++  STD_PUT(B1);
++  STD_PUT(B2);
++
++#undef STD_PUT
++
++  return off == STD_STMT_POINTS(n) * kMPT_PUBKEY_SIZE;
++}
++
++/**
++ * Serialise the first-round commitments, in upstream's challenge order:
++ * T_1, T_{2,1}..T_{2,n}, T_m, T_b, T_{sk,1}, T_{sk,2}.
++ */
++static int std_serialize_commitments(const secp256k1_context *ctx,
++                                     unsigned char *out, size_t n,
++                                     const secp256k1_pubkey *T1,
++                                     const secp256k1_pubkey *T2_vec,
++                                     const secp256k1_pubkey *T_PCm,
++                                     const secp256k1_pubkey *T_PCb,
++                                     const secp256k1_pubkey *K1,
++                                     const secp256k1_pubkey *K2)
++{
++  size_t off = 0;
++  size_t len;
++
++#define STD_PUT(pk_ptr)                                                        \
++  do                                                                           \
++  {                                                                            \
++    len = kMPT_PUBKEY_SIZE;                                                    \
++    if (!secp256k1_ec_pubkey_serialize(ctx, out + off, &len, pk_ptr,           \
++                                       SECP256K1_EC_COMPRESSED) ||             \
++        len != kMPT_PUBKEY_SIZE)                                               \
++      return 0;                                                                \
++    off += kMPT_PUBKEY_SIZE;                                                   \
++  } while (0)
++
++  STD_PUT(T1);
++  for (size_t i = 0; i < n; i++)
++    STD_PUT(&T2_vec[i]);
++  STD_PUT(T_PCm);
++  STD_PUT(T_PCb);
++  STD_PUT(K1);
++  STD_PUT(K2);
++
++#undef STD_PUT
++
++  return off == STD_COMMIT_POINTS(n) * kMPT_PUBKEY_SIZE;
++}
++
+ /**
+  * Compute the Fiat-Shamir challenge.
+  *
+- * Hash input:
++ * Hash input, UNCHANGED from upstream 85dbac7 — this is consensus-critical:
+  *   domain || pk_1..pk_n || pk_A || C1 || C_{2,1}..C_{2,n}
+  *          || PC_m || PC_b || B1 || B2
+  *          || T_1 || T_{2,1}..T_{2,n} || T_m || T_b || T_{sk,1} || T_{sk,2}
+  *          || context_id
++ *
++ * W-CONF PATCH: takes the statement bytes as a buffer rather than
++ * re-serialising them, so the prover can feed the identical bytes to the nonce
++ * KDF. The bytes hashed are the same bytes upstream hashed.
+  */
+ static int compute_compact_std_challenge(
+     const secp256k1_context *ctx, unsigned char *e_out, size_t n,
+-    const secp256k1_pubkey *Pk_vec, const secp256k1_pubkey *C1,
+-    const secp256k1_pubkey *C2_vec, const secp256k1_pubkey *PC_m,
+-    const secp256k1_pubkey *pk_A, const secp256k1_pubkey *PC_b,
+-    const secp256k1_pubkey *B1, const secp256k1_pubkey *B2,
++    const unsigned char *stmt_bytes, size_t stmt_len,
+     const secp256k1_pubkey *T1, const secp256k1_pubkey *T2_vec,
+     const secp256k1_pubkey *T_PCm, const secp256k1_pubkey *K1,
+     const secp256k1_pubkey *T_PCb, const secp256k1_pubkey *K2,
+     const unsigned char *context_id)
+ {
+   EVP_MD_CTX *mdctx = EVP_MD_CTX_new();
+-  unsigned char buf[kMPT_PUBKEY_SIZE];
+   unsigned char h[kMPT_HALF_SHA_SIZE];
+-  size_t len;
++  unsigned char *commit_bytes = NULL;
++  size_t commit_len = STD_COMMIT_POINTS(n) * kMPT_PUBKEY_SIZE;
+   int ok = 0;
+ 
+   if (!mdctx)
+     return 0;
++  if (n == 0 || n > STD_MAX_PARTICIPANTS)
++    goto cleanup;
++  if (stmt_len != STD_STMT_POINTS(n) * kMPT_PUBKEY_SIZE)
++    goto cleanup;
++
++  commit_bytes = (unsigned char *)malloc(commit_len);
++  if (!commit_bytes)
++    goto cleanup;
++  if (!std_serialize_commitments(ctx, commit_bytes, n, T1, T2_vec, T_PCm,
++                                 T_PCb, K1, K2))
++    goto cleanup;
+ 
+   if (EVP_DigestInit_ex(mdctx, EVP_sha256(), NULL) != 1)
+     goto cleanup;
+   if (EVP_DigestUpdate(mdctx, DOMAIN_COMPACT_STANDARD,
+                        strlen(DOMAIN_COMPACT_STANDARD)) != 1)
+     goto cleanup;
+-
+-#define SER(pk_ptr)                                                            \
+-  do                                                                           \
+-  {                                                                            \
+-    len = kMPT_PUBKEY_SIZE;                                                    \
+-    if (!secp256k1_ec_pubkey_serialize(ctx, buf, &len, pk_ptr,                 \
+-                                       SECP256K1_EC_COMPRESSED) ||             \
+-        len != kMPT_PUBKEY_SIZE)                                               \
+-      goto cleanup;                                                            \
+-    if (EVP_DigestUpdate(mdctx, buf, kMPT_PUBKEY_SIZE) != 1)                   \
+-      goto cleanup;                                                            \
+-  } while (0)
+-
+-  /* Statement — public keys first, then ciphertexts and commitments */
+-  for (size_t i = 0; i < n; i++)
+-    SER(&Pk_vec[i]);
+-  SER(pk_A);
+-  SER(C1);
+-  for (size_t i = 0; i < n; i++)
+-    SER(&C2_vec[i]);
+-  SER(PC_m);
+-  SER(PC_b);
+-  SER(B1);
+-  SER(B2);
+-
+-  /* Commitments — order: T_1, T_{2,i}, T_m, T_b, T_{sk,1}, T_{sk,2} */
+-  SER(T1);
+-  for (size_t i = 0; i < n; i++)
+-    SER(&T2_vec[i]);
+-  SER(T_PCm);
+-  SER(T_PCb);
+-  SER(K1);
+-  SER(K2);
+-
+-#undef SER
++  if (EVP_DigestUpdate(mdctx, stmt_bytes, stmt_len) != 1)
++    goto cleanup;
++  if (EVP_DigestUpdate(mdctx, commit_bytes, commit_len) != 1)
++    goto cleanup;
+ 
+   if (context_id)
+   {
+@@ -117,6 +221,7 @@ static int compute_compact_std_challenge(
+   ok = 1;
+ 
+ cleanup:
++  free(commit_bytes);
+   EVP_MD_CTX_free(mdctx);
+   return ok;
+ }
+@@ -135,6 +240,8 @@ int secp256k1_compact_standard_prove(
+   /* n=0 would produce a proof binding no ciphertexts to any recipient,
+    * which is semantically vacuous (paper requires n >= 1). */
+   MPT_ARG_CHECK(n > 0);
++  /* W-CONF PATCH: upper bound so the length arithmetic below cannot wrap. */
++  MPT_ARG_CHECK(n <= STD_MAX_PARTICIPANTS);
+   MPT_ARG_CHECK(ctx != NULL);
+   MPT_ARG_CHECK(proof_out != NULL);
+   MPT_ARG_CHECK(r_shared != NULL);
+@@ -160,6 +267,10 @@ int secp256k1_compact_standard_prove(
+   secp256k1_pubkey T1, T_PCm, K1, T_PCb, K2;
+   secp256k1_pubkey *T2_vec = NULL;
+   secp256k1_pubkey H;
++  /* W-CONF PATCH: statement bytes, built once and used twice — as nonce-KDF
++   * input and as challenge input. Never re-derived. */
++  unsigned char *stmt_bytes = NULL;
++  size_t stmt_len = STD_STMT_POINTS(n) * kMPT_PUBKEY_SIZE;
+   int ok = 0;
+ 
+   if (!secp256k1_ec_seckey_verify(ctx, r_shared))
+@@ -179,89 +290,49 @@ int secp256k1_compact_standard_prove(
+   if (!secp256k1_mpt_get_h_generator(ctx, &H))
+     goto cleanup;
+ 
+-  /* 1. Deterministic nonces (synthetic RFC 6979, per paper §6.1):
+-   *    HKDF(sk_A || r || m || b || rho || statement || fresh_entropy)
+-   *    Binds nonces to both witness and public statement.              */
++  /* 1. Nonces — W-CONF PATCH. See WCONF-PATCH.md and mpt_internal.h.
++   *
++   * Upstream derived these from a SEPARATE re-serialisation of the statement,
++   * hashed to 32 bytes, plus 32 bytes of RAND_bytes salt. Both are gone. The
++   * statement is serialised once, here, by the same encoder the challenge
++   * uses, and the derivation draws no entropy.
++   *
++   * The last argument is the hedge (issue #1). NULL = leg B, fully
++   * deterministic, which is the default while #1 is open. To take leg A's
++   * ruling, pass 32 bytes of aux and the offset of sk_A in the witness — the
++   * offset is 0 here. Nothing else in this file changes. */
++  stmt_bytes = (unsigned char *)malloc(stmt_len);
++  if (!stmt_bytes)
++    goto cleanup;
++  if (!std_serialize_statement(ctx, stmt_bytes, n, Pk_vec, pk_A, C1, C2_vec,
++                               PC_m, PC_b, B1, B2))
++    goto cleanup;
++
+   {
+-    /* Witness in canonical order: sk_A, r, m, b, rho */
++    /* Witness in canonical order: sk_A, r, m, b, rho. sk_A is at offset 0,
++     * which is the offset the hedged branch would mask. */
+     unsigned char witness_buf[5 * kMPT_SCALAR_SIZE];
++    unsigned char nonces[5 * kMPT_SCALAR_SIZE];
++    unsigned char aux_buf[32];
++    const unsigned char *aux = wconf_hedge_aux(aux_buf);
++    int nonce_ok;
++
+     memcpy(witness_buf, sk_A, kMPT_SCALAR_SIZE);
+     memcpy(witness_buf + 32, r_shared, kMPT_SCALAR_SIZE);
+     memcpy(witness_buf + 64, m_scalar, kMPT_SCALAR_SIZE);
+     memcpy(witness_buf + 96, b_scalar, kMPT_SCALAR_SIZE);
+     memcpy(witness_buf + 128, r_b, kMPT_SCALAR_SIZE);
+ 
+-    /* Hash all public statement elements into a 32-byte digest */
+-    unsigned char stmt_hash[kMPT_HALF_SHA_SIZE];
+-    {
+-      EVP_MD_CTX *sh = EVP_MD_CTX_new();
+-      unsigned char sbuf[kMPT_PUBKEY_SIZE];
+-      size_t slen;
+-      if (!sh)
+-      {
+-        OPENSSL_cleanse(witness_buf, sizeof(witness_buf));
+-        goto cleanup;
+-      }
+-      if (EVP_DigestInit_ex(sh, EVP_sha256(), NULL) != 1)
+-      {
+-        EVP_MD_CTX_free(sh);
+-        OPENSSL_cleanse(witness_buf, sizeof(witness_buf));
+-        goto cleanup;
+-      }
+-#define SHASH(pk_ptr)                                                          \
+-  do                                                                           \
+-  {                                                                            \
+-    slen = kMPT_PUBKEY_SIZE;                                                   \
+-    if (!secp256k1_ec_pubkey_serialize(ctx, sbuf, &slen, pk_ptr,               \
+-                                       SECP256K1_EC_COMPRESSED) ||             \
+-        slen != kMPT_PUBKEY_SIZE)                                              \
+-    {                                                                          \
+-      EVP_MD_CTX_free(sh);                                                     \
+-      OPENSSL_cleanse(witness_buf, sizeof(witness_buf));                       \
+-      goto cleanup;                                                            \
+-    }                                                                          \
+-    if (EVP_DigestUpdate(sh, sbuf, kMPT_PUBKEY_SIZE) != 1)                     \
+-    {                                                                          \
+-      EVP_MD_CTX_free(sh);                                                     \
+-      OPENSSL_cleanse(witness_buf, sizeof(witness_buf));                       \
+-      goto cleanup;                                                            \
+-    }                                                                          \
+-  } while (0)
+-      for (size_t i = 0; i < n; i++)
+-        SHASH(&Pk_vec[i]);
+-      SHASH(pk_A);
+-      SHASH(C1);
+-      for (size_t i = 0; i < n; i++)
+-        SHASH(&C2_vec[i]);
+-      SHASH(PC_m);
+-      SHASH(PC_b);
+-      SHASH(B1);
+-      SHASH(B2);
+-      if (context_id)
+-      {
+-        if (EVP_DigestUpdate(sh, context_id, kMPT_HALF_SHA_SIZE) != 1)
+-        {
+-          EVP_MD_CTX_free(sh);
+-          OPENSSL_cleanse(witness_buf, sizeof(witness_buf));
+-          goto cleanup;
+-        }
+-      }
+-      if (EVP_DigestFinal_ex(sh, stmt_hash, NULL) != 1)
+-      {
+-        EVP_MD_CTX_free(sh);
+-        OPENSSL_cleanse(witness_buf, sizeof(witness_buf));
+-        goto cleanup;
+-      }
+-      EVP_MD_CTX_free(sh);
+-#undef SHASH
+-    }
++    nonce_ok = wconf_generate_nonces(
++        ctx, nonces, 5, witness_buf, sizeof(witness_buf),
++        DOMAIN_COMPACT_STANDARD, strlen(DOMAIN_COMPACT_STANDARD), stmt_bytes,
++        stmt_len, context_id, aux, 0);
+ 
+-    unsigned char nonces[5 * kMPT_SCALAR_SIZE];
+-    if (!generate_deterministic_nonces(
+-            ctx, nonces, 5, witness_buf, sizeof(witness_buf), stmt_hash,
+-            DOMAIN_COMPACT_STANDARD, strlen(DOMAIN_COMPACT_STANDARD)))
++    if (!nonce_ok)
+     {
+       OPENSSL_cleanse(witness_buf, sizeof(witness_buf));
++      OPENSSL_cleanse(nonces, sizeof(nonces));
++      OPENSSL_cleanse(aux_buf, sizeof(aux_buf));
+       goto cleanup;
+     }
+     memcpy(alpha, nonces, kMPT_SCALAR_SIZE);
+@@ -271,6 +342,7 @@ int secp256k1_compact_standard_prove(
+     memcpy(epsilon, nonces + 128, kMPT_SCALAR_SIZE);
+     OPENSSL_cleanse(witness_buf, sizeof(witness_buf));
+     OPENSSL_cleanse(nonces, sizeof(nonces));
++    OPENSSL_cleanse(aux_buf, sizeof(aux_buf));
+   }
+ 
+   /* 2. Compute commitments */
+@@ -339,9 +411,10 @@ int secp256k1_compact_standard_prove(
+   }
+ 
+   /* 3. Challenge */
+-  if (!compute_compact_std_challenge(ctx, e, n, Pk_vec, C1, C2_vec, PC_m, pk_A,
+-                                     PC_b, B1, B2, &T1, T2_vec, &T_PCm, &K1,
+-                                     &T_PCb, &K2, context_id))
++  /* W-CONF PATCH: stmt_bytes are the bytes already fed to the nonce KDF. */
++  if (!compute_compact_std_challenge(ctx, e, n, stmt_bytes, stmt_len, &T1,
++                                     T2_vec, &T_PCm, &K1, &T_PCb, &K2,
++                                     context_id))
+     goto cleanup;
+ 
+   /* 4. Responses */
+@@ -382,6 +455,7 @@ cleanup:
+   OPENSSL_cleanse(z_rb, kMPT_SCALAR_SIZE);
+   OPENSSL_cleanse(z_b, kMPT_SCALAR_SIZE);
+   free(T2_vec);
++  free(stmt_bytes);
+   return ok;
+ }
+ 
+@@ -398,6 +472,8 @@ int secp256k1_compact_standard_verify(
+   /* n=0 would produce a proof binding no ciphertexts to any recipient,
+    * which is semantically vacuous (paper requires n >= 1). */
+   MPT_ARG_CHECK(n > 0);
++  /* W-CONF PATCH: upper bound so the length arithmetic below cannot wrap. */
++  MPT_ARG_CHECK(n <= STD_MAX_PARTICIPANTS);
+   MPT_ARG_CHECK(ctx != NULL);
+   MPT_ARG_CHECK(proof != NULL);
+   MPT_ARG_CHECK(C1 != NULL);
+@@ -416,6 +492,10 @@ int secp256k1_compact_standard_verify(
+   secp256k1_pubkey T1, T_PCm, K1, T_PCb, K2;
+   secp256k1_pubkey *T2_vec = NULL;
+   secp256k1_pubkey H;
++  /* W-CONF PATCH: statement bytes, built once and used twice — as nonce-KDF
++   * input and as challenge input. Never re-derived. */
++  unsigned char *stmt_bytes = NULL;
++  size_t stmt_len = STD_STMT_POINTS(n) * kMPT_PUBKEY_SIZE;
+   int ok = 0;
+ 
+   /* 1. Deserialize: e || z_m || z_r || z_b || z_rb || z_sk */
+@@ -549,10 +629,16 @@ int secp256k1_compact_standard_verify(
+       goto cleanup;
+   }
+ 
+-  /* 3. Recompute challenge */
+-  if (!compute_compact_std_challenge(ctx, e_prime, n, Pk_vec, C1, C2_vec, PC_m,
+-                                     pk_A, PC_b, B1, B2, &T1, T2_vec, &T_PCm,
+-                                     &K1, &T_PCb, &K2, context_id))
++  /* 3. Recompute challenge. W-CONF PATCH: same encoder as the prover. */
++  stmt_bytes = (unsigned char *)malloc(stmt_len);
++  if (!stmt_bytes)
++    goto cleanup;
++  if (!std_serialize_statement(ctx, stmt_bytes, n, Pk_vec, pk_A, C1, C2_vec,
++                               PC_m, PC_b, B1, B2))
++    goto cleanup;
++  if (!compute_compact_std_challenge(ctx, e_prime, n, stmt_bytes, stmt_len,
++                                     &T1, T2_vec, &T_PCm, &K1, &T_PCb, &K2,
++                                     context_id))
+     goto cleanup;
+ 
+   /* 4. Accept iff e' == e (constant-time comparison) */
+@@ -563,5 +649,6 @@ cleanup:
+   OPENSSL_cleanse(neg_e, kMPT_SCALAR_SIZE);
+   /* z_*, e, e_prime are public proof values — intentionally not cleansed */
+   free(T2_vec);
++  free(stmt_bytes);
+   return ok;
+ }
+diff --git a/src/proof_pok_sk.c b/src/proof_pok_sk.c
+index d7e9f7b..d2c05bb 100644
+--- a/src/proof_pok_sk.c
++++ b/src/proof_pok_sk.c
+@@ -20,8 +20,12 @@
+ 
+ static const char DOMAIN_POK_SK[] = "CMPT_POK_SK_REGISTER";
+ 
++/* W-CONF PATCH: takes the 33-byte statement (pk) as bytes rather than
++ * re-serialising it, so the prover feeds the identical bytes to the nonce KDF.
++ * The hashed bytes are unchanged from upstream 85dbac7. */
+ static int build_pok_challenge(const secp256k1_context *ctx,
+-                               unsigned char *e_out, const secp256k1_pubkey *pk,
++                               unsigned char *e_out,
++                               const unsigned char *stmt_bytes,
+                                const secp256k1_pubkey *T,
+                                const unsigned char *context_id)
+ {
+@@ -51,7 +55,8 @@ static int build_pok_challenge(const secp256k1_context *ctx,
+       goto cleanup;                                                            \
+   } while (0)
+ 
+-  SER(pk);
++  if (EVP_DigestUpdate(mdctx, stmt_bytes, kMPT_PUBKEY_SIZE) != 1)
++    goto cleanup;
+   SER(T);
+ 
+ #undef SER
+@@ -89,6 +94,7 @@ int secp256k1_mpt_pok_sk_prove(const secp256k1_context *ctx,
+   unsigned char k[kMPT_SCALAR_SIZE];
+   unsigned char e[kMPT_SCALAR_SIZE], s[kMPT_SCALAR_SIZE];
+   secp256k1_pubkey T;
++  unsigned char stmt_bytes[kMPT_PUBKEY_SIZE];
+   int ok = 0;
+ 
+   if (!secp256k1_ec_seckey_verify(ctx, sk))
+@@ -96,54 +102,30 @@ int secp256k1_mpt_pok_sk_prove(const secp256k1_context *ctx,
+ 
+   /* 1. Deterministic nonce */
+   {
+-    unsigned char stmt_hash[kMPT_HALF_SHA_SIZE];
++    unsigned char nonces[kMPT_SCALAR_SIZE];
++    unsigned char aux_buf[32];
++    const unsigned char *aux = wconf_hedge_aux(aux_buf);
++
++    /* W-CONF PATCH: the statement is the single point pk. Serialised once,
++     * here, and reused verbatim by the challenge below. The witness is sk,
++     * the long-lived secret, at offset 0. */
++    if (!wconf_put_point(ctx, stmt_bytes, pk))
+     {
+-      EVP_MD_CTX *sh = EVP_MD_CTX_new();
+-      unsigned char sbuf[kMPT_PUBKEY_SIZE];
+-      size_t slen;
+-      if (!sh)
+-        goto cleanup;
+-      if (EVP_DigestInit_ex(sh, EVP_sha256(), NULL) != 1)
+-      {
+-        EVP_MD_CTX_free(sh);
+-        goto cleanup;
+-      }
+-      slen = kMPT_PUBKEY_SIZE;
+-      if (!secp256k1_ec_pubkey_serialize(ctx, sbuf, &slen, pk,
+-                                         SECP256K1_EC_COMPRESSED) ||
+-          slen != kMPT_PUBKEY_SIZE)
+-      {
+-        EVP_MD_CTX_free(sh);
+-        goto cleanup;
+-      }
+-      if (EVP_DigestUpdate(sh, sbuf, kMPT_PUBKEY_SIZE) != 1)
+-      {
+-        EVP_MD_CTX_free(sh);
+-        goto cleanup;
+-      }
+-      if (context_id)
+-      {
+-        if (EVP_DigestUpdate(sh, context_id, kMPT_HALF_SHA_SIZE) != 1)
+-        {
+-          EVP_MD_CTX_free(sh);
+-          goto cleanup;
+-        }
+-      }
+-      if (EVP_DigestFinal_ex(sh, stmt_hash, NULL) != 1)
+-      {
+-        EVP_MD_CTX_free(sh);
+-        goto cleanup;
+-      }
+-      EVP_MD_CTX_free(sh);
++      OPENSSL_cleanse(aux_buf, sizeof(aux_buf));
++      goto cleanup;
+     }
+ 
+-    unsigned char nonces[kMPT_SCALAR_SIZE];
+-    if (!generate_deterministic_nonces(ctx, nonces, 1, sk, kMPT_SCALAR_SIZE,
+-                                       stmt_hash, DOMAIN_POK_SK,
+-                                       strlen(DOMAIN_POK_SK)))
++    if (!wconf_generate_nonces(ctx, nonces, 1, sk, kMPT_SCALAR_SIZE,
++                               DOMAIN_POK_SK, strlen(DOMAIN_POK_SK), stmt_bytes,
++                               kMPT_PUBKEY_SIZE, context_id, aux, 0))
++    {
++      OPENSSL_cleanse(nonces, sizeof(nonces));
++      OPENSSL_cleanse(aux_buf, sizeof(aux_buf));
+       goto cleanup;
++    }
+     memcpy(k, nonces, kMPT_SCALAR_SIZE);
+     OPENSSL_cleanse(nonces, sizeof(nonces));
++    OPENSSL_cleanse(aux_buf, sizeof(aux_buf));
+   }
+ 
+   /* 2. Commitment: T = k*G */
+@@ -151,7 +133,7 @@ int secp256k1_mpt_pok_sk_prove(const secp256k1_context *ctx,
+     goto cleanup;
+ 
+   /* 3. Challenge */
+-  if (!build_pok_challenge(ctx, e, pk, &T, context_id))
++  if (!build_pok_challenge(ctx, e, stmt_bytes, &T, context_id))
+     goto cleanup;
+ 
+   /* 4. Response: s = k + e*sk */
+@@ -184,6 +166,7 @@ int secp256k1_mpt_pok_sk_verify(const secp256k1_context *ctx,
+ 
+   unsigned char e[kMPT_SCALAR_SIZE], s[kMPT_SCALAR_SIZE];
+   unsigned char e_prime[kMPT_SCALAR_SIZE], neg_e[kMPT_SCALAR_SIZE];
++  unsigned char stmt_bytes[kMPT_PUBKEY_SIZE];
+   secp256k1_pubkey T;
+ 
+   /* 1. Deserialize: e || s */
+@@ -210,8 +193,10 @@ int secp256k1_mpt_pok_sk_verify(const secp256k1_context *ctx,
+       return 0;
+   }
+ 
+-  /* 3. Recompute challenge */
+-  if (!build_pok_challenge(ctx, e_prime, pk, &T, context_id))
++  /* 3. Recompute challenge. W-CONF PATCH: same encoder as the prover. */
++  if (!wconf_put_point(ctx, stmt_bytes, pk))
++    return 0;
++  if (!build_pok_challenge(ctx, e_prime, stmt_bytes, &T, context_id))
+     return 0;
+ 
+   /* 4. Accept iff e' == e */

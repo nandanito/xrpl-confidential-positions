@@ -1,0 +1,10 @@
+==== source record 2026-10-18T00:49:42Z
+c60a60cc82eac5f7446480e0363105b8ace44631
+c60a60cc82eac5f7446480e0363105b8ace44631 2026-10-01 17:59:32 -0700 feat(rotate): ElGamal key-rotation proofs (9 of 9) (#142)
+commit
+3baaaac33dadec3e649846e487f452c5b6b2d825 2026-08-20 10:33:49 -0400 ci: emit a browser-only ESM glue (mpt_crypto.web.mjs)  (#139)
+---- is 3baaaac an ancestor of origin/main?
+ancestor-exit 0
+---- commits on origin/main after 3baaaac
+c60a60c feat(rotate): ElGamal key-rotation proofs (9 of 9) (#142)
+---- diff of build-wasm.sh and build-wasm.yml between 3baaaac and origin/main

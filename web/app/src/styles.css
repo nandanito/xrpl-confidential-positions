@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: oklch(0.19 0.012 264);
+  --color-paper: oklch(0.985 0.003 264);
+  --color-hidden: oklch(0.55 0.16 292);
+  --color-public: oklch(0.58 0.14 42);
+  --color-warn: oklch(0.55 0.19 27);
+}
+
+:root { color-scheme: light dark; }
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-feature-settings: "cv05", "ss01";
+}
+
+@media (prefers-color-scheme: dark) {
+  body { background: oklch(0.17 0.01 264); color: oklch(0.93 0.006 264); }
+}

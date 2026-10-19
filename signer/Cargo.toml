@@ -1,0 +1,102 @@
+[package]
+name = "wconf-signer"
+version = "0.0.1"
+edition = "2021"
+publish = false
+description = "W-CONF holder signer. Real keys, real proofs, real signatures, hedged nonces on both algorithms. Devnet only. (This read 'skeleton. No keys, no proofs, no signing' until 2026-08-27, nine days after it stopped being true — REVIEW-025, Codex leg.)"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+libc = "0.2"
+hmac = "0.12"
+sha2 = "0.10"
+k256 = { version = "0.13", default-features = false, features = ["arithmetic", "ecdsa"] }
+ripemd = "0.1"
+# `hazmat` — **B-16**, `REVIEW-024` 2026-08-27. It is what makes
+# `ExpandedSecretKey`'s `hash_prefix` field and `hazmat::raw_sign` reachable, and
+# hedging the RFC 8032 nonce prefix is one assignment to that field. ⚠ **This is
+# a project-wide guardrail removal for one call site** — all three legs named it
+# as the strongest argument against the change, and the ruling's §7 item 2 is
+# what contains it: the verifying key is derived inside the signing helper and is
+# never a parameter this signer accepts. It costs no compile time and no binary
+# size: `src/lib.rs:268-271` compiles the module either way and the feature gates
+# only its publicity.
+#
+# `zeroize` — **B-19**, decided 2026-08-27. ⚠⚠ **THIS COMMENT ASSERTED THAT THE
+# FEATURE WAS OFF AND THAT IS FALSE — `CLAIMS.md` E-171.** It read: *"a crate
+# DEFAULT that `default-features = false` turned off by accident … without it
+# `ExpandedSecretKey` and `SigningKey` are not wiped on drop"*. The feature was
+# **already on**: `std = ["alloc", ..]` and `alloc` lists `"zeroize/alloc"`
+# without the `?` sigil that `serde?/alloc` beside it carries. Verified by
+# reading the `--cfg` flags rustc actually receives — a crate depending on
+# nothing but `ed25519-dalek` at `features = ["std"]` compiles its `lib.rs` with
+# `--cfg 'feature="zeroize"'`.
+#
+# **Naming it here is still right**: an implied feature is one upstream refactor
+# from vanishing, and `make check-zeroize-bounds` now pins it. ⚠ **`fast` stays
+# off** — a speed trade with no security content, and re-enabling it is not that
+# decision. `docs/decisions/DECISION-b19-ed25519-zeroize-2026-08-27.md`.
+ed25519-dalek = { version = "2", default-features = false, features = ["std", "hazmat", "zeroize"] }
+# `zeroize` as a DIRECT dependency — **B-21**, 2026-08-27. `SigningKey` and
+# `ExpandedSecretKey` have real `Drop` impls (`hazmat.rs:67-76`, read at source)
+# — ⚠ **because the feature was always on, NOT because B-19 turned it on;
+# this sentence said the latter in the same commit that corrected it elsewhere
+# (E-171, E-172).** That reaches the
+# crate's *types* and nothing else: the SHA-512 expansion this signer computes
+# itself, the nonce mask, the auxiliary entropy buffer and the ECDSA aux RNG are
+# plain locals in `xrpl.rs` that no `Drop` touches. Both `REVIEW-025` legs
+# confirmed the residue independently.
+#
+# ⚠ **`features = ["alloc"]`, and it is B-23 that made that load-bearing.** This
+# read `default-features = false` with the comment *"the default is `alloc`, and
+# `Zeroizing` is a `core` type. Nothing here zeroizes a heap collection."* Both
+# halves are now wrong: B-23 wipes `String` and `Vec<u8>`, which ARE heap
+# collections, and `impl Zeroize for String` exists **only** under `alloc`.
+#
+# ⚠ **It compiled before this line was added, and that is exactly the trap
+# E-167 records.** `cargo tree -f '{p} {f}'` resolved `zeroize` to `alloc,default`
+# — enabled by OTHER crates in the tree, not by us. B-23 would have rested on a
+# transitive crate's feature choice, and a dependency bump that dropped it would
+# have broken this crate for a reason nothing here stated. **Asking for the
+# feature we use is the fix; reading the resolved set is what found it.**
+#
+# ⚠ **What this buys is bounded and P-5 governs the claim**: it narrows the
+# window in which secret bytes sit in a stack frame that is later reused. It
+# removes **no channel** — an adversary with code execution reads the scalar
+# while it is live, Rust leaves the source of a move unwiped, and the curve
+# arithmetic's temporaries are outside all of it.
+zeroize = { version = "1", default-features = false, features = ["alloc"] }
+ureq = { version = "3.4.0", default-features = false, features = ["rustls"] }
+
+[features]
+# Exposes `confirm::acknowledgement_for_test`, which fabricates the
+# HumanAcknowledgement that A6 otherwise requires come from the signer's own
+# window.
+#
+# NOT a default feature. It was one, and the README then claimed "a release
+# build drops it" — false, because a plain `cargo build --release` keeps default
+# features (REVIEW-014a/b). The dev-dependency on this crate below turns it on
+# for tests only, so `cargo test` needs no flags AND a release binary genuinely
+# cannot construct a HumanAcknowledgement.
+test-support = []
+
+# Self dev-dependency: enables `test-support` for the test targets only.
+[dev-dependencies]
+sha2 = "0.10"
+# ⚠ **The `zeroize` dev-dependency is GONE and that is not an omission.** It was
+# here for exactly one assertion — `hedged_signing.rs`'s
+# `ed25519_secret_types_implement_zeroize_on_drop`, which names the
+# `ZeroizeOnDrop` bound — ⚠ **and whose comment here said *"so reverting B-19's
+# manifest line fails to COMPILE"*, which is FALSE (E-171): it compiles, because
+# `std` already implies the feature. Round two of `REVIEW-027` found this
+# sentence still standing after round one recorded all sites fixed (E-175)** —
+# its comment said *"the signer itself does not depend on `zeroize`"*. **B-21
+# made that false**, and a `[dependencies]` entry is already on the test targets'
+# extern prelude, so keeping both would have been a duplicate carrying a stale
+# reason. `CLAIMS.md`'s twenty-two-instance lesson, caught by grepping for what
+# this commit contradicts.
+wconf-signer = { path = ".", features = ["test-support"] }
+
+[profile.release]
+panic = "abort"

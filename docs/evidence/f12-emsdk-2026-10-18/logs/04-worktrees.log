@@ -1,0 +1,83 @@
+==== worktrees 2026-10-18T00:53:03Z
+---- git worktree add --detach $USER_TMP/T/f12b.epIe0s/wt/v6.0.2-unpatched 3baaaac33dadec3e649846e487f452c5b6b2d825
+Preparing worktree (detached HEAD 3baaaac)
+HEAD is now at 3baaaac ci: emit a browser-only ESM glue (mpt_crypto.web.mjs)  (#139)
+exit 0
+---- git worktree add --detach $USER_TMP/T/f12b.epIe0s/wt/v6.0.2-empp 3baaaac33dadec3e649846e487f452c5b6b2d825
+Preparing worktree (detached HEAD 3baaaac)
+HEAD is now at 3baaaac ci: emit a browser-only ESM glue (mpt_crypto.web.mjs)  (#139)
+exit 0
+---- git worktree add --detach $USER_TMP/T/f12b.epIe0s/wt/v6.0.2-dcxx 3baaaac33dadec3e649846e487f452c5b6b2d825
+Preparing worktree (detached HEAD 3baaaac)
+HEAD is now at 3baaaac ci: emit a browser-only ESM glue (mpt_crypto.web.mjs)  (#139)
+exit 0
+---- git worktree add --detach $USER_TMP/T/f12b.epIe0s/wt/v6.0.3-unpatched 3baaaac33dadec3e649846e487f452c5b6b2d825
+Preparing worktree (detached HEAD 3baaaac)
+HEAD is now at 3baaaac ci: emit a browser-only ESM glue (mpt_crypto.web.mjs)  (#139)
+exit 0
+---- git worktree add --detach $USER_TMP/T/f12b.epIe0s/wt/v6.0.4-unpatched 3baaaac33dadec3e649846e487f452c5b6b2d825
+Preparing worktree (detached HEAD 3baaaac)
+HEAD is now at 3baaaac ci: emit a browser-only ESM glue (mpt_crypto.web.mjs)  (#139)
+exit 0
+---- git worktree add --detach $USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched 3baaaac33dadec3e649846e487f452c5b6b2d825
+Preparing worktree (detached HEAD 3baaaac)
+HEAD is now at 3baaaac ci: emit a browser-only ESM glue (mpt_crypto.web.mjs)  (#139)
+exit 0
+---- git worktree add --detach $USER_TMP/T/f12b.epIe0s/wt/v6.0.6-unpatched 3baaaac33dadec3e649846e487f452c5b6b2d825
+Preparing worktree (detached HEAD 3baaaac)
+HEAD is now at 3baaaac ci: emit a browser-only ESM glue (mpt_crypto.web.mjs)  (#139)
+exit 0
+---- git worktree add --detach $USER_TMP/T/f12b.epIe0s/wt/v6.0.6-empp 3baaaac33dadec3e649846e487f452c5b6b2d825
+Preparing worktree (detached HEAD 3baaaac)
+HEAD is now at 3baaaac ci: emit a browser-only ESM glue (mpt_crypto.web.mjs)  (#139)
+exit 0
+---- git worktree add --detach $USER_TMP/T/f12b.epIe0s/wt/v6.0.6-dcxx 3baaaac33dadec3e649846e487f452c5b6b2d825
+Preparing worktree (detached HEAD 3baaaac)
+HEAD is now at 3baaaac ci: emit a browser-only ESM glue (mpt_crypto.web.mjs)  (#139)
+exit 0
+---- git worktree add --detach $USER_TMP/T/f12b.epIe0s/wt/v6.0.6-partial 3baaaac33dadec3e649846e487f452c5b6b2d825
+Preparing worktree (detached HEAD 3baaaac)
+HEAD is now at 3baaaac ci: emit a browser-only ESM glue (mpt_crypto.web.mjs)  (#139)
+exit 0
+---- git worktree add --detach $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched 3baaaac33dadec3e649846e487f452c5b6b2d825
+Preparing worktree (detached HEAD 3baaaac)
+HEAD is now at 3baaaac ci: emit a browser-only ESM glue (mpt_crypto.web.mjs)  (#139)
+exit 0
+---- git worktree add --detach $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-empp 3baaaac33dadec3e649846e487f452c5b6b2d825
+Preparing worktree (detached HEAD 3baaaac)
+HEAD is now at 3baaaac ci: emit a browser-only ESM glue (mpt_crypto.web.mjs)  (#139)
+exit 0
+---- git worktree add --detach $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-dcxx 3baaaac33dadec3e649846e487f452c5b6b2d825
+Preparing worktree (detached HEAD 3baaaac)
+HEAD is now at 3baaaac ci: emit a browser-only ESM glue (mpt_crypto.web.mjs)  (#139)
+exit 0
+---- git worktree add --detach $USER_TMP/T/f12b.epIe0s/wt/v6.0.12-unpatched 3baaaac33dadec3e649846e487f452c5b6b2d825
+Preparing worktree (detached HEAD 3baaaac)
+HEAD is now at 3baaaac ci: emit a browser-only ESM glue (mpt_crypto.web.mjs)  (#139)
+exit 0
+---- git worktree add --detach $USER_TMP/T/f12b.epIe0s/wt/v6.0.12-empp 3baaaac33dadec3e649846e487f452c5b6b2d825
+Preparing worktree (detached HEAD 3baaaac)
+HEAD is now at 3baaaac ci: emit a browser-only ESM glue (mpt_crypto.web.mjs)  (#139)
+exit 0
+---- git worktree add --detach $USER_TMP/T/f12b.epIe0s/wt/v6.0.12-dcxx 3baaaac33dadec3e649846e487f452c5b6b2d825
+Preparing worktree (detached HEAD 3baaaac)
+HEAD is now at 3baaaac ci: emit a browser-only ESM glue (mpt_crypto.web.mjs)  (#139)
+exit 0
+---- git worktree list
+$USER_TMP/T/f12b.epIe0s/mpt-crypto            c60a60c [main]
+$USER_TMP/T/f12b.epIe0s/wt/v6.0.10-dcxx       3baaaac (detached HEAD)
+$USER_TMP/T/f12b.epIe0s/wt/v6.0.10-empp       3baaaac (detached HEAD)
+$USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched  3baaaac (detached HEAD)
+$USER_TMP/T/f12b.epIe0s/wt/v6.0.12-dcxx       3baaaac (detached HEAD)
+$USER_TMP/T/f12b.epIe0s/wt/v6.0.12-empp       3baaaac (detached HEAD)
+$USER_TMP/T/f12b.epIe0s/wt/v6.0.12-unpatched  3baaaac (detached HEAD)
+$USER_TMP/T/f12b.epIe0s/wt/v6.0.2-dcxx        3baaaac (detached HEAD)
+$USER_TMP/T/f12b.epIe0s/wt/v6.0.2-empp        3baaaac (detached HEAD)
+$USER_TMP/T/f12b.epIe0s/wt/v6.0.2-unpatched   3baaaac (detached HEAD)
+$USER_TMP/T/f12b.epIe0s/wt/v6.0.3-unpatched   3baaaac (detached HEAD)
+$USER_TMP/T/f12b.epIe0s/wt/v6.0.4-unpatched   3baaaac (detached HEAD)
+$USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched   3baaaac (detached HEAD)
+$USER_TMP/T/f12b.epIe0s/wt/v6.0.6-dcxx        3baaaac (detached HEAD)
+$USER_TMP/T/f12b.epIe0s/wt/v6.0.6-empp        3baaaac (detached HEAD)
+$USER_TMP/T/f12b.epIe0s/wt/v6.0.6-partial     3baaaac (detached HEAD)
+$USER_TMP/T/f12b.epIe0s/wt/v6.0.6-unpatched   3baaaac (detached HEAD)

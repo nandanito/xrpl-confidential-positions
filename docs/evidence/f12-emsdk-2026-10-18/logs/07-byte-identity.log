@@ -1,0 +1,73 @@
+==== byte identity at emsdk 6.0.2  2026-10-18T01:09:07Z
+---- v6.0.2-unpatched: shasum -a 256 emcc_out/* output/*
+2d568a94344685d53712593678230f56696f1483f5e5859a32ce266c10fc8af2  emcc_out/mpt_crypto.js
+8ae3ad22a8c706ffec63d5d90066d5a2379d3c8f449da8537b05d9e66ab67a1b  emcc_out/mpt_crypto.mjs
+68ddb99a0e70f99d88bbf82ba135e8a8f75817a630d774f1f5798e8c37ff6c86  emcc_out/mpt_crypto.wasm
+d3a8aad8ce2547e6b17c8ef1abd13c69eda8ae7b77f89ce602adbdcb1efbac4d  emcc_out/mpt_crypto.web.mjs
+2d568a94344685d53712593678230f56696f1483f5e5859a32ce266c10fc8af2  output/mpt_crypto.js
+8ae3ad22a8c706ffec63d5d90066d5a2379d3c8f449da8537b05d9e66ab67a1b  output/mpt_crypto.mjs
+68ddb99a0e70f99d88bbf82ba135e8a8f75817a630d774f1f5798e8c37ff6c86  output/mpt_crypto.wasm
+d3a8aad8ce2547e6b17c8ef1abd13c69eda8ae7b77f89ce602adbdcb1efbac4d  output/mpt_crypto.web.mjs
+   64186 emcc_out/mpt_crypto.js
+   64211 emcc_out/mpt_crypto.mjs
+ 2110544 emcc_out/mpt_crypto.wasm
+   63138 emcc_out/mpt_crypto.web.mjs
+ 2302079 total
+---- v6.0.2-empp: shasum -a 256 emcc_out/* output/*
+2d568a94344685d53712593678230f56696f1483f5e5859a32ce266c10fc8af2  emcc_out/mpt_crypto.js
+8ae3ad22a8c706ffec63d5d90066d5a2379d3c8f449da8537b05d9e66ab67a1b  emcc_out/mpt_crypto.mjs
+68ddb99a0e70f99d88bbf82ba135e8a8f75817a630d774f1f5798e8c37ff6c86  emcc_out/mpt_crypto.wasm
+d3a8aad8ce2547e6b17c8ef1abd13c69eda8ae7b77f89ce602adbdcb1efbac4d  emcc_out/mpt_crypto.web.mjs
+2d568a94344685d53712593678230f56696f1483f5e5859a32ce266c10fc8af2  output/mpt_crypto.js
+8ae3ad22a8c706ffec63d5d90066d5a2379d3c8f449da8537b05d9e66ab67a1b  output/mpt_crypto.mjs
+68ddb99a0e70f99d88bbf82ba135e8a8f75817a630d774f1f5798e8c37ff6c86  output/mpt_crypto.wasm
+d3a8aad8ce2547e6b17c8ef1abd13c69eda8ae7b77f89ce602adbdcb1efbac4d  output/mpt_crypto.web.mjs
+   64186 emcc_out/mpt_crypto.js
+   64211 emcc_out/mpt_crypto.mjs
+ 2110544 emcc_out/mpt_crypto.wasm
+   63138 emcc_out/mpt_crypto.web.mjs
+ 2302079 total
+---- v6.0.2-dcxx: shasum -a 256 emcc_out/* output/*
+2d568a94344685d53712593678230f56696f1483f5e5859a32ce266c10fc8af2  emcc_out/mpt_crypto.js
+8ae3ad22a8c706ffec63d5d90066d5a2379d3c8f449da8537b05d9e66ab67a1b  emcc_out/mpt_crypto.mjs
+68ddb99a0e70f99d88bbf82ba135e8a8f75817a630d774f1f5798e8c37ff6c86  emcc_out/mpt_crypto.wasm
+d3a8aad8ce2547e6b17c8ef1abd13c69eda8ae7b77f89ce602adbdcb1efbac4d  emcc_out/mpt_crypto.web.mjs
+2d568a94344685d53712593678230f56696f1483f5e5859a32ce266c10fc8af2  output/mpt_crypto.js
+8ae3ad22a8c706ffec63d5d90066d5a2379d3c8f449da8537b05d9e66ab67a1b  output/mpt_crypto.mjs
+68ddb99a0e70f99d88bbf82ba135e8a8f75817a630d774f1f5798e8c37ff6c86  output/mpt_crypto.wasm
+d3a8aad8ce2547e6b17c8ef1abd13c69eda8ae7b77f89ce602adbdcb1efbac4d  output/mpt_crypto.web.mjs
+   64186 emcc_out/mpt_crypto.js
+   64211 emcc_out/mpt_crypto.mjs
+ 2110544 emcc_out/mpt_crypto.wasm
+   63138 emcc_out/mpt_crypto.web.mjs
+ 2302079 total
+---- cmp against v6.0.2-unpatched (emcc_out)
+cmp v6.0.2-empp mpt_crypto.js exit 0
+cmp v6.0.2-empp mpt_crypto.mjs exit 0
+cmp v6.0.2-empp mpt_crypto.web.mjs exit 0
+cmp v6.0.2-empp mpt_crypto.wasm exit 0
+cmp v6.0.2-dcxx mpt_crypto.js exit 0
+cmp v6.0.2-dcxx mpt_crypto.mjs exit 0
+cmp v6.0.2-dcxx mpt_crypto.web.mjs exit 0
+cmp v6.0.2-dcxx mpt_crypto.wasm exit 0
+---- file count in each emcc_out
+v6.0.2-unpatched 4
+v6.0.2-empp 4
+v6.0.2-dcxx 4
+==== same check at 6.0.6, 6.0.10, 6.0.12: em++ vs DEFAULT_TO_CXX (no unpatched output exists at these versions)
+cmp v6.0.6 empp-vs-dcxx mpt_crypto.js exit 0
+cmp v6.0.6 empp-vs-dcxx mpt_crypto.mjs exit 0
+cmp v6.0.6 empp-vs-dcxx mpt_crypto.web.mjs exit 0
+cmp v6.0.6 empp-vs-dcxx mpt_crypto.wasm exit 0
+cmp v6.0.10 empp-vs-dcxx mpt_crypto.js exit 0
+cmp v6.0.10 empp-vs-dcxx mpt_crypto.mjs exit 0
+cmp v6.0.10 empp-vs-dcxx mpt_crypto.web.mjs exit 0
+cmp v6.0.10 empp-vs-dcxx mpt_crypto.wasm exit 0
+cmp v6.0.12 empp-vs-dcxx mpt_crypto.js exit 0
+cmp v6.0.12 empp-vs-dcxx mpt_crypto.mjs exit 0
+cmp v6.0.12 empp-vs-dcxx mpt_crypto.web.mjs exit 0
+cmp v6.0.12 empp-vs-dcxx mpt_crypto.wasm exit 0
+==== 6.0.6-partial: outputs of lines 363/365 vs 6.0.6-empp
+cmp v6.0.6 empp-vs-partial mpt_crypto.js exit 0
+cmp v6.0.6 empp-vs-partial mpt_crypto.mjs exit 0
+cmp v6.0.6 empp-vs-partial mpt_crypto.wasm exit 0

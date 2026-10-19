@@ -1,0 +1,80 @@
+==== environment record 2026-10-18T00:50:06Z
+---- uname -a
+Darwin Nandans-MacBook-Pro.local 25.6.0 Darwin Kernel Version 25.6.0: Fri Jul 31 19:16:36 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T6030 arm64
+---- sw_vers
+ProductName:		macOS
+ProductVersion:		26.6.2
+BuildVersion:		25G83
+---- uname -m / arch
+arm64
+arm64---- hw.ncpu
+12
+---- hw.memsize
+19327352832
+---- PATH (pre-emsdk)
+/Applications/Orca.app/Contents/Resources/bin:$HOME/.kx/bin:$HOME/.local/bin:$HOME/.antigravity-ide/antigravity-ide/bin:$HOME/.local/bin:/opt/homebrew/opt/libpq/bin:$HOME/.antigravity/antigravity/bin:$HOME/.codeium/windsurf/bin:$HOME/go/bin:$HOME/.nvm/versions/node/v24.3.0/bin:$HOME/.bun/bin:$HOME/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Library/TeX/texbin:/Applications/Orca.app/Contents/Resources/bin:$HOME/.kx/bin:$HOME/.local/bin:$HOME/.antigravity-ide/antigravity-ide/bin:/opt/homebrew/opt/libpq/bin:$HOME/.antigravity/antigravity/bin:$HOME/.codeium/windsurf/bin:$HOME/go/bin:$HOME/.nvm/versions/node/v24.3.0/bin:$HOME/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:$HOME/.cargo/bin:$HOME/Library/Application Support/JetBrains/Toolbox/scripts:$HOME/.orbstack/bin:$HOME/.lmstudio/bin:$HOME/.volta/bin:$HOME/.asdf/shims:$HOME/.fnm/aliases/default/bin:$HOME/.local/share/mise/shims:$HOME/Library/pnpm:$HOME/.yarn/bin:/usr/local/sbin:/nix/var/nix/profiles/default/bin:$HOME/bin:$HOME/.nix-profile/bin:$HOME/.opencode/bin:$HOME/.vite-plus/bin:$HOME/Library/Application Support/JetBrains/Toolbox/scripts:$HOME/.orbstack/bin:$HOME/.lmstudio/bin
+---- which cmake
+/opt/homebrew/bin/cmake
+---- which python3
+/opt/homebrew/bin/python3
+---- which node
+$HOME/.local/bin/node
+---- which git
+/usr/bin/git
+---- which perl
+/usr/bin/perl
+---- which curl
+/usr/bin/curl
+---- which make
+/usr/bin/make
+---- which tar
+/usr/bin/tar
+---- which shasum
+/usr/bin/shasum
+---- which sha256sum
+/sbin/sha256sum
+---- which nproc
+/opt/homebrew/bin/nproc
+---- which emcc
+(not on PATH)
+---- which em++
+(not on PATH)
+---- which emcmake
+(not on PATH)
+---- which emmake
+(not on PATH)
+---- which xcode-select
+/usr/bin/xcode-select
+---- which clang
+/usr/bin/clang
+---- cmake --version
+cmake version 4.4.2
+
+CMake suite maintained and supported by Kitware (kitware.com/cmake).
+---- python3 --version
+Python 3.14.5
+---- node --version
+v22.23.2
+---- git --version
+git version 2.50.1 (Apple Git-155)
+---- perl -v (first lines)
+
+This is perl 5, version 34, subversion 1 (v5.34.1) built for darwin-thread-multi-2level
+(with 2 registered patches, see perl -V for more detail)
+---- curl --version (first line)
+curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.1
+---- make --version (first line)
+GNU Make 3.81
+---- tar --version
+bsdtar 3.5.3 - libarchive 3.7.4 zlib/1.2.12 liblzma/5.4.3 bz2lib/1.0.8 
+---- clang --version
+Apple clang version 21.0.0 (clang-2100.1.1.101)
+Target: arm64-apple-darwin25.6.0
+Thread model: posix
+InstalledDir: /Library/Developer/CommandLineTools/usr/bin
+---- ls of node installs (nvm/fnm/homebrew)
+$HOME/.nvm/versions/node/v20.20.2
+$HOME/.nvm/versions/node/v22.22.3
+$HOME/.nvm/versions/node/v23.7.0
+$HOME/.nvm/versions/node/v24.3.0
+/opt/homebrew/Cellar/node

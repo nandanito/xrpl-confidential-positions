@@ -1,0 +1,50 @@
+{
+  // A REAL type-check for the TypeScript half of this repository.
+  //
+  // ⚠ `CLAIMS.md` E-145: `bun build` is **not** a type-check. Two migrated
+  // harnesses had no import at all for a function they called and `bun build`
+  // reported success on both. `bun run typecheck` is what fails on that.
+  "compilerOptions": {
+    "lib": ["ESNext", "DOM"],
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "types": ["bun"],
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "noUnusedLocals": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  // ⚠ **Scoped, and the scope is a named gap rather than a claim.** The
+  // `tools/spike-*` harnesses are throwaway by design and do not typecheck
+  // clean — unused imports, two importing a path under `/tmp`. Widening this
+  // to `tools/**` would produce 40 findings that are not defects and would
+  // train the next session to ignore the output. What is included is the
+  // facility and the shared modules that gate other code.
+  "include": [
+    "facility/**/*.ts",
+    "tools/wconf-randomness.ts",
+    "tools/wconf-keygen.ts",
+    "tools/wconf-keygen.test.ts",
+    "tools/check-blinding-sources.ts",
+    "tools/check-loopback.ts",
+    // The phase 1 secret sweep and its scrubber: they decide what is published.
+    "tools/check-no-secrets.ts",
+    "tools/scrub-personal-data.ts",
+    "tools/break-no-secrets-gate.ts",
+    "tools/redact-review-fixtures.ts",
+    "tools/check-vocabulary.ts",
+    // Architecture §6 step 8. ⚠ `web/api/**` is the Elysia process and it
+    // typechecks with the rest of the repository, because E-145's lesson —
+    // `bun build` is not a type-check — applies hardest to the tier that is
+    // new. `web/app/**` is a Vite/React application with its own JSX
+    // configuration and its own `tsconfig`; folding it in here would need
+    // `jsx` and DOM-only libs that the facility does not want.
+    "web/api/**/*.ts"
+  ],
+  "exclude": ["node_modules", "signer/target"]
+}

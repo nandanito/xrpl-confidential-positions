@@ -1,0 +1,56 @@
+xrpl-confidential-positions
+Copyright 2026 Nandan
+
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+This repository reproduces material that third parties own. That material is
+NOT covered by the Apache License: it stays under its owners' terms, set out
+below. docs/third-party/INVENTORY.md lists every file and line range found,
+the versions compared and how they were found, and
+tools/inventory-third-party.ts rebuilds it. What that search cannot see is
+stated at its head.
+
+1. XRPLF/mpt-crypto, which carries no licence
+
+   - tools/spike-2026-08-18/wconf-nonces.patch is a patch against
+     XRPLF/mpt-crypto at 85dbac7. Its context lines and removed lines, 841 in
+     all, are upstream source.
+   - tools/mpt-crypto-bench/wconf_bench.c lifts proof setup code from
+     mpt-crypto's tests at the same commit.
+   - Review records and transcripts under docs/reviews/, and the evidence notes
+     and build logs under docs/evidence/, quote its source.
+
+   XRPLF/mpt-crypto carried no licence file at that commit or at main when
+   checked on 2026-10-18. The npm package @xrplf/mpt-crypto is ISC-licensed;
+   it ships a WASM build and no C source, and this repository does not treat
+   its licence as a grant for the C source. The upstream lines are not
+   relicensed here. They are reproduced so that the signer can be rebuilt and
+   the review records can be checked, and they will be removed if the
+   copyright holder asks.
+
+2. Material under licences that require their notice to travel with copies.
+   Each notice is reproduced verbatim in LICENSES/.
+
+   - ed25519-dalek 2.2.0, BSD-3-Clause: source quoted in review records under
+     docs/reviews/. LICENSES/ed25519-dalek-BSD-3-Clause.txt
+   - XRPLF/rippled, ISC: source quoted in review records, research notes and an
+     upstream filing draft. LICENSES/rippled-ISC.md
+   - XRPLF/clio, ISC: lines in review transcripts that clio and rippled both
+     carry, listed under both because which one a reviewer copied cannot be told
+     from the text. LICENSES/clio-ISC.md
+   - XRPLF/XRPL-Standards, MIT: specification text, XLS-0096 among it, quoted
+     in the claims register, review records, research notes and filing drafts.
+     LICENSES/XRPL-Standards-MIT.txt
+   - XRPLF/xrpl-dev-portal, MIT for its original contents: documentation text
+     quoted in the feedback register, review records and filing drafts.
+     LICENSES/xrpl-dev-portal-MIT.txt
+   - ripple-binary-codec 2.9.0, ISC: lines in a test-vector file under
+     tools/spike-step3-2026-08-18/. LICENSES/ripple-binary-codec-ISC.txt
+   - @noble/curves, MIT: source a review leg printed into its transcript under
+     docs/reviews/REVIEW-057-packets/. LICENSES/noble-curves-MIT.txt
+   - emscripten-core/emscripten, MIT and University of Illinois/NCSA: its
+     ChangeLog quoted in the F-12 evidence logs and notes, two review transcripts
+     and a filing draft. LICENSES/emscripten-MIT-NCSA.txt
+
+The packages this repository depends on are installed by bun and cargo at
+build time and are not redistributed here, except as listed above.

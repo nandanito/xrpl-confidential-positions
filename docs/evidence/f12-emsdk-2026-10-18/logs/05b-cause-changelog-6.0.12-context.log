@@ -1,0 +1,51 @@
+==== emsdk-6.0.12 ChangeLog.md lines 95-130 (line-numbered) 2026-10-18T00:57:57Z
+95	  (where it is automatically disabled). (#27568)
+96	- The `SOCKET_WEBRTC` setting was removed (#27367)
+97	- `WASM_BIGINT` was deprecated. BigInt integration is standard and enabled by
+98	  default across all supported engines; it should now only ever be disabled
+99	  implicitly when targeting JavaScript via `-sWASM=0`. (#27558)
+100	
+101	6.0.7 - 08/17/26
+102	----------------
+103	
+104	- JavaScript library symbols can now use the `__force` and `__export`
+105	  decorators to control inclusion and export visibility. (#27436)
+106	- contrib.glfw3 port upgraded to use the latest version of GLFW 3.5.1
+107	  (#27508)
+108	- `-fwasm-exceptions` now links the Wasm EH runtime (libunwind and the
+109	  `__cpp_exception` tag) independently of C++ linking, so Wasm EH objects from
+110	  non-C++ frontends (e.g. rustc, which links via `emcc`) link without
+111	  requiring `em++` or `-sDEFAULT_TO_CXX`. (#27496)
+112	- FreeType was updated to 2.14.3 (#27518)
+113	- The oldest supported Safari version (`MIN_SAFARI_VERSION`) was raised from
+114	  14.1 to 15.0, making 15.0 the minimum version that can be targeted. This
+115	  allows assuming `bulk-memory`, `nontrapping-fptoint`, and `WASM_BIGINT`
+116	  (`JS_BIGINT_INTEGRATION`) are universally available across all supported
+117	  engines, and removes legacy JS polyfills and Binaryen lowering passes.
+118	  (#27542)
+119	
+120	6.0.6 - 08/05/26
+121	----------------
+122	- `DEFAULT_TO_CXX` is now disabled by default. This means that `em++` is now
+123	  required when linking C++ programs, matching the behavior of clang and gcc.
+124	  The old behavior is still available using `-sDEFAULT_TO_CXX`. (#11121)
+125	- Added example Meson cross compilation files (`wasm32-emscripten.ini` and
+126	  `wasm64-emscripten.ini`) in `tools/meson/`. (#27478)
+127	- libcxx and libcxxabi were updated to LLVM 22.1.8. (#27428)
+128	
+129	6.0.5 - 07/29/26
+130	----------------
+==== emsdk-6.0.12 ChangeLog.md: version headers in lines 1-130, and WASM_BIGINT mentions in lines 1-130  2026-10-18T01:10:02Z
+21	6.0.12 (in development)
+37	6.0.11 - 10/02/26
+48	6.0.10 - 09/21/26
+72	6.0.9 - 09/01/26
+82	6.0.8 - 08/20/26
+101	6.0.7 - 08/17/26
+120	6.0.6 - 08/05/26
+129	6.0.5 - 07/29/26
+----
+93	  Wasm bounary is still used when `WASM_BIGINT` is disabled.  However
+94	  disabling of `WASM_BIGINT` itself should only be needed under `-sWASM=0`
+97	- `WASM_BIGINT` was deprecated. BigInt integration is standard and enabled by
+115	  allows assuming `bulk-memory`, `nontrapping-fptoint`, and `WASM_BIGINT`

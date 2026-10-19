@@ -1,0 +1,54 @@
+==== environment variables and global emscripten config  2026-10-18T01:13:28Z
+NOTE: the same env grep was run before the builds (00:5x UTC) with the same empty result; its output was seen in the session but not saved, so this is the post-run re-check in the same login environment.
+---- env | grep -iE '^(EM_|EMSDK|EMCC|EMSCRIPTEN|CC=|CXX=|CFLAGS|LDFLAGS|CPATH|LIBRARY_PATH|NODE_OPTIONS|NODE_PATH)'
+grep exit 1 (1 = no matches)
+---- ls -la ~/.emscripten ~/.emscripten_cache
+ls: $HOME/.emscripten: No such file or directory
+ls: $HOME/.emscripten_cache: No such file or directory
+---- each emsdk install's .emscripten config (embedded mode)
+== emsdk-6.0.2/.emscripten
+import os
+emsdk_path = os.path.dirname(os.getenv('EM_CONFIG')).replace('\\', '/')
+NODE_JS = emsdk_path + '/node/24.19.0_64bit/bin/node'
+PYTHON = emsdk_path + '/python/3.13.3_64bit/bin/python3'
+LLVM_ROOT = emsdk_path + '/upstream/bin'
+BINARYEN_ROOT = emsdk_path + '/upstream'
+EMSCRIPTEN_ROOT = emsdk_path + '/upstream/emscripten'
+== emsdk-6.0.3/.emscripten
+import os
+emsdk_path = os.path.dirname(os.getenv('EM_CONFIG')).replace('\\', '/')
+NODE_JS = emsdk_path + '/node/24.19.0_64bit/bin/node'
+PYTHON = emsdk_path + '/python/3.13.3_64bit/bin/python3'
+LLVM_ROOT = emsdk_path + '/upstream/bin'
+BINARYEN_ROOT = emsdk_path + '/upstream'
+EMSCRIPTEN_ROOT = emsdk_path + '/upstream/emscripten'
+== emsdk-6.0.4/.emscripten
+NODE_JS = '$CFGDIR/node/24.19.0_64bit/bin/node'
+PYTHON = '$CFGDIR/python/3.13.3_64bit/bin/python3'
+LLVM_ROOT = '$CFGDIR/upstream/bin'
+BINARYEN_ROOT = '$CFGDIR/upstream'
+EMSCRIPTEN_ROOT = '$CFGDIR/upstream/emscripten'
+== emsdk-6.0.5/.emscripten
+NODE_JS = '$CFGDIR/node/24.19.0_64bit/bin/node'
+PYTHON = '$CFGDIR/python/3.13.3_64bit/bin/python3'
+LLVM_ROOT = '$CFGDIR/upstream/bin'
+BINARYEN_ROOT = '$CFGDIR/upstream'
+EMSCRIPTEN_ROOT = '$CFGDIR/upstream/emscripten'
+== emsdk-6.0.6/.emscripten
+NODE_JS = '$CFGDIR/node/24.19.0_64bit/bin/node'
+PYTHON = '$CFGDIR/python/3.13.3_64bit/bin/python3'
+LLVM_ROOT = '$CFGDIR/upstream/bin'
+BINARYEN_ROOT = '$CFGDIR/upstream'
+EMSCRIPTEN_ROOT = '$CFGDIR/upstream/emscripten'
+== emsdk-6.0.10/.emscripten
+NODE_JS = '$CFGDIR/node/24.19.0_64bit/bin/node'
+PYTHON = '$CFGDIR/python/3.13.3_64bit/bin/python3'
+LLVM_ROOT = '$CFGDIR/upstream/bin'
+BINARYEN_ROOT = '$CFGDIR/upstream'
+EMSCRIPTEN_ROOT = '$CFGDIR/upstream/emscripten'
+== emsdk-6.0.12/.emscripten
+NODE_JS = '$CFGDIR/node/24.19.0_64bit/bin/node'
+PYTHON = '$CFGDIR/python/3.13.3_64bit/bin/python3'
+LLVM_ROOT = '$CFGDIR/upstream/bin'
+BINARYEN_ROOT = '$CFGDIR/upstream'
+EMSCRIPTEN_ROOT = '$CFGDIR/upstream/emscripten'

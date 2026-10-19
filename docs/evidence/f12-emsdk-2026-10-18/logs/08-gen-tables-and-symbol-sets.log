@@ -1,0 +1,180 @@
+==== table generator, README assembler, and undefined-symbol sets  2026-10-18T01:13:01Z
+======== gen-tables.py
+fc281e288e22f552c9b77c2dbc5c18b8e1a46c9f42293131159211cb878ac49a  $USER_TMP/T/f12b.epIe0s/scripts/gen-tables.py
+import os, re, sys
+W = sys.argv[1]; L = os.path.join(W, "logs")
+runs = [("6.0.2","unpatched"),("6.0.2","empp"),("6.0.2","dcxx"),("6.0.3","unpatched"),("6.0.4","unpatched"),
+        ("6.0.5","unpatched"),("6.0.6","unpatched"),("6.0.6","empp"),("6.0.6","dcxx"),("6.0.6","partial"),
+        ("6.0.10","unpatched"),("6.0.10","empp"),("6.0.10","dcxx"),("6.0.12","unpatched"),("6.0.12","empp"),("6.0.12","dcxx")]
+vname = {"unpatched":"unpatched","empp":"`em++` on 363/365/374","dcxx":"`-sDEFAULT_TO_CXX` on 363/365/374","partial":"`em++` on 363/365 only"}
+files = ["mpt_crypto.js","mpt_crypto.mjs","mpt_crypto.web.mjs","mpt_crypto.wasm"]
+def rd(p):
+    return open(p, encoding="utf-8", errors="replace").read() if os.path.exists(p) else None
+base = {}
+out_main, out_hash = [], []
+out_main.append("| Run label | emsdk | Variant | `emcc --version` (version and hash) | Build exit | Step reached / error | Sizes in bytes: js / mjs / web.mjs / wasm | Tests (ctest; glue smoke) | sha256 vs 6.0.2 unpatched |")
+out_main.append("|---|---|---|---|---|---|---|---|---|")
+for v, var in runs:
+    lab = f"v{v}-{var}"; s = rd(os.path.join(L, lab + ".log"))
+    ver = re.search(r"^emcc \(Emscripten gcc/clang-like replacement \+ linker emulating GNU ld\) (\S+ \([0-9a-f]+\))", s, re.M).group(1)
+    bexit = re.search(r"^==== BUILD EXIT: (\d+)", s, re.M).group(1)
+    fexit = re.findall(r"^exit (\d+)$", s, re.M)[-1]
+    assert bexit == fexit, lab
+    sizes = dict((m.group(2), m.group(1)) for m in re.finditer(r"^\s+(\d+) emcc_out/(\S+)$", s, re.M))
+    hashes = dict((m.group(2), m.group(1)) for m in re.finditer(r"^([0-9a-f]{64})  emcc_out/(\S+)$", s, re.M))
+    nund = len(re.findall(r"undefined symbol", s))
+    if bexit == "0":
+        step = "all five steps; `==> Done!`" if "==> Done!" in s else "?"
+    else:
+        x = rd(os.path.join(L, lab + "-xtrace.log"))
+        lines = re.findall(r"^\+ \./\.github/scripts/build-wasm\.sh:(\d+): (emcc|em\+\+) ", x, re.M)
+        last = lines[-1] if lines else ("?","?")
+        step = f"link at line {last[0]} (`{last[1]}`) failed: {nund} `undefined symbol` errors + the `em++`/`-sDEFAULT_TO_CXX` warning"
+    sz = " / ".join(sizes.get(f, "absent") for f in files)
+    t = rd(os.path.join(L, lab + "-test.log"))
+    if t is None:
+        tests = "not run (build failed)"
+    else:
+        cs = re.search(r"^(\d+% tests passed[^\n]*)$", t, re.M).group(1)
+        smoke = len(re.findall(r"^  mpt_crypto\S* +\(\w+\) OK$", t, re.M))
+        texit = re.findall(r"^exit (\d+)$", t, re.M)[-1]
+        tests = f"{cs}; {smoke}/3 glue OK; exit {texit}"
+    if v == "6.0.2" and var == "unpatched":
+        base = hashes; ident = "(baseline)"
+    elif v == "6.0.2":
+        ident = "identical, all 4 files" if all(hashes.get(f) == base.get(f) for f in files) else "DIFFERS"
+    else:
+        ident = "n/a (different emsdk)"
+    out_main.append(f"| `{lab}` | {v} | {vname[var]} | {ver} | {bexit} | {step} | {sz} | {tests} | {ident} |")
+    if hashes:
+        for f in files:
+            if f in hashes:
+                out_hash.append(f"| `{lab}` | `{f}` | `{hashes[f]}` |")
+open(os.path.join(W, "readme-parts", "table-results.md"), "w").write("\n".join(out_main) + "\n")
+open(os.path.join(W, "readme-parts", "table-hashes.md"), "w").write("| Run label | File | sha256 |\n|---|---|---|\n" + "\n".join(out_hash) + "\n")
+print("\n".join(out_main))
+======== assemble.py
+8a4329b3e08fdd283a753b4c1dea4b41f38510a2d00dc0f2b155e9ab5a89fb33  $USER_TMP/T/f12b.epIe0s/scripts/assemble.py
+import os, re, sys
+W = sys.argv[1]; L = os.path.join(W, "logs"); P = os.path.join(W, "readme-parts"); S = os.path.join(W, "scripts")
+rd = lambda p: open(p, encoding="utf-8", errors="replace").read()
+t = rd(os.path.join(P, "template.md"))
+# emsdk table
+tags = dict((m.group(2), m.group(1)) for m in re.finditer(r"^([0-9a-f]{40})\trefs/tags/(\S+)$", rd(os.path.join(L, "03-emsdk-tags.log")), re.M))
+rows = []
+for v in ["6.0.2","6.0.3","6.0.4","6.0.5","6.0.6","6.0.10","6.0.12"]:
+    s = rd(os.path.join(L, f"emsdk-install-{v}.log"))
+    ver = re.search(r"^emcc \(Emscripten gcc/clang-like replacement \+ linker emulating GNU ld\) (\S+ \([0-9a-f]+\))", s, re.M).group(1)
+    ie = re.search(r"^install exit (\d+)", s, re.M).group(1); ae = re.search(r"^activate exit (\d+)", s, re.M).group(1)
+    tagc = re.search(r"^---- emsdk tag \S+ resolves to\n([0-9a-f]{40})", s, re.M).group(1)
+    assert tagc == tags[v], v
+    rows.append(f"| {v} | `{tags[v]}` | {ver} | {ie} / {ae} |")
+t = t.replace("@@EMSDK_TABLE@@", "\n".join(rows))
+t = t.replace("@@TABLE_RESULTS@@", rd(os.path.join(P, "table-results.md")).rstrip("\n"))
+t = t.replace("@@TABLE_HASHES@@", rd(os.path.join(P, "table-hashes.md")).rstrip("\n"))
+t = t.replace("@@UNDEFINED@@", rd(os.path.join(P, "undefined.txt")).rstrip("\n"))
+# identity table from 07 log
+b = rd(os.path.join(L, "07-byte-identity.log"))
+def hashes(label):
+    sec = re.search(r"^---- " + re.escape(label) + r": .*?\n(.*?)(?=^---- )", b, re.M | re.S).group(1)
+    return dict((m.group(2), m.group(1)) for m in re.finditer(r"^([0-9a-f]{64})  emcc_out/(\S+)$", sec, re.M))
+hu, he, hd = hashes("v6.0.2-unpatched"), hashes("v6.0.2-empp"), hashes("v6.0.2-dcxx")
+cmpok = lambda lab, f: re.search(r"^cmp " + re.escape(lab) + " " + re.escape(f) + r" exit (\d+)$", b, re.M).group(1)
+irows = []
+for f in ["mpt_crypto.js","mpt_crypto.mjs","mpt_crypto.web.mjs","mpt_crypto.wasm"]:
+    e = "identical (cmp exit %s)" % cmpok("v6.0.2-empp", f) if he[f] == hu[f] else "DIFFERS"
+    d = "identical (cmp exit %s)" % cmpok("v6.0.2-dcxx", f) if hd[f] == hu[f] else "DIFFERS"
+    irows.append(f"| `{f}` | `{hu[f]}` | {e} | {d} |")
+t = t.replace("@@IDENTITY_TABLE@@", "\n".join(irows))
+# scripts
+parts = []
+for n in ["install-emsdk.sh","run-group.sh","run-build.sh","run-test.sh","run-xtrace.sh","gen-tables.py"]:
+    lang = "python" if n.endswith(".py") else "bash"
+    parts.append(f"`{n}`:\n\n```{lang}\n" + rd(os.path.join(S, n)).rstrip("\n") + "\n```")
+t = t.replace("@@SCRIPTS@@", "\n\n".join(parts))
+# diffs
+dparts = []
+for lab, title in [("v6.0.2-empp","`em++` on lines 363, 365 and 374 (identical in all four `em++` runs)"),
+                   ("v6.0.2-dcxx","`-sDEFAULT_TO_CXX` on lines 363, 365 and 374 (identical in all four `-sDEFAULT_TO_CXX` runs)"),
+                   ("v6.0.6-partial","partial: `em++` on lines 363 and 365 only")]:
+    s = rd(os.path.join(L, lab + ".log"))
+    num = re.search(r"^---- git diff --numstat\n(.*?)\n", s, re.M).group(1)
+    diff = re.search(r"^---- git diff\n(.*?)(?=^---- link lines)", s, re.M | re.S).group(1).rstrip("\n")
+    after = re.search(r"^---- link lines .*?\n(.*?)(?=^Setting up EMSDK)", s, re.M | re.S).group(1).rstrip("\n")
+    dparts.append(f"{title}, from `logs/{lab}.log`. `git diff --numstat`: `{num}`.\n\n```diff\n{diff}\n```\n\nLink lines after patching (`grep -nE '^(emcc|em\\+\\+) '`):\n\n```\n{after}\n```")
+t = t.replace("@@DIFFS@@", "\n\n".join(dparts))
+assert not re.findall(r"@@[A-Z_]+@@", t), re.findall(r"@@[A-Z_]+@@", t)
+open(os.path.join(W, "README.md"), "w").write(t)
+print("written", len(t), "bytes")
+======== output of: python3 -I gen-tables.py $W
+| Run label | emsdk | Variant | `emcc --version` (version and hash) | Build exit | Step reached / error | Sizes in bytes: js / mjs / web.mjs / wasm | Tests (ctest; glue smoke) | sha256 vs 6.0.2 unpatched |
+|---|---|---|---|---|---|---|---|---|
+| `v6.0.2-unpatched` | 6.0.2 | unpatched | 6.0.2 (7a2d97d627ff4945eae28847ce0387ac52b92c09) | 0 | all five steps; `==> Done!` | 64186 / 64211 / 63138 / 2110544 | 100% tests passed out of 12; 3/3 glue OK; exit 0 | (baseline) |
+| `v6.0.2-empp` | 6.0.2 | `em++` on 363/365/374 | 6.0.2 (7a2d97d627ff4945eae28847ce0387ac52b92c09) | 0 | all five steps; `==> Done!` | 64186 / 64211 / 63138 / 2110544 | 100% tests passed out of 12; 3/3 glue OK; exit 0 | identical, all 4 files |
+| `v6.0.2-dcxx` | 6.0.2 | `-sDEFAULT_TO_CXX` on 363/365/374 | 6.0.2 (7a2d97d627ff4945eae28847ce0387ac52b92c09) | 0 | all five steps; `==> Done!` | 64186 / 64211 / 63138 / 2110544 | 100% tests passed out of 12; 3/3 glue OK; exit 0 | identical, all 4 files |
+| `v6.0.3-unpatched` | 6.0.3 | unpatched | 6.0.3 (283e2d130132859fde6a4e4c87fd254b38127651) | 0 | all five steps; `==> Done!` | 65186 / 65211 / 64138 / 2110518 | 100% tests passed out of 12; 3/3 glue OK; exit 0 | n/a (different emsdk) |
+| `v6.0.4-unpatched` | 6.0.4 | unpatched | 6.0.4 (fe5be6afdff43ad58860d821fcc8572a23f92d19) | 0 | all five steps; `==> Done!` | 65242 / 65267 / 64194 / 2110687 | 100% tests passed out of 12; 3/3 glue OK; exit 0 | n/a (different emsdk) |
+| `v6.0.5-unpatched` | 6.0.5 | unpatched | 6.0.5 (1db513782be24469589d7cb8a1f1834e9a33f271) | 0 | all five steps; `==> Done!` | 65242 / 65267 / 64194 / 2110673 | 100% tests passed out of 12; 3/3 glue OK; exit 0 | n/a (different emsdk) |
+| `v6.0.6-unpatched` | 6.0.6 | unpatched | 6.0.6 (ce75e06884093bcefb86a6b8fd56a5d62a4cc245) | 1 | link at line 363 (`emcc`) failed: 8 `undefined symbol` errors + the `em++`/`-sDEFAULT_TO_CXX` warning | absent / absent / absent / absent | not run (build failed) | n/a (different emsdk) |
+| `v6.0.6-empp` | 6.0.6 | `em++` on 363/365/374 | 6.0.6 (ce75e06884093bcefb86a6b8fd56a5d62a4cc245) | 0 | all five steps; `==> Done!` | 65211 / 65236 / 64163 / 2110620 | 100% tests passed out of 12; 3/3 glue OK; exit 0 | n/a (different emsdk) |
+| `v6.0.6-dcxx` | 6.0.6 | `-sDEFAULT_TO_CXX` on 363/365/374 | 6.0.6 (ce75e06884093bcefb86a6b8fd56a5d62a4cc245) | 0 | all five steps; `==> Done!` | 65211 / 65236 / 64163 / 2110620 | 100% tests passed out of 12; 3/3 glue OK; exit 0 | n/a (different emsdk) |
+| `v6.0.6-partial` | 6.0.6 | `em++` on 363/365 only | 6.0.6 (ce75e06884093bcefb86a6b8fd56a5d62a4cc245) | 1 | link at line 374 (`emcc`) failed: 8 `undefined symbol` errors + the `em++`/`-sDEFAULT_TO_CXX` warning | 65211 / 65236 / absent / 2110620 | not run (build failed) | n/a (different emsdk) |
+| `v6.0.10-unpatched` | 6.0.10 | unpatched | 6.0.10 (d6c521a7f05449857c76bd99e396895583cf2083) | 1 | link at line 363 (`emcc`) failed: 8 `undefined symbol` errors + the `em++`/`-sDEFAULT_TO_CXX` warning | absent / absent / absent / absent | not run (build failed) | n/a (different emsdk) |
+| `v6.0.10-empp` | 6.0.10 | `em++` on 363/365/374 | 6.0.10 (d6c521a7f05449857c76bd99e396895583cf2083) | 0 | all five steps; `==> Done!` | 65295 / 65320 / 64247 / 2110515 | 100% tests passed out of 12; 3/3 glue OK; exit 0 | n/a (different emsdk) |
+| `v6.0.10-dcxx` | 6.0.10 | `-sDEFAULT_TO_CXX` on 363/365/374 | 6.0.10 (d6c521a7f05449857c76bd99e396895583cf2083) | 0 | all five steps; `==> Done!` | 65295 / 65320 / 64247 / 2110515 | 100% tests passed out of 12; 3/3 glue OK; exit 0 | n/a (different emsdk) |
+| `v6.0.12-unpatched` | 6.0.12 | unpatched | 6.0.12 (5488e0871d46d19a3209988190fa6a653126256f) | 1 | link at line 363 (`emcc`) failed: 10 `undefined symbol` errors + the `em++`/`-sDEFAULT_TO_CXX` warning | absent / absent / absent / absent | not run (build failed) | n/a (different emsdk) |
+| `v6.0.12-empp` | 6.0.12 | `em++` on 363/365/374 | 6.0.12 (5488e0871d46d19a3209988190fa6a653126256f) | 0 | all five steps; `==> Done!` | 65314 / 65340 / 64283 / 2109106 | 100% tests passed out of 12; 3/3 glue OK; exit 0 | n/a (different emsdk) |
+| `v6.0.12-dcxx` | 6.0.12 | `-sDEFAULT_TO_CXX` on 363/365/374 | 6.0.12 (5488e0871d46d19a3209988190fa6a653126256f) | 0 | all five steps; `==> Done!` | 65314 / 65340 / 64283 / 2109106 | 100% tests passed out of 12; 3/3 glue OK; exit 0 | n/a (different emsdk) |
+======== undefined-symbol lines per failed run (path prefix replaced by <...>)
+== v6.0.6-unpatched
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: operator new(unsigned long)
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: operator delete(void*, unsigned long)
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: __cxa_allocate_exception
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: typeinfo for std::length_error
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: std::length_error::~length_error()
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: __cxa_throw
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: std::logic_error::logic_error(char const*)
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: vtable for std::length_error
+emcc: warning: link failed with undefined C++ symbols. Try linking with 'em++' or passing '-sDEFAULT_TO_CXX'
+== v6.0.10-unpatched
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: operator new(unsigned long)
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: operator delete(void*, unsigned long)
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: __cxa_allocate_exception
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: typeinfo for std::length_error
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: std::length_error::~length_error()
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: __cxa_throw
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: std::logic_error::logic_error(char const*)
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: vtable for std::length_error
+emcc: warning: link failed with undefined C++ symbols. Try linking with 'em++' or passing '-sDEFAULT_TO_CXX'
+== v6.0.12-unpatched
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: __cxa_guard_acquire
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: __cxa_guard_release
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: operator new(unsigned long)
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: operator delete(void*, unsigned long)
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: __cxa_allocate_exception
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: typeinfo for std::length_error
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: std::length_error::~length_error()
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: __cxa_throw
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: std::logic_error::logic_error(char const*)
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: vtable for std::length_error
+emcc: warning: link failed with undefined C++ symbols. Try linking with 'em++' or passing '-sDEFAULT_TO_CXX'
+== v6.0.6-partial
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: operator new(unsigned long)
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: operator delete(void*, unsigned long)
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: __cxa_allocate_exception
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: typeinfo for std::length_error
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: std::length_error::~length_error()
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: __cxa_throw
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: std::logic_error::logic_error(char const*)
+wasm-ld: error: <...>/mpt_crypto.wasm.lto.o: undefined symbol: vtable for std::length_error
+emcc: warning: link failed with undefined C++ symbols. Try linking with 'em++' or passing '-sDEFAULT_TO_CXX'
+======== sha256 (first 16 hex) of the sorted 'undefined symbol: ...' list per failed run
+f37b42a9f25227b8 v6.0.6-unpatched count=8
+f37b42a9f25227b8 v6.0.10-unpatched count=8
+f37b42a9f25227b8 v6.0.6-partial count=8
+32ca1c12528240ed v6.0.12-unpatched count=10
+======== symbols in 6.0.12-unpatched not in 6.0.6-unpatched
+undefined symbol: __cxa_guard_acquire
+undefined symbol: __cxa_guard_release
+======== symbols in 6.0.6-unpatched not in 6.0.12-unpatched
+(end)

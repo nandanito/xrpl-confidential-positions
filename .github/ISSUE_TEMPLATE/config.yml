@@ -1,0 +1,4 @@
+# Blank issues are allowed: not every report fits a template. GitHub adds a
+# "Report a security vulnerability" link here once private vulnerability
+# reporting is enabled on the repository, which SECURITY.md relies on.
+blank_issues_enabled: true

@@ -1,0 +1,12 @@
+# Devnet validator list.
+#
+# The public key below was fetched from the list site itself on 2026-08-25 —
+# `curl -s https://vl.devnet.rippletest.net | jq -r .public_key` — rather than
+# transcribed from documentation. A named gap is a correct output; a substituted
+# source is a corrupted one.
+
+[validator_list_sites]
+https://vl.devnet.rippletest.net
+
+[validator_list_keys]
+EDBB54B0D9AEE071BB37784AF5A9E7CC49AC7A0EFCE868C54532BCB966B9CFC13B

@@ -1,0 +1,123 @@
+==== cause record 2026-10-18T00:57:50Z
+======== emsdk-6.0.5 ChangeLog: $USER_TMP/T/f12b.epIe0s/emsdk-6.0.5/upstream/emscripten/ChangeLog.md
+71dcdecec467d62ac90342e75736f82e68d4ad6eb7a93a20cbe98e0b13dc7490  $USER_TMP/T/f12b.epIe0s/emsdk-6.0.5/upstream/emscripten/ChangeLog.md
+---- emscripten-version.txt
+"6.0.5"
+---- grep -n DEFAULT_TO_CXX
+1171:  the `DEFAULT_TO_CXX` setting now only applies when linking and not when
+---- lines 15-40 (cat -n)
+15	significant internal modifications and optimizations etc. generally deserve a
+16	mention. To examine the full set of changes between versions, you can use git
+17	to browse the changes between the tags.
+18	
+19	See docs/process.md for more on how version tagging works.
+20	
+21	6.0.5 (in development)
+22	----------------------
+23	- Revert #27397, which changed the way config keys such as NODE_JS were parsed
+24	  when reading the config file.  This change broke emsdk installations that
+25	  contained spaces. (#27421)
+26	
+27	6.0.4 - 07/24/26
+28	----------------
+29	- The emscripten config file parser can now handle strings that contain
+30	  environment variables (e.g. `$HOME`) and that use the `~/` prefix.  This means
+31	  that it should be possible, in most cases, to avoid the use of python's
+32	  `os.path` within the the config file itself. (#27215)
+33	- Legacy support for ancient vendor-prefixed DOM APIs was removed (#27341,
+34	  #27339, #27338, #27340, #27347)
+35	- Removed legacy JS library symbols symbols: `$ALLOC_NORMAL`, `$ALLOC_STACK`,
+36	  and `$allocate`. (#27378)
+37	- llvm-libc was updated to LLVM 22.1.8. (#27374)
+38	- mimalloc was updated to 3.4.1. (#27380)
+39	- Backport fix for musl's qsort (CVE-2026-40200) (#27029)
+40	- `recvmmsg` and `sendmmsg` are now implemented in terms of `recvmsg` and
+======== emsdk-6.0.6 ChangeLog: $USER_TMP/T/f12b.epIe0s/emsdk-6.0.6/upstream/emscripten/ChangeLog.md
+57d5fe6b8fdbdab64d7e9ead2913759d026c037f66f9046eb9ffa3955933d843  $USER_TMP/T/f12b.epIe0s/emsdk-6.0.6/upstream/emscripten/ChangeLog.md
+---- emscripten-version.txt
+"6.0.6"
+---- grep -n DEFAULT_TO_CXX
+23:- `DEFAULT_TO_CXX` is now disabled by default. This means that `em++` is now
+25:  The old behavior is still available using `-sDEFAULT_TO_CXX`. (#11121)
+1181:  the `DEFAULT_TO_CXX` setting now only applies when linking and not when
+---- lines 15-40 (cat -n)
+15	significant internal modifications and optimizations etc. generally deserve a
+16	mention. To examine the full set of changes between versions, you can use git
+17	to browse the changes between the tags.
+18	
+19	See docs/process.md for more on how version tagging works.
+20	
+21	6.0.6 (in development)
+22	----------------------
+23	- `DEFAULT_TO_CXX` is now disabled by default. This means that `em++` is now
+24	  required when linking C++ programs, matching the behavior of clang and gcc.
+25	  The old behavior is still available using `-sDEFAULT_TO_CXX`. (#11121)
+26	- Added example Meson cross compilation files (`wasm32-emscripten.ini` and
+27	  `wasm64-emscripten.ini`) in `tools/meson/`. (#27478)
+28	- libcxx and libcxxabi were updated to LLVM 22.1.8. (#27428)
+29	
+30	6.0.5 - 07/29/26
+31	----------------
+32	- Revert #27397, which changed the way config keys such as NODE_JS were parsed
+33	  when reading the config file.  This change broke emsdk installations that
+34	  contained spaces. (#27421)
+35	- OpenMP was updated to LLVM 22.1.8 (#27437)
+36	
+37	6.0.4 - 07/24/26
+38	----------------
+39	- The emscripten config file parser can now handle strings that contain
+40	  environment variables (e.g. `$HOME`) and that use the `~/` prefix.  This means
+======== emsdk-6.0.12 ChangeLog: $USER_TMP/T/f12b.epIe0s/emsdk-6.0.12/upstream/emscripten/ChangeLog.md
+f0a4105a764356aeab623effb09f0b7b15e97129717097a72074b664104b4dc5  $USER_TMP/T/f12b.epIe0s/emsdk-6.0.12/upstream/emscripten/ChangeLog.md
+---- emscripten-version.txt
+"6.0.12"
+---- grep -n DEFAULT_TO_CXX
+111:  requiring `em++` or `-sDEFAULT_TO_CXX`. (#27496)
+122:- `DEFAULT_TO_CXX` is now disabled by default. This means that `em++` is now
+124:  The old behavior is still available using `-sDEFAULT_TO_CXX`. (#11121)
+1285:  the `DEFAULT_TO_CXX` setting now only applies when linking and not when
+---- lines 15-40 (cat -n)
+15	significant internal modifications and optimizations etc. generally deserve a
+16	mention. To examine the full set of changes between versions, you can use git
+17	to browse the changes between the tags.
+18	
+19	See docs/process.md for more on how version tagging works.
+20	
+21	6.0.12 (in development)
+22	----------------------
+23	- The embind library functions `getInheritedInstanceCount` and
+24	  `getLiveInheritedInstances` were marked as deprecated. (#27899)
+25	- `MAXIMUM_MEMORY` is now honored with `IMPORTED_MEMORY` even without
+26	  `ALLOW_MEMORY_GROWTH`: the module accepts an imported memory of any size up to
+27	  the maximum, but never grows it. Previously the maximum was ignored, with a
+28	  warning, and only a memory of exactly `INITIAL_MEMORY` was accepted.
+29	  (#27859)
+30	- Added experimental `emscripten_epoll_listener_add` and
+31	  `emscripten_epoll_listener_remove` in the new `<emscripten/epoll.h>`. These
+32	  listeners deliver an epoll set's readiness to a callback, supported on the
+33	  main thread only. The callback itself is then able to collect the events via
+34	  a zero-timeout `epoll_wait`, without an `ASYNCIFY`/`JSPI` requirement.
+35	  (#27547)
+36	
+37	6.0.11 - 10/02/26
+38	-----------------
+39	- Built-in SCons support (`emscons` and `tools/scons`) was marked as deprecated.
+40	  (See #27835)
+======== emsdk tag commits (from git ls-remote in 03-emsdk-tags.log)
+a2b92777574c2feda07994cd4f1079a3dfc151f8	refs/tags/6.0.10
+35ff8a6d150541276abbc6bae512ca90bcfbe220	refs/tags/6.0.12
+ca38f487f28b7c3c16f8f70cd0e012099ac4b7e2	refs/tags/6.0.2
+db04e88298d9916fc51fcd3743045ca3eb695127	refs/tags/6.0.3
+224ec5f9f2f72f09f9ce0e26d66bae7dbd8b692f	refs/tags/6.0.4
+dfb9d1a46c3bb8f52e1e6324be23123b9d73c190	refs/tags/6.0.5
+9981799f744be74ac67b1c1813ff172f63be0630	refs/tags/6.0.6
+======== emcc --version per install
+6.0.2: emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 6.0.2 (7a2d97d627ff4945eae28847ce0387ac52b92c09)
+6.0.3: emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 6.0.3 (283e2d130132859fde6a4e4c87fd254b38127651)
+6.0.4: emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 6.0.4 (fe5be6afdff43ad58860d821fcc8572a23f92d19)
+6.0.5: emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 6.0.5 (1db513782be24469589d7cb8a1f1834e9a33f271)
+6.0.6: emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 6.0.6 (ce75e06884093bcefb86a6b8fd56a5d62a4cc245)
+6.0.10: emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 6.0.10 (d6c521a7f05449857c76bd99e396895583cf2083)
+6.0.12: emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 6.0.12 (5488e0871d46d19a3209988190fa6a653126256f)
+======== emsdk-6.0.6 emscripten-releases-tags.json entry for 6.0.6
+25:    "6.0.6": "833aa203ba2283fc2b6adb504a79a3a0d692df81",

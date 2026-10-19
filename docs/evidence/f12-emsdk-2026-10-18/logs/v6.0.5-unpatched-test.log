@@ -1,0 +1,175 @@
+==== test v6.0.5-unpatched (emsdk 6.0.5)  start 2026-10-18T01:06:39Z
+---- git rev-parse HEAD
+3baaaac33dadec3e649846e487f452c5b6b2d825
+---- git status
+?? output/
+---- git diff --numstat
+Setting up EMSDK environment (suppress these messages with EMSDK_QUIET=1)
+Adding directories to PATH:
+PATH += $USER_TMP/T/f12b.epIe0s/emsdk-6.0.5
+PATH += $USER_TMP/T/f12b.epIe0s/emsdk-6.0.5/upstream/emscripten
+
+Setting environment variables:
+PATH = $USER_TMP/T/f12b.epIe0s/emsdk-6.0.5:$USER_TMP/T/f12b.epIe0s/emsdk-6.0.5/upstream/emscripten:/Applications/Orca.app/Contents/Resources/bin:$HOME/.kx/bin:$HOME/.local/bin:$HOME/.antigravity-ide/antigravity-ide/bin:/opt/homebrew/opt/libpq/bin:$HOME/.antigravity/antigravity/bin:$HOME/.codeium/windsurf/bin:$HOME/go/bin:$HOME/.nvm/versions/node/v24.3.0/bin:$HOME/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Library/TeX/texbin:$HOME/.cargo/bin:$HOME/Library/Application Support/JetBrains/Toolbox/scripts:$HOME/.orbstack/bin:$HOME/.lmstudio/bin:$HOME/.volta/bin:$HOME/.asdf/shims:$HOME/.fnm/aliases/default/bin:$HOME/.local/share/mise/shims:$HOME/Library/pnpm:$HOME/.yarn/bin:/usr/local/sbin:/nix/var/nix/profiles/default/bin:$HOME/bin:$HOME/.nix-profile/bin:$HOME/.opencode/bin:$HOME/.vite-plus/bin
+EMSDK = $USER_TMP/T/f12b.epIe0s/emsdk-6.0.5
+EMSDK_NODE = $USER_TMP/T/f12b.epIe0s/emsdk-6.0.5/node/24.19.0_64bit/bin/node
+EMSDK_PYTHON = $USER_TMP/T/f12b.epIe0s/emsdk-6.0.5/python/3.13.3_64bit/bin/python3
+SSL_CERT_FILE = $USER_TMP/T/f12b.epIe0s/emsdk-6.0.5/python/3.13.3_64bit/lib/python3.13/site-packages/certifi/cacert.pem
+---- emcc --version
+emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 6.0.5 (1db513782be24469589d7cb8a1f1834e9a33f271)
+Copyright (C) 2026 the Emscripten authors (see AUTHORS.txt)
+This is free and open source software under the MIT license.
+There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+---- node
+$HOME/.nvm/versions/node/v22.22.3/bin/node
+v22.22.3
+---- GLUE_DIR=$USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/output
+total 4512
+drwxr-xr-x@  6 nandan  staff      192 Oct 18 10:06 .
+drwxr-xr-x@ 24 nandan  staff      768 Oct 18 10:06 ..
+-rw-r--r--@  1 nandan  staff    65242 Oct 18 10:06 mpt_crypto.js
+-rw-r--r--@  1 nandan  staff    65267 Oct 18 10:06 mpt_crypto.mjs
+-rwxr-xr-x@  1 nandan  staff  2110673 Oct 18 10:06 mpt_crypto.wasm
+-rw-r--r--@  1 nandan  staff    64194 Oct 18 10:06 mpt_crypto.web.mjs
+==== TEST: GLUE_DIR=$WT/output ./.github/scripts/test-wasm.sh  start 2026-10-18T01:06:40Z
+emcmake: cmake -S $USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched -B $USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/emcc_build/wasm-tests -G 'Unix Makefiles' -DENABLE_TESTS=ON -DMPT_CRYPTO_WERROR=OFF -DHAVE___INT128=FALSE -Dsecp256k1_DIR=$USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/emcc_build/wasm-deps -DOPENSSL_USE_STATIC_LIBS=ON -DOPENSSL_CRYPTO_LIBRARY=$USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/emcc_build/openssl-3.6.2/libcrypto.a -DOPENSSL_INCLUDE_DIR=$USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/emcc_build/openssl-3.6.2/include -DCMAKE_C_FLAGS=-I$USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/emcc_build/obj -DCMAKE_CXX_FLAGS=-I$USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/emcc_build/obj -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH -DCMAKE_CROSSCOMPILING_EMULATOR=$HOME/.nvm/versions/node/v22.22.3/bin/node -DCMAKE_TOOLCHAIN_FILE=$USER_TMP/T/f12b.epIe0s/emsdk-6.0.5/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake in directory $USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched
+-- Found OpenSSL: $USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/emcc_build/openssl-3.6.2/libcrypto.a (found version "3.6.2")
+-- Looking for sys/types.h
+-- Looking for sys/types.h - found
+-- Looking for stdint.h
+-- Looking for stdint.h - found
+-- Looking for stddef.h
+-- Looking for stddef.h - found
+-- Check size of __int128
+-- Check size of __int128 - done
+-- Build: No 128-bit support detected.
+-- Configuring done (4.8s)
+-- Generating done (0.0s)
+-- Build files have been written to: $USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/emcc_build/wasm-tests
+[  5%] Building C object CMakeFiles/mpt-crypto.dir/src/commitments.c.o
+[  5%] Building C object CMakeFiles/mpt-crypto.dir/src/elgamal.c.o
+[  8%] Building C object CMakeFiles/mpt-crypto.dir/src/proof_compact_standard.c.o
+[ 11%] Building C object CMakeFiles/mpt-crypto.dir/src/mpt_scalar.c.o
+[ 14%] Building C object CMakeFiles/mpt-crypto.dir/src/bulletproof_aggregated.c.o
+[ 17%] Building C object CMakeFiles/mpt-crypto.dir/src/bsgs_dlp.c.o
+[ 22%] Building CXX object CMakeFiles/mpt-crypto.dir/src/utility/mpt_utility.cpp.o
+[ 22%] Building C object CMakeFiles/mpt-crypto.dir/src/proof_compact_convertback.c.o
+[ 28%] Building C object CMakeFiles/mpt-crypto.dir/src/proof_compact_clawback.c.o
+[ 28%] Building C object CMakeFiles/mpt-crypto.dir/src/proof_pok_sk.c.o
+In file included from $USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/src/mpt_scalar.c:52:
+In file included from $USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/emcc_build/obj/private/int128.h:4:
+$USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/emcc_build/obj/private/util.h:34:13: warning: unused function 'print_buf_plain' [-Wunused-function]
+   34 | static void print_buf_plain(const unsigned char *buf, size_t len) {
+      |             ^~~~~~~~~~~~~~~
+In file included from $USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/src/mpt_scalar.c:58:
+$USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/emcc_build/obj/private/scalar_impl.h:34:12: warning: unused function 'secp256k1_scalar_set_b32_seckey' [-Wunused-function]
+   34 | static int secp256k1_scalar_set_b32_seckey(secp256k1_scalar *r, const unsigned char *bin) {
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from $USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/src/mpt_scalar.c:58:
+In file included from $USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/emcc_build/obj/private/scalar_impl.h:20:
+$USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/emcc_build/obj/private/scalar_4x64_impl.h:982:13: warning: unused function 'secp256k1_scalar_inverse_var' [-Wunused-function]
+  982 | static void secp256k1_scalar_inverse_var(secp256k1_scalar *r, const secp256k1_scalar *x) {
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/emcc_build/obj/private/scalar_4x64_impl.h:195:13: warning: unused function 'secp256k1_scalar_half' [-Wunused-function]
+  195 | static void secp256k1_scalar_half(secp256k1_scalar *r, const secp256k1_scalar *a) {
+      |             ^~~~~~~~~~~~~~~~~~~~~
+$USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/emcc_build/obj/private/scalar_4x64_impl.h:242:12: warning: unused function 'secp256k1_scalar_is_high' [-Wunused-function]
+  242 | static int secp256k1_scalar_is_high(const secp256k1_scalar *a) {
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~
+$USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/emcc_build/obj/private/scalar_4x64_impl.h:256:12: warning: unused function 'secp256k1_scalar_cond_negate' [-Wunused-function]
+  256 | static int secp256k1_scalar_cond_negate(secp256k1_scalar *r, int flag) {
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/emcc_build/obj/private/scalar_4x64_impl.h:868:13: warning: unused function 'secp256k1_scalar_split_128' [-Wunused-function]
+  868 | static void secp256k1_scalar_split_128(secp256k1_scalar *r1, secp256k1_scalar *r2, const secp256k1_scalar *k) {
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from $USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/src/mpt_scalar.c:58:
+$USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/emcc_build/obj/private/scalar_impl.h:142:13: warning: unused function 'secp256k1_scalar_split_lambda' [-Wunused-function]
+  142 | static void secp256k1_scalar_split_lambda(secp256k1_scalar * SECP256K1_RESTRICT r1, secp256k1_scalar * SECP256K1_RESTRICT r2, const secp256k1_scalar * SECP256K1_RESTRICT k) {
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from $USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/src/mpt_scalar.c:58:
+In file included from $USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/emcc_build/obj/private/scalar_impl.h:20:
+In file included from $USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/emcc_build/obj/private/scalar_4x64_impl.h:12:
+$USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/emcc_build/obj/private/modinv64_impl.h:721:12: warning: unused function 'secp256k1_jacobi64_maybe_var' [-Wunused-function]
+  721 | static int secp256k1_jacobi64_maybe_var(const secp256k1_modinv64_signed62 *x, const secp256k1_modinv64_modinfo *modinfo) {
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+9 warnings generated.
+In file included from $USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/src/bsgs_dlp.c:40:
+In file included from $USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/emcc_build/obj/private/int128.h:4:
+$USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/emcc_build/obj/private/util.h:34:13: warning: unused function 'print_buf_plain' [-Wunused-function]
+   34 | static void print_buf_plain(const unsigned char *buf, size_t len) {
+      |             ^~~~~~~~~~~~~~~
+1 warning generated.
+[ 31%] Linking CXX static library libmpt-crypto.a
+[ 31%] Built target mpt-crypto
+[ 34%] Building C object tests/CMakeFiles/test_elgamal_verify.dir/test_elgamal_verify.c.o
+[ 37%] Building C object tests/CMakeFiles/test_ct_tweak_mul.dir/test_ct_tweak_mul.c.o
+[ 40%] Building C object tests/CMakeFiles/test_commitments.dir/test_commitments.c.o
+[ 42%] Building C object tests/CMakeFiles/test_pok_sk.dir/test_pok_sk.c.o
+[ 45%] Building C object tests/CMakeFiles/test_compact_standard.dir/test_compact_standard.c.o
+[ 48%] Building C object tests/CMakeFiles/test_ipa.dir/test_ipa.c.o
+[ 51%] Building C object tests/CMakeFiles/test_bsgs_dlp.dir/test_bsgs_dlp.c.o
+[ 54%] Building C object tests/CMakeFiles/test_compact_clawback.dir/test_compact_clawback.c.o
+[ 57%] Building C object tests/CMakeFiles/test_elgamal.dir/test_elgamal.c.o
+[ 60%] Building C object tests/CMakeFiles/test_bulletproof_agg.dir/test_bulletproof_agg.c.o
+[ 62%] Building CXX object tests/CMakeFiles/test_mpt_utility.dir/test_mpt_utility.cpp.o
+[ 65%] Building C object tests/CMakeFiles/test_compact_convertback.dir/test_compact_convertback.c.o
+[ 68%] Linking CXX executable test_elgamal.js
+[ 71%] Linking CXX executable test_ct_tweak_mul.js
+[ 74%] Linking CXX executable test_pok_sk.js
+[ 77%] Linking CXX executable test_compact_convertback.js
+[ 80%] Linking CXX executable test_commitments.js
+[ 82%] Linking CXX executable test_bsgs_dlp.js
+[ 85%] Linking CXX executable test_bulletproof_agg.js
+[ 88%] Linking CXX executable test_ipa.js
+[ 91%] Linking CXX executable test_compact_standard.js
+[ 94%] Linking CXX executable test_elgamal_verify.js
+[ 97%] Linking CXX executable test_compact_clawback.js
+[100%] Linking CXX executable test_mpt_utility.js
+[100%] Built target test_elgamal_verify
+[100%] Built target test_bsgs_dlp
+[100%] Built target test_ct_tweak_mul
+[100%] Built target test_commitments
+[100%] Built target test_ipa
+[100%] Built target test_elgamal
+[100%] Built target test_compact_clawback
+[100%] Built target test_bulletproof_agg
+[100%] Built target test_compact_convertback
+[100%] Built target test_compact_standard
+[100%] Built target test_pok_sk
+[100%] Built target test_mpt_utility
+Test project $USER_TMP/T/f12b.epIe0s/wt/v6.0.5-unpatched/emcc_build/wasm-tests
+      Start  1: test_elgamal
+ 1/12 Test  #1: test_elgamal .....................   Passed    0.26 sec
+      Start  2: test_elgamal_verify
+ 2/12 Test  #2: test_elgamal_verify ..............   Passed    0.05 sec
+      Start  3: test_pok_sk
+ 3/12 Test  #3: test_pok_sk ......................   Passed    0.09 sec
+      Start  4: test_commitments
+ 4/12 Test  #4: test_commitments .................   Passed    0.07 sec
+      Start  5: test_ipa
+ 5/12 Test  #5: test_ipa .........................   Passed    0.18 sec
+      Start  6: test_bulletproof_agg
+ 6/12 Test  #6: test_bulletproof_agg .............   Passed    1.55 sec
+      Start  7: test_mpt_utility
+ 7/12 Test  #7: test_mpt_utility .................   Passed    3.52 sec
+      Start  8: test_compact_standard
+ 8/12 Test  #8: test_compact_standard ............   Passed    0.06 sec
+      Start  9: test_compact_clawback
+ 9/12 Test  #9: test_compact_clawback ............   Passed    0.05 sec
+      Start 10: test_compact_convertback
+10/12 Test #10: test_compact_convertback .........   Passed    0.05 sec
+      Start 11: test_ct_tweak_mul
+11/12 Test #11: test_ct_tweak_mul ................   Passed    0.06 sec
+      Start 12: test_bsgs_dlp
+12/12 Test #12: test_bsgs_dlp ....................   Passed   11.18 sec
+
+100% tests passed out of 12
+
+Total Test time (real) =  17.12 sec
+Smoke-testing the CJS + ESM + browser glue...
+  mpt_crypto.js  (CJS) OK
+  mpt_crypto.mjs (ESM) OK
+  mpt_crypto.web.mjs (web) OK
+==== TEST EXIT: 0  end 2026-10-18T01:07:08Z
+exit 0

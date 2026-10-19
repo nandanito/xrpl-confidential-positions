@@ -1,0 +1,172 @@
+==== DIAGNOSTIC xtrace re-run of v6.0.10-unpatched (emsdk 6.0.10)  start 2026-10-18T01:00:14Z
+---- git rev-parse HEAD
+3baaaac33dadec3e649846e487f452c5b6b2d825
+---- git diff --numstat
+Setting up EMSDK environment (suppress these messages with EMSDK_QUIET=1)
+Adding directories to PATH:
+PATH += $USER_TMP/T/f12b.epIe0s/emsdk-6.0.10
+PATH += $USER_TMP/T/f12b.epIe0s/emsdk-6.0.10/upstream/emscripten
+
+Setting environment variables:
+PATH = $USER_TMP/T/f12b.epIe0s/emsdk-6.0.10:$USER_TMP/T/f12b.epIe0s/emsdk-6.0.10/upstream/emscripten:/Applications/Orca.app/Contents/Resources/bin:$HOME/.kx/bin:$HOME/.local/bin:$HOME/.antigravity-ide/antigravity-ide/bin:/opt/homebrew/opt/libpq/bin:$HOME/.antigravity/antigravity/bin:$HOME/.codeium/windsurf/bin:$HOME/go/bin:$HOME/.nvm/versions/node/v24.3.0/bin:$HOME/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Library/TeX/texbin:$HOME/.cargo/bin:$HOME/Library/Application Support/JetBrains/Toolbox/scripts:$HOME/.orbstack/bin:$HOME/.lmstudio/bin:$HOME/.volta/bin:$HOME/.asdf/shims:$HOME/.fnm/aliases/default/bin:$HOME/.local/share/mise/shims:$HOME/Library/pnpm:$HOME/.yarn/bin:/usr/local/sbin:/nix/var/nix/profiles/default/bin:$HOME/bin:$HOME/.nix-profile/bin:$HOME/.opencode/bin:$HOME/.vite-plus/bin
+EMSDK = $USER_TMP/T/f12b.epIe0s/emsdk-6.0.10
+EMSDK_NODE = $USER_TMP/T/f12b.epIe0s/emsdk-6.0.10/node/24.19.0_64bit/bin/node
+EMSDK_PYTHON = $USER_TMP/T/f12b.epIe0s/emsdk-6.0.10/python/3.13.3_64bit/bin/python3
+SSL_CERT_FILE = $USER_TMP/T/f12b.epIe0s/emsdk-6.0.10/python/3.13.3_64bit/lib/python3.13/site-packages/certifi/cacert.pem
+---- emcc --version
+emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 6.0.10 (d6c521a7f05449857c76bd99e396895583cf2083)
+Copyright (C) 2026 the Emscripten authors (see AUTHORS.txt)
+This is free and open source software under the MIT license.
+There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
++ ./.github/scripts/build-wasm.sh:25: set -euo pipefail
++++ ./.github/scripts/build-wasm.sh:27: dirname ./.github/scripts/build-wasm.sh
+++ ./.github/scripts/build-wasm.sh:27: cd ./.github/scripts/../..
+++ ./.github/scripts/build-wasm.sh:27: pwd
++ ./.github/scripts/build-wasm.sh:27: ROOT_DIR=$USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched
++ ./.github/scripts/build-wasm.sh:28: BUILD_DIR=$USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build
++ ./.github/scripts/build-wasm.sh:29: OUT_DIR=$USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_out
++ ./.github/scripts/build-wasm.sh:30: CONAN_LOCK=$USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/conan.lock
++ ./.github/scripts/build-wasm.sh:36: [[ ! -f $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/conan.lock ]]
+++ ./.github/scripts/build-wasm.sh:45: lock_version secp256k1
+++ ./.github/scripts/build-wasm.sh:41: sed -nE 's|.*"secp256k1/([0-9][^#"]*)#.*|\1|p' $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/conan.lock
+++ ./.github/scripts/build-wasm.sh:41: head -n1
++ ./.github/scripts/build-wasm.sh:45: SECP256K1_VERSION=v0.7.1
+++ ./.github/scripts/build-wasm.sh:46: lock_version openssl
+++ ./.github/scripts/build-wasm.sh:41: sed -nE 's|.*"openssl/([0-9][^#"]*)#.*|\1|p' $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/conan.lock
+++ ./.github/scripts/build-wasm.sh:41: head -n1
++ ./.github/scripts/build-wasm.sh:46: OPENSSL_VERSION=3.6.2
++ ./.github/scripts/build-wasm.sh:48: [[ v0.7.1 == \v ]]
++ ./.github/scripts/build-wasm.sh:48: [[ -z 3.6.2 ]]
++ ./.github/scripts/build-wasm.sh:56: SECP256K1_COMMIT=1a53f4961f337b4d166c25fce72ef0dc88806618
++ ./.github/scripts/build-wasm.sh:57: OPENSSL_SHA256=aaf51a1fe064384f811daeaeb4ec4dce7340ec8bd893027eee676af31e83a04f
++ ./.github/scripts/build-wasm.sh:68: SECP256K1_SRC=$USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1
++ ./.github/scripts/build-wasm.sh:69: SECP256K1_BUILD=$USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/build
++ ./.github/scripts/build-wasm.sh:70: OPENSSL_SRC=$USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/openssl-3.6.2
++ ./.github/scripts/build-wasm.sh:71: OBJ_DIR=$USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj
++ ./.github/scripts/build-wasm.sh:87: [[ '' == \-\-\c\l\e\a\n ]]
++ ./.github/scripts/build-wasm.sh:95: require_cmd emcc
++ ./.github/scripts/build-wasm.sh:78: command -v emcc
++ ./.github/scripts/build-wasm.sh:96: require_cmd em++
++ ./.github/scripts/build-wasm.sh:78: command -v em++
++ ./.github/scripts/build-wasm.sh:97: require_cmd emcmake
++ ./.github/scripts/build-wasm.sh:78: command -v emcmake
++ ./.github/scripts/build-wasm.sh:98: require_cmd emmake
++ ./.github/scripts/build-wasm.sh:78: command -v emmake
++ ./.github/scripts/build-wasm.sh:100: mkdir -p $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_out $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj
++ ./.github/scripts/build-wasm.sh:102: log 'Dependencies (from conan.lock): secp256k1 v0.7.1, openssl 3.6.2'
++ ./.github/scripts/build-wasm.sh:76: echo '==> Dependencies (from conan.lock): secp256k1 v0.7.1, openssl 3.6.2'
+==> Dependencies (from conan.lock): secp256k1 v0.7.1, openssl 3.6.2
++ ./.github/scripts/build-wasm.sh:107: [[ ! -f $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/build/lib/libsecp256k1.a ]]
++ ./.github/scripts/build-wasm.sh:163: log 'secp256k1 already built — skipping'
++ ./.github/scripts/build-wasm.sh:76: echo '==> secp256k1 already built — skipping'
+==> secp256k1 already built — skipping
++ ./.github/scripts/build-wasm.sh:169: [[ ! -f $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/openssl-3.6.2/libcrypto.a ]]
++ ./.github/scripts/build-wasm.sh:225: log 'OpenSSL already built — skipping'
++ ./.github/scripts/build-wasm.sh:76: echo '==> OpenSSL already built — skipping'
+==> OpenSSL already built — skipping
++ ./.github/scripts/build-wasm.sh:235: log 'Setting up secp256k1 private header symlink'
++ ./.github/scripts/build-wasm.sh:76: echo '==> Setting up secp256k1 private header symlink'
+==> Setting up secp256k1 private header symlink
++ ./.github/scripts/build-wasm.sh:236: mkdir -p $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/private
++ ./.github/scripts/build-wasm.sh:237: ln -sf $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/asm $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/assumptions.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/bench_ecmult.c $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/bench_internal.c $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/bench.c $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/bench.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/checkmem.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/CMakeLists.txt $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/ctime_tests.c $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/ecdsa_impl.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/ecdsa.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/eckey_impl.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/eckey.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/ecmult_compute_table_impl.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/ecmult_compute_table.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/ecmult_const_impl.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/ecmult_const.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/ecmult_gen_compute_table_impl.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/ecmult_gen_compute_table.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/ecmult_gen_impl.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/ecmult_gen.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/ecmult_impl.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/ecmult.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/field_10x26_impl.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/field_10x26.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/field_5x52_impl.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/field_5x52_int128_impl.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/field_5x52.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/field_impl.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/field.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/group_impl.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/group.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/hash_impl.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/hash.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/hsort_impl.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/hsort.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/int128_impl.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/int128_native_impl.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/int128_native.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/int128_struct_impl.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/int128_struct.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/int128.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/modinv32_impl.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/modinv32.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/modinv64_impl.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/modinv64.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/modules $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/precompute_ecmult_gen.c $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/precompute_ecmult.c $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/precomputed_ecmult_gen.c $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/precomputed_ecmult_gen.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/precomputed_ecmult.c $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/precomputed_ecmult.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/scalar_4x64_impl.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/scalar_4x64.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/scalar_8x32_impl.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/scalar_8x32.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/scalar_impl.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/scalar_low_impl.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/scalar_low.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/scalar.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/scratch_impl.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/scratch.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/secp256k1.c $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/selftest.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/testrand_impl.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/testrand.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/tests_common.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/tests_exhaustive.c $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/tests.c $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/testutil.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/unit_test.c $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/unit_test.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/util_local_visibility.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/util.h $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/src/wycheproof $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/private/
++ ./.github/scripts/build-wasm.sh:242: log 'Compiling mpt-crypto sources'
++ ./.github/scripts/build-wasm.sh:76: echo '==> Compiling mpt-crypto sources'
+==> Compiling mpt-crypto sources
++ ./.github/scripts/build-wasm.sh:249: CFLAGS='-Oz -flto     -I$USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/include     -I$USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/include     -I$USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/openssl-3.6.2/include     -I$USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj     -DSECP256K1_WIDEMUL_INT64'
++ ./.github/scripts/build-wasm.sh:256: OBJECTS=()
++ ./.github/scripts/build-wasm.sh:257: for f in '"${ROOT_DIR}"/src/*.c'
+++ ./.github/scripts/build-wasm.sh:258: basename $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/src/bsgs_dlp.c .c
++ ./.github/scripts/build-wasm.sh:258: name=bsgs_dlp
++ ./.github/scripts/build-wasm.sh:259: obj=$USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/bsgs_dlp.o
++ ./.github/scripts/build-wasm.sh:260: OBJECTS+=("${obj}")
++ ./.github/scripts/build-wasm.sh:261: [[ $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/src/bsgs_dlp.c -nt $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/bsgs_dlp.o ]]
++ ./.github/scripts/build-wasm.sh:257: for f in '"${ROOT_DIR}"/src/*.c'
+++ ./.github/scripts/build-wasm.sh:258: basename $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/src/bulletproof_aggregated.c .c
++ ./.github/scripts/build-wasm.sh:258: name=bulletproof_aggregated
++ ./.github/scripts/build-wasm.sh:259: obj=$USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/bulletproof_aggregated.o
++ ./.github/scripts/build-wasm.sh:260: OBJECTS+=("${obj}")
++ ./.github/scripts/build-wasm.sh:261: [[ $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/src/bulletproof_aggregated.c -nt $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/bulletproof_aggregated.o ]]
++ ./.github/scripts/build-wasm.sh:257: for f in '"${ROOT_DIR}"/src/*.c'
+++ ./.github/scripts/build-wasm.sh:258: basename $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/src/commitments.c .c
++ ./.github/scripts/build-wasm.sh:258: name=commitments
++ ./.github/scripts/build-wasm.sh:259: obj=$USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/commitments.o
++ ./.github/scripts/build-wasm.sh:260: OBJECTS+=("${obj}")
++ ./.github/scripts/build-wasm.sh:261: [[ $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/src/commitments.c -nt $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/commitments.o ]]
++ ./.github/scripts/build-wasm.sh:257: for f in '"${ROOT_DIR}"/src/*.c'
+++ ./.github/scripts/build-wasm.sh:258: basename $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/src/elgamal.c .c
++ ./.github/scripts/build-wasm.sh:258: name=elgamal
++ ./.github/scripts/build-wasm.sh:259: obj=$USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/elgamal.o
++ ./.github/scripts/build-wasm.sh:260: OBJECTS+=("${obj}")
++ ./.github/scripts/build-wasm.sh:261: [[ $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/src/elgamal.c -nt $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/elgamal.o ]]
++ ./.github/scripts/build-wasm.sh:257: for f in '"${ROOT_DIR}"/src/*.c'
+++ ./.github/scripts/build-wasm.sh:258: basename $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/src/mpt_scalar.c .c
++ ./.github/scripts/build-wasm.sh:258: name=mpt_scalar
++ ./.github/scripts/build-wasm.sh:259: obj=$USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/mpt_scalar.o
++ ./.github/scripts/build-wasm.sh:260: OBJECTS+=("${obj}")
++ ./.github/scripts/build-wasm.sh:261: [[ $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/src/mpt_scalar.c -nt $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/mpt_scalar.o ]]
++ ./.github/scripts/build-wasm.sh:257: for f in '"${ROOT_DIR}"/src/*.c'
+++ ./.github/scripts/build-wasm.sh:258: basename $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/src/proof_compact_clawback.c .c
++ ./.github/scripts/build-wasm.sh:258: name=proof_compact_clawback
++ ./.github/scripts/build-wasm.sh:259: obj=$USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/proof_compact_clawback.o
++ ./.github/scripts/build-wasm.sh:260: OBJECTS+=("${obj}")
++ ./.github/scripts/build-wasm.sh:261: [[ $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/src/proof_compact_clawback.c -nt $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/proof_compact_clawback.o ]]
++ ./.github/scripts/build-wasm.sh:257: for f in '"${ROOT_DIR}"/src/*.c'
+++ ./.github/scripts/build-wasm.sh:258: basename $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/src/proof_compact_convertback.c .c
++ ./.github/scripts/build-wasm.sh:258: name=proof_compact_convertback
++ ./.github/scripts/build-wasm.sh:259: obj=$USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/proof_compact_convertback.o
++ ./.github/scripts/build-wasm.sh:260: OBJECTS+=("${obj}")
++ ./.github/scripts/build-wasm.sh:261: [[ $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/src/proof_compact_convertback.c -nt $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/proof_compact_convertback.o ]]
++ ./.github/scripts/build-wasm.sh:257: for f in '"${ROOT_DIR}"/src/*.c'
+++ ./.github/scripts/build-wasm.sh:258: basename $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/src/proof_compact_standard.c .c
++ ./.github/scripts/build-wasm.sh:258: name=proof_compact_standard
++ ./.github/scripts/build-wasm.sh:259: obj=$USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/proof_compact_standard.o
++ ./.github/scripts/build-wasm.sh:260: OBJECTS+=("${obj}")
++ ./.github/scripts/build-wasm.sh:261: [[ $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/src/proof_compact_standard.c -nt $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/proof_compact_standard.o ]]
++ ./.github/scripts/build-wasm.sh:257: for f in '"${ROOT_DIR}"/src/*.c'
+++ ./.github/scripts/build-wasm.sh:258: basename $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/src/proof_pok_sk.c .c
++ ./.github/scripts/build-wasm.sh:258: name=proof_pok_sk
++ ./.github/scripts/build-wasm.sh:259: obj=$USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/proof_pok_sk.o
++ ./.github/scripts/build-wasm.sh:260: OBJECTS+=("${obj}")
++ ./.github/scripts/build-wasm.sh:261: [[ $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/src/proof_pok_sk.c -nt $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/proof_pok_sk.o ]]
++ ./.github/scripts/build-wasm.sh:267: name=mpt_utility
++ ./.github/scripts/build-wasm.sh:268: obj=$USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/mpt_utility.o
++ ./.github/scripts/build-wasm.sh:269: OBJECTS+=("${obj}")
++ ./.github/scripts/build-wasm.sh:270: [[ $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/src/utility/mpt_utility.cpp -nt $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/mpt_utility.o ]]
++ ./.github/scripts/build-wasm.sh:278: log 'Linking mpt_crypto.wasm'
++ ./.github/scripts/build-wasm.sh:76: echo '==> Linking mpt_crypto.wasm'
+==> Linking mpt_crypto.wasm
++ ./.github/scripts/build-wasm.sh:280: EXPORTS=_malloc,_free
++ ./.github/scripts/build-wasm.sh:281: EXPORTS=_malloc,_free,_mpt_secp256k1_context
++ ./.github/scripts/build-wasm.sh:284: EXPORTS=_malloc,_free,_mpt_secp256k1_context,_mpt_generate_blinding_factor
++ ./.github/scripts/build-wasm.sh:285: EXPORTS=_malloc,_free,_mpt_secp256k1_context,_mpt_generate_blinding_factor,_mpt_encrypt_amount,_mpt_decrypt_amount
++ ./.github/scripts/build-wasm.sh:286: EXPORTS=_malloc,_free,_mpt_secp256k1_context,_mpt_generate_blinding_factor,_mpt_encrypt_amount,_mpt_decrypt_amount,_mpt_get_pedersen_commitment
++ ./.github/scripts/build-wasm.sh:294: EXPORTS=_malloc,_free,_mpt_secp256k1_context,_mpt_generate_blinding_factor,_mpt_encrypt_amount,_mpt_decrypt_amount,_mpt_get_pedersen_commitment,_mpt_get_convert_context_hash,_mpt_get_convert_proof,_mpt_verify_convert_proof
++ ./.github/scripts/build-wasm.sh:295: EXPORTS=_malloc,_free,_mpt_secp256k1_context,_mpt_generate_blinding_factor,_mpt_encrypt_amount,_mpt_decrypt_amount,_mpt_get_pedersen_commitment,_mpt_get_convert_context_hash,_mpt_get_convert_proof,_mpt_verify_convert_proof,_mpt_get_clawback_context_hash,_mpt_get_clawback_proof,_mpt_verify_clawback_proof
++ ./.github/scripts/build-wasm.sh:296: EXPORTS=_malloc,_free,_mpt_secp256k1_context,_mpt_generate_blinding_factor,_mpt_encrypt_amount,_mpt_decrypt_amount,_mpt_get_pedersen_commitment,_mpt_get_convert_context_hash,_mpt_get_convert_proof,_mpt_verify_convert_proof,_mpt_get_clawback_context_hash,_mpt_get_clawback_proof,_mpt_verify_clawback_proof,_mpt_get_convert_back_context_hash,_mpt_get_convert_back_proof,_mpt_verify_convert_back_proof
++ ./.github/scripts/build-wasm.sh:297: EXPORTS=_malloc,_free,_mpt_secp256k1_context,_mpt_generate_blinding_factor,_mpt_encrypt_amount,_mpt_decrypt_amount,_mpt_get_pedersen_commitment,_mpt_get_convert_context_hash,_mpt_get_convert_proof,_mpt_verify_convert_proof,_mpt_get_clawback_context_hash,_mpt_get_clawback_proof,_mpt_verify_clawback_proof,_mpt_get_convert_back_context_hash,_mpt_get_convert_back_proof,_mpt_verify_convert_back_proof,_mpt_get_send_context_hash,_mpt_get_confidential_send_proof,_mpt_verify_send_proof
++ ./.github/scripts/build-wasm.sh:300: EXPORTS=_malloc,_free,_mpt_secp256k1_context,_mpt_generate_blinding_factor,_mpt_encrypt_amount,_mpt_decrypt_amount,_mpt_get_pedersen_commitment,_mpt_get_convert_context_hash,_mpt_get_convert_proof,_mpt_verify_convert_proof,_mpt_get_clawback_context_hash,_mpt_get_clawback_proof,_mpt_verify_clawback_proof,_mpt_get_convert_back_context_hash,_mpt_get_convert_back_proof,_mpt_verify_convert_back_proof,_mpt_get_send_context_hash,_mpt_get_confidential_send_proof,_mpt_verify_send_proof,_mpt_verify_revealed_amount
++ ./.github/scripts/build-wasm.sh:301: EXPORTS=_malloc,_free,_mpt_secp256k1_context,_mpt_generate_blinding_factor,_mpt_encrypt_amount,_mpt_decrypt_amount,_mpt_get_pedersen_commitment,_mpt_get_convert_context_hash,_mpt_get_convert_proof,_mpt_verify_convert_proof,_mpt_get_clawback_context_hash,_mpt_get_clawback_proof,_mpt_verify_clawback_proof,_mpt_get_convert_back_context_hash,_mpt_get_convert_back_proof,_mpt_verify_convert_back_proof,_mpt_get_send_context_hash,_mpt_get_confidential_send_proof,_mpt_verify_send_proof,_mpt_verify_revealed_amount,_mpt_verify_send_range_proof
++ ./.github/scripts/build-wasm.sh:302: EXPORTS=_malloc,_free,_mpt_secp256k1_context,_mpt_generate_blinding_factor,_mpt_encrypt_amount,_mpt_decrypt_amount,_mpt_get_pedersen_commitment,_mpt_get_convert_context_hash,_mpt_get_convert_proof,_mpt_verify_convert_proof,_mpt_get_clawback_context_hash,_mpt_get_clawback_proof,_mpt_verify_clawback_proof,_mpt_get_convert_back_context_hash,_mpt_get_convert_back_proof,_mpt_verify_convert_back_proof,_mpt_get_send_context_hash,_mpt_get_confidential_send_proof,_mpt_verify_send_proof,_mpt_verify_revealed_amount,_mpt_verify_send_range_proof,_mpt_verify_aggregated_bulletproof
++ ./.github/scripts/build-wasm.sh:303: EXPORTS=_malloc,_free,_mpt_secp256k1_context,_mpt_generate_blinding_factor,_mpt_encrypt_amount,_mpt_decrypt_amount,_mpt_get_pedersen_commitment,_mpt_get_convert_context_hash,_mpt_get_convert_proof,_mpt_verify_convert_proof,_mpt_get_clawback_context_hash,_mpt_get_clawback_proof,_mpt_verify_clawback_proof,_mpt_get_convert_back_context_hash,_mpt_get_convert_back_proof,_mpt_verify_convert_back_proof,_mpt_get_send_context_hash,_mpt_get_confidential_send_proof,_mpt_verify_send_proof,_mpt_verify_revealed_amount,_mpt_verify_send_range_proof,_mpt_verify_aggregated_bulletproof,_mpt_make_ec_pair,_mpt_serialize_ec_pair
++ ./.github/scripts/build-wasm.sh:304: EXPORTS=_malloc,_free,_mpt_secp256k1_context,_mpt_generate_blinding_factor,_mpt_encrypt_amount,_mpt_decrypt_amount,_mpt_get_pedersen_commitment,_mpt_get_convert_context_hash,_mpt_get_convert_proof,_mpt_verify_convert_proof,_mpt_get_clawback_context_hash,_mpt_get_clawback_proof,_mpt_verify_clawback_proof,_mpt_get_convert_back_context_hash,_mpt_get_convert_back_proof,_mpt_verify_convert_back_proof,_mpt_get_send_context_hash,_mpt_get_confidential_send_proof,_mpt_verify_send_proof,_mpt_verify_revealed_amount,_mpt_verify_send_range_proof,_mpt_verify_aggregated_bulletproof,_mpt_make_ec_pair,_mpt_serialize_ec_pair,_mpt_compute_convert_back_remainder
++ ./.github/scripts/build-wasm.sh:311: EXPORTS=_malloc,_free,_mpt_secp256k1_context,_mpt_generate_blinding_factor,_mpt_encrypt_amount,_mpt_decrypt_amount,_mpt_get_pedersen_commitment,_mpt_get_convert_context_hash,_mpt_get_convert_proof,_mpt_verify_convert_proof,_mpt_get_clawback_context_hash,_mpt_get_clawback_proof,_mpt_verify_clawback_proof,_mpt_get_convert_back_context_hash,_mpt_get_convert_back_proof,_mpt_verify_convert_back_proof,_mpt_get_send_context_hash,_mpt_get_confidential_send_proof,_mpt_verify_send_proof,_mpt_verify_revealed_amount,_mpt_verify_send_range_proof,_mpt_verify_aggregated_bulletproof,_mpt_make_ec_pair,_mpt_serialize_ec_pair,_mpt_compute_convert_back_remainder,_secp256k1_elgamal_add,_secp256k1_elgamal_subtract
++ ./.github/scripts/build-wasm.sh:346: LINK_FLAGS=(-Oz -flto "${OBJECTS[@]}" "${SECP256K1_BUILD}/lib/libsecp256k1.a" "${OPENSSL_SRC}/libcrypto.a" -sMODULARIZE=1 -sEXPORT_NAME=MptCrypto -sWASM_BIGINT=1 -sALLOW_MEMORY_GROWTH=1 -sGROWABLE_ARRAYBUFFERS=0 -sMAXIMUM_MEMORY=134217728 -sEXPORTED_FUNCTIONS="${EXPORTS}" '-sEXPORTED_RUNTIME_METHODS=["ccall","cwrap","HEAPU8"]' -sENVIRONMENT=web,node)
++ ./.github/scripts/build-wasm.sh:363: emcc -Oz -flto $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/bsgs_dlp.o $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/bulletproof_aggregated.o $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/commitments.o $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/elgamal.o $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/mpt_scalar.o $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/proof_compact_clawback.o $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/proof_compact_convertback.o $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/proof_compact_standard.o $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/proof_pok_sk.o $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/mpt_utility.o $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/build/lib/libsecp256k1.a $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/openssl-3.6.2/libcrypto.a -sMODULARIZE=1 -sEXPORT_NAME=MptCrypto -sWASM_BIGINT=1 -sALLOW_MEMORY_GROWTH=1 -sGROWABLE_ARRAYBUFFERS=0 -sMAXIMUM_MEMORY=134217728 -sEXPORTED_FUNCTIONS=_malloc,_free,_mpt_secp256k1_context,_mpt_generate_blinding_factor,_mpt_encrypt_amount,_mpt_decrypt_amount,_mpt_get_pedersen_commitment,_mpt_get_convert_context_hash,_mpt_get_convert_proof,_mpt_verify_convert_proof,_mpt_get_clawback_context_hash,_mpt_get_clawback_proof,_mpt_verify_clawback_proof,_mpt_get_convert_back_context_hash,_mpt_get_convert_back_proof,_mpt_verify_convert_back_proof,_mpt_get_send_context_hash,_mpt_get_confidential_send_proof,_mpt_verify_send_proof,_mpt_verify_revealed_amount,_mpt_verify_send_range_proof,_mpt_verify_aggregated_bulletproof,_mpt_make_ec_pair,_mpt_serialize_ec_pair,_mpt_compute_convert_back_remainder,_secp256k1_elgamal_add,_secp256k1_elgamal_subtract '-sEXPORTED_RUNTIME_METHODS=["ccall","cwrap","HEAPU8"]' -sENVIRONMENT=web,node -o $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_out/mpt_crypto.js
+emcc: warning: WASM_BIGINT is deprecated (no longer needed. Should only ever be implicitly disabled by -sWASM=0). Please open a bug if you have a continuing need for this setting [-Wdeprecated]
+wasm-ld: error: $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_out/mpt_crypto.wasm.lto.o: undefined symbol: operator new(unsigned long)
+wasm-ld: error: $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_out/mpt_crypto.wasm.lto.o: undefined symbol: operator delete(void*, unsigned long)
+wasm-ld: error: $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_out/mpt_crypto.wasm.lto.o: undefined symbol: __cxa_allocate_exception
+wasm-ld: error: $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_out/mpt_crypto.wasm.lto.o: undefined symbol: typeinfo for std::length_error
+wasm-ld: error: $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_out/mpt_crypto.wasm.lto.o: undefined symbol: std::length_error::~length_error()
+wasm-ld: error: $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_out/mpt_crypto.wasm.lto.o: undefined symbol: __cxa_throw
+wasm-ld: error: $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_out/mpt_crypto.wasm.lto.o: undefined symbol: std::logic_error::logic_error(char const*)
+wasm-ld: error: $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_out/mpt_crypto.wasm.lto.o: undefined symbol: vtable for std::length_error
+emcc: warning: link failed with undefined C++ symbols. Try linking with 'em++' or passing '-sDEFAULT_TO_CXX'
+emcc: error: '$USER_TMP/T/f12b.epIe0s/emsdk-6.0.10/upstream/bin/wasm-ld -o $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_out/mpt_crypto.wasm $USER_TMP/T/tmps597iz80libemscripten_js_symbols.so -Bstatic --strip-debug -u__cxa_atexit --export=malloc --export=free --export=mpt_secp256k1_context --export=mpt_generate_blinding_factor --export=mpt_encrypt_amount --export=mpt_decrypt_amount --export=mpt_get_pedersen_commitment --export=mpt_get_convert_context_hash --export=mpt_get_convert_proof --export=mpt_verify_convert_proof --export=mpt_get_clawback_context_hash --export=mpt_get_clawback_proof --export=mpt_verify_clawback_proof --export=mpt_get_convert_back_context_hash --export=mpt_get_convert_back_proof --export=mpt_verify_convert_back_proof --export=mpt_get_send_context_hash --export=mpt_get_confidential_send_proof --export=mpt_verify_send_proof --export=mpt_verify_revealed_amount --export=mpt_verify_send_range_proof --export=mpt_verify_aggregated_bulletproof --export=mpt_make_ec_pair --export=mpt_serialize_ec_pair --export=mpt_compute_convert_back_remainder --export=secp256k1_elgamal_add --export=secp256k1_elgamal_subtract --export=_emscripten_stack_alloc --export=setThrew --export=__wasm_call_ctors --export=emscripten_stack_get_current --export=_emscripten_stack_restore --export-if-defined=__start_em_asm --export-if-defined=__stop_em_asm --export-if-defined=__start_em_lib_deps --export-if-defined=__stop_em_lib_deps --export-if-defined=__start_em_js --export-if-defined=__stop_em_js --export-table -z stack-size=65536 --max-memory=134217728 --initial-memory=16777216 --no-entry --no-stack-first --table-base=1 --global-base=1024 $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/bsgs_dlp.o $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/bulletproof_aggregated.o $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/commitments.o $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/elgamal.o $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/mpt_scalar.o $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/proof_compact_clawback.o $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/proof_compact_convertback.o $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/proof_compact_standard.o $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/proof_pok_sk.o $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/obj/mpt_utility.o $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/secp256k1/build/lib/libsecp256k1.a $USER_TMP/T/f12b.epIe0s/wt/v6.0.10-unpatched/emcc_build/openssl-3.6.2/libcrypto.a -L$USER_TMP/T/f12b.epIe0s/emsdk-6.0.10/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/lto -L$USER_TMP/T/f12b.epIe0s/emsdk-6.0.10/upstream/emscripten/src/lib -lGL-getprocaddr -lal -lhtml5 -lc_optz -lstubs -lnoexit -lc -ldlmalloc -lclang_rt.builtins -lsockets -mllvm -combiner-global-alias-analysis=false -mllvm -enable-emscripten-sjlj -mllvm -disable-lsr' failed (returned 1)
+==== XTRACE BUILD EXIT: 1  end 2026-10-18T01:00:17Z
+---- emcc_out listing
+total 0
+drwxr-xr-x@  2 nandan  staff   64 Oct 18 10:00 .
+drwxr-xr-x@ 23 nandan  staff  736 Oct 18 09:57 ..
+exit 1

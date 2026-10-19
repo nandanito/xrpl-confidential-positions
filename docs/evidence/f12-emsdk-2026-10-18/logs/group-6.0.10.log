@@ -1,0 +1,7 @@
+v6.0.10-unpatched build exit 1
+v6.0.10-unpatched xtrace exit 1
+v6.0.10-empp build exit 0
+v6.0.10-empp test exit 0
+v6.0.10-dcxx build exit 0
+v6.0.10-dcxx test exit 0
+exit 0

@@ -1,0 +1,113 @@
+#!/usr/bin/env bash
+# wconf push guard — the pre-push hook for this repository's PRIVATE clones.
+#
+# Decision request phase 1, D4 and D8. Installed by `make install-push-guard`,
+# which copies this file into the clone's hooks directory and records the
+# private archive's GitHub repository id in the clone's git config.
+#
+# The property: a private clone pushes to the private archive and nowhere else,
+# whatever it pushes. "The archive" means the destination is an HTTPS URL on
+# github.com, TLS verification has not been weakened, `gh` is not routed
+# elsewhere, the repository resolves to the recorded id, and GitHub reports it
+# private. The id survives a rename. Publication happens from the separate
+# export, which has no history to protect and no guard.
+#
+# ⚠ HTTPS only, since `REVIEW-057` round three. An SSH URL can name the archive
+# while `core.sshCommand`, `GIT_SSH_COMMAND` or an SSH config sends the push to
+# another server, and none of that is visible here. Over HTTPS, TLS ties the
+# connection to github.com — so the hook also refuses when TLS verification is
+# off or a CA has been added, and when `gh` is routed through a socket.
+#
+# Measured on git 2.50.1: git passes the destination AFTER `insteadOf`,
+# `pushInsteadOf` and `pushurl` are applied, and runs the hook once for every
+# push URL of a remote.
+#
+# ⚠ A guard against mistakes, not against the owner. `git push --no-verify`
+# skips it, it does nothing in a clone it was never installed in, and it trusts
+# the machine's own TLS roots.
+#
+# `make check-push-guard` breaks it every way it knows and fails if any break
+# goes unnoticed. tools/install-push-guard.sh extracts the three functions below
+# by name; the hook itself has no mode but the check.
+set -u
+
+# Prints `owner/name` for an HTTPS URL on github.com, or fails. Hosts are
+# matched exactly, so `github.com.example.org` is not GitHub.
+parse_github_url() {
+  local u=$1 rest hostpart host path
+  case "$u" in
+    https://*) ;;
+    *) return 1 ;;
+  esac
+  rest=${u#https://}
+  hostpart=${rest%%/*}
+  [ "$hostpart" = "$rest" ] && return 1
+  path=${rest#*/}
+  hostpart=${hostpart##*@}
+  host=$(printf '%s' "${hostpart%%:*}" | tr '[:upper:]' '[:lower:]')
+  case "$host" in
+    github.com | www.github.com) ;;
+    *) return 1 ;;
+  esac
+  while [ "${path%/}" != "$path" ]; do path=${path%/}; done
+  path=${path%.git}
+  while [ "${path%/}" != "$path" ]; do path=${path%/}; done
+  case "$path" in
+    */*/* | /* | */ | '') return 1 ;;
+    ?*/?*) ;;
+    *) return 1 ;;
+  esac
+  printf '%s\n' "$path"
+}
+
+# Prints why the connection to <url> cannot be trusted to reach github.com, or
+# nothing. Each of these let a URL naming the archive reach another server.
+routing_problem() {
+  local u=$1 v
+  [ -n "${GIT_SSL_NO_VERIFY-}" ] && { echo "GIT_SSL_NO_VERIFY is set"; return; }
+  v=$(git config --type=bool --get-urlmatch http.sslVerify "$u" 2>/dev/null || true)
+  [ "$v" = false ] && { echo "http.sslVerify is false for this URL"; return; }
+  for e in GIT_SSL_CAINFO GIT_SSL_CAPATH SSL_CERT_FILE SSL_CERT_DIR; do
+    [ -n "${!e-}" ] && { echo "$e is set, so a CA the system does not ship could be trusted"; return; }
+  done
+  for k in http.sslCAInfo http.sslCAPath; do
+    [ -n "$(git config --get-urlmatch "$k" "$u" 2>/dev/null || true)" ] && { echo "$k is set"; return; }
+  done
+  v=$(gh config get http_unix_socket --host github.com 2>/dev/null || true)
+  [ -n "$v" ] && { echo "gh routes github.com through a socket ($v)"; return; }
+  return 0
+}
+
+# Prints `<id> <private>` for owner/name on github.com, or fails. `--hostname`
+# pins it; without it gh follows GH_HOST (`REVIEW-057` R2-3).
+lookup_repo() {
+  gh api --hostname github.com "repos/$1" --jq '"\(.id) \(.private)"' 2>/dev/null
+}
+
+url=${2-}
+refuse() {
+  printf 'push guard: REFUSED — %s\n' "$1" >&2
+  printf '  destination: %s\n' "$url" >&2
+  printf '  A private clone pushes only to the private archive. Publish from the\n' >&2
+  printf '  export instead: decision request phase 1, item 5, step 5.\n' >&2
+  exit 1
+}
+
+archive_id=$(git config --get wconf.pushguard.archiveid || true)
+[ -n "$archive_id" ] || refuse "the guard is not configured in this clone; run make install-push-guard"
+
+target=$(parse_github_url "$url") \
+  || refuse "the destination is not an HTTPS repository on github.com (SSH is refused: its transport can be redirected by configuration this hook cannot see)"
+problem=$(routing_problem "$url")
+[ -z "$problem" ] || refuse "the connection cannot be trusted to reach github.com: $problem"
+command -v gh >/dev/null 2>&1 \
+  || refuse "gh is not on PATH, so the destination cannot be checked"
+info=$(lookup_repo "$target") \
+  || refuse "repos/$target could not be read from github.com"
+id=${info%% *}
+private=${info#* }
+[ "$id" = "$archive_id" ] \
+  || refuse "$target (repository id $id) is not the archive (id $archive_id)"
+[ "$private" = "true" ] \
+  || refuse "$target is the archive, but GitHub reports that it is not private"
+exit 0
