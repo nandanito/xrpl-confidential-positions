@@ -37,7 +37,7 @@ function recordingNode() {
           });
         case "account_info":
           return Response.json({
-            result: { status: "success", ledger_index: 4_800_000, account_data: { Sequence: 11 } },
+            result: { status: "success", ledger_index: 4_800_000, validated: true, account_data: { Sequence: 11 } },
           });
         case "submit":
           submits.push(params);

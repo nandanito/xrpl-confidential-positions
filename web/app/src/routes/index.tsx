@@ -48,7 +48,7 @@ function Overview() {
         <ol className="text-sm mt-3 space-y-1 list-decimal pl-5 opacity-85">
           <li><strong>Capability matrix</strong> — what each key source can and cannot do.</li>
           <li><strong>Observer view</strong> — what anyone can read, including which zero balances are visible.</li>
-          <li><strong>Issuer view</strong> — the same holder, decrypted. This is the point.</li>
+          <li><strong>Issuer view</strong> — the same holder as the issuer reads it: whether its decryption succeeded, never the figure.</li>
           <li><strong>Wallet</strong> — three structural reasons a wallet cannot hold a position.</li>
           <li><strong>Custody</strong> — where confidentiality and policy controls collide.</li>
         </ol>

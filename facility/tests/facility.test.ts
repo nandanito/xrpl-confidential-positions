@@ -70,9 +70,10 @@ function nodeWith(entries: Record<string, any>) {
         const key = params.mptoken?.account ?? (params.mpt_issuance ? "ISSUANCE" : "?");
         const node = entries[key];
         if (!node) {
-          return Response.json({ result: { status: "error", error: "entryNotFound" } });
+          return Response.json({ result: { status: "error", error: "entryNotFound", ledger_index: 4_800_000, validated: true } });
         }
-        return Response.json({ result: { status: "success", ledger_index: 4_800_000, node } });
+        const LedgerEntryType = key === "ISSUANCE" ? "MPTokenIssuance" : "MPToken";
+        return Response.json({ result: { status: "success", ledger_index: 4_800_000, validated: true, node: { LedgerEntryType, ...node } } });
       }
       return Response.json({ result: { status: "error", error: "unknown" } });
     },

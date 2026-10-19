@@ -36,7 +36,7 @@ The **capability matrix** is the spine of the demonstration. It answers one ques
 
 - **A standalone key** is an independent viewing key with its own backup. Two secrets to keep. It is the honest option when the master seed has been retired — and it is the row a custody platform lands on.
 
-- **A browser wallet** can do neither, and this is the sharpest thing in the demonstration. A confidential operation needs the viewing key **and** the signing key; the viewing key is derived from the master seed; and a wallet extension exists **in order not to release seed material**. So the operation cannot be assembled at all. It is not a permission being withheld — there is nothing to grant.
+- **A browser wallet** can do neither, and this is the sharpest thing in the demonstration. A confidential operation needs the viewing key **and** the signing key; the viewing key is derived from the master seed; and a wallet extension exists **in order not to release seed material**. So a page cannot assemble the operation through the wallets examined (Xaman, GemWallet and Crossmark, 2026-08-28). It is not a permission being withheld: they hold nothing they are built to release. A wallet that held the viewing key and produced the proofs itself would close this, and none observed does (`CLAIMS.md` E-330).
 
 - **A custody platform**, simulated, splits in two: it can sign, and it cannot evaluate a policy on an amount it cannot see.
 

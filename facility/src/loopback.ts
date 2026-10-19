@@ -120,7 +120,16 @@ export const REMOTE_LEDGER_DISCLOSURE = [
 
 /** A read or a check that must stop the facility, distinct from a bug. */
 export class LedgerRefusal extends Error {
-  constructor(readonly code: string, message: string) {
+  /**
+   * @param answeredFrom the origin fields a negative answer carried. Only
+   * `REFUSED_LEDGER_ENTRY_MISSING` sets it, because a "not found" is an answer
+   * about one ledger and `Snapshot` checks it exactly as it checks a positive one.
+   */
+  constructor(
+    readonly code: string,
+    message: string,
+    readonly answeredFrom?: { ledger_index?: unknown; validated?: unknown },
+  ) {
     super(`${code}: ${message}`);
     this.name = "LedgerRefusal";
   }
@@ -219,16 +228,50 @@ export class Snapshot {
   ) {}
 
   private async pinned(method: string, params: Record<string, unknown>): Promise<any> {
-    const result = await this.ledger.call(method, { ...params, ledger_index: this.index });
-    const answered = Number(result.ledger_index ?? result.ledger_current_index ?? NaN);
-    if (answered !== this.index) {
+    let result: any;
+    try {
+      result = await this.ledger.call(method, { ...params, ledger_index: this.index });
+    } catch (e) {
+      // ⚠ **A "not found" is an answer, and it is checked like one.** `REVIEW-058`
+      // found this path returning before the index check below, so a negative
+      // answer naming ledger 43 read as `null` in a snapshot pinned to 42. The
+      // Rust reader closed the same gap in `REVIEW-016` round two
+      // (`signer/src/ledger.rs`, `ledger_entry`) and this one never got the fix:
+      // two readings of one obligation, drifting (`CLAIMS.md` E-141's shape).
+      // rippled 3.4.1 names `ledger_index` on `entryNotFound`, measured on
+      // Devnet 2026-10-19; an absence that names no ledger proves nothing.
+      if (e instanceof LedgerRefusal && e.code === "REFUSED_LEDGER_ENTRY_MISSING") {
+        this.cameFrom(`${method} said "not found"`, e.answeredFrom ?? {});
+      }
+      throw e;
+    }
+    this.cameFrom(`${method} answered`, result);
+    return result;
+  }
+
+  /**
+   * Did this answer come from the pinned, validated ledger? The same predicate for
+   * a positive answer and a negative one.
+   *
+   * ⚠ **Round one's fix checked the index of a negative answer and stopped there,
+   * and `REVIEW-058` round two found the Rust reader's third check still missing.**
+   * `signer/src/ledger.rs`'s `came_from` requires `validated` to be exactly `true`
+   * and `ledger_index` to be a number, with no fallback; this one accepted
+   * `validated: false`, a `ledger_current_index` in place of the index, and the
+   * string `"42"`. rippled 3.4.1 sends a numeric `ledger_index` and
+   * `validated: true` on every pinned answer, positive or `entryNotFound`
+   * (measured on Devnet 2026-10-19), so nothing honest is refused.
+   */
+  private cameFrom(what: string, r: any): void {
+    const index = r?.ledger_index;
+    if (r?.validated !== true || typeof index !== "number" || index !== this.index) {
       throw new LedgerRefusal(
         "REFUSED_LEDGER_TORN",
-        `${method} answered from ledger ${answered}, not the pinned ${this.index}. ` +
-          `A snapshot assembled from two ledgers is a state that never existed`,
+        `${what} from ledger ${typeof index === "number" ? index : JSON.stringify(index ?? null)}` +
+          ` (validated: ${JSON.stringify(r?.validated ?? null)}), not the pinned, validated ${this.index}. ` +
+          `A snapshot assembled from two ledgers, or from one nobody validated, is a state that never existed`,
       );
     }
-    return result;
   }
 
   async sequenceOf(address: string): Promise<number> {
@@ -247,7 +290,7 @@ export class Snapshot {
       if (e instanceof LedgerRefusal && e.code === "REFUSED_LEDGER_ENTRY_MISSING") return null;
       throw e;
     }
-    const n = r.node;
+    const n = entryOfType(r, "MPToken");
     return {
       publicAmount: Number(n.MPTAmount ?? 0),
       publicAmountRaw: String(n.MPTAmount ?? "0"),
@@ -262,7 +305,7 @@ export class Snapshot {
 
   async issuance(issuanceId: string): Promise<IssuanceState> {
     const r = await this.pinned("ledger_entry", { mpt_issuance: issuanceId });
-    const n = r.node;
+    const n = entryOfType(r, "MPTokenIssuance");
     return {
       issuer: n.Issuer,
       // ⚠ **A JSON string, as rippled serialises every `UINT64`.** Reading it
@@ -277,6 +320,26 @@ export class Snapshot {
       flags: Number(n.Flags ?? 0),
     };
   }
+}
+
+/**
+ * The node must be the kind of object that was asked for. Without this a node
+ * could return an `MPTokenIssuance` where an `MPToken` was requested, and the
+ * reader would take whichever fields happened to have the right names. The Rust
+ * reader has checked this since `REVIEW-016`; this one did not until `REVIEW-058`.
+ */
+function entryOfType(r: any, expected: string): any {
+  const n = r?.node;
+  if (!n || typeof n !== "object") {
+    throw new LedgerRefusal("REFUSED_LEDGER_MALFORMED", `ledger_entry returned no node`);
+  }
+  if (n.LedgerEntryType !== expected) {
+    throw new LedgerRefusal(
+      "REFUSED_LEDGER_MALFORMED",
+      `ledger_entry was asked for a ${expected} and returned a ${String(n.LedgerEntryType ?? "(no LedgerEntryType)")}`,
+    );
+  }
+  return n;
 }
 
 export interface NodeIdentity {
@@ -534,10 +597,15 @@ async function rawCall(
   if (result.status === "error") {
     // `entryNotFound` is an answer, not a failure — a holder who has not opted
     // in has no `MPToken`, and the caller distinguishes that from a broken read.
-    const code = result.error === "entryNotFound" || result.error === "objectNotFound"
-      ? "REFUSED_LEDGER_ENTRY_MISSING"
-      : "REFUSED_LEDGER_ERROR";
-    throw new LedgerRefusal(code, `${method}: ${result.error} ${result.error_message ?? ""}`);
+    // ⚠ Only `entryNotFound`, as the Rust reader tolerates. This also accepted
+    // `objectNotFound` until `REVIEW-058` round two; no pinned read here can
+    // receive it, and a tolerance nothing needs is a tolerance something abuses.
+    const missing = result.error === "entryNotFound";
+    const code = missing ? "REFUSED_LEDGER_ENTRY_MISSING" : "REFUSED_LEDGER_ERROR";
+    // The origin fields a negative answer carries travel with it, so `Snapshot`
+    // checks it exactly as it checks a positive answer.
+    const answeredFrom = missing ? { ledger_index: result.ledger_index, validated: result.validated } : undefined;
+    throw new LedgerRefusal(code, `${method}: ${result.error} ${result.error_message ?? ""}`, answeredFrom);
   }
   return result;
 }

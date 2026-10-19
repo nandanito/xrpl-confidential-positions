@@ -330,11 +330,26 @@ type Run = { file: string; from: number; to: number; kind: "code" | "prose"; pro
 const GENERIC_PROJECTS = 3;
 const LICENCE_SHARE = 0.8;
 
-function tracked(): string[] {
-  return run(["git", "ls-files"], ROOT).split("\n").filter((f) =>
-    f && TEXT.test(f) && !/(^|\/)(bun\.lock|Cargo\.lock|package-lock\.json)$/.test(f)
+function scannable(f: string): boolean {
+  return Boolean(f) && TEXT.test(f) && !/(^|\/)(bun\.lock|Cargo\.lock|package-lock\.json)$/.test(f)
     && f !== "LICENSE" && f !== "NOTICE" && !f.startsWith("LICENSES/")
-    && !f.startsWith("docs/third-party/") && existsSync(join(ROOT, f)));
+    && !f.startsWith("docs/third-party/");
+}
+
+/**
+ * ⚠ Refuses while any file it would scan is untracked. The public-update
+ * procedure copied new files into the export and ran this before `git add`,
+ * so 25 review transcripts went unscanned and the check passed on 9 projects
+ * when the files reproduce 12 (`CLAIMS.md` E-332).
+ */
+function tracked(): string[] {
+  const untracked = run(["git", "ls-files", "--others", "--exclude-standard"], ROOT).split("\n").filter(scannable);
+  if (untracked.length) {
+    console.error(`refusing: ${untracked.length} untracked file(s) would not be scanned, e.g. ${untracked[0]}. ` +
+      "git add them, or remove them, and run again.");
+    process.exit(2);
+  }
+  return run(["git", "ls-files"], ROOT).split("\n").filter((f) => scannable(f) && existsSync(join(ROOT, f)));
 }
 
 /**

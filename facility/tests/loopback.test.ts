@@ -167,7 +167,9 @@ describe("Snapshot", () => {
       if (method === "server_info") return FULL_INFO;
       return {
         ledger_index: 4_800_000,
+        validated: true,
         node: {
+          LedgerEntryType: "MPTokenIssuance",
           Issuer: "rBank",
           ConfidentialOutstandingAmount: "12345",
           IssuerEncryptionKey: "02AA",
@@ -189,13 +191,109 @@ describe("Snapshot", () => {
   });
 
   test("a holder with no MPToken reads as null rather than as an error", async () => {
+    // rippled 3.4.1 names the ledger on `entryNotFound` (measured on Devnet,
+    // 2026-10-19), and the snapshot now checks it like any other answer.
+    const { server, endpoint } = fakeNode((method) => {
+      if (method === "server_info") return FULL_INFO;
+      return { status: "error", error: "entryNotFound", ledger_index: 4_800_000, validated: true };
+    });
+    try {
+      const snapshot = await (await LoopbackLedger.open(endpoint)).snapshot();
+      expect(await snapshot.mptoken("rNobody", "00".repeat(24))).toBeNull();
+    } finally {
+      server.stop(true);
+    }
+  });
+
+  test("a 'not found' from a DIFFERENT ledger is refused, not read as an empty position", async () => {
+    // REVIEW-058 R1-7: the negative path returned before the index check, so
+    // this answer read as `null` in a snapshot pinned to 4_800_000, and the
+    // observer view would have rendered an empty position. The Rust reader
+    // closed the same gap in REVIEW-016 round two.
+    const { server, endpoint } = fakeNode((method) => {
+      if (method === "server_info") return FULL_INFO;
+      return { status: "error", error: "entryNotFound", ledger_index: 4_800_001, validated: true };
+    });
+    try {
+      const snapshot = await (await LoopbackLedger.open(endpoint)).snapshot();
+      await expect(snapshot.mptoken("rSomeone", "00".repeat(24))).rejects.toThrow(/REFUSED_LEDGER_TORN/);
+    } finally {
+      server.stop(true);
+    }
+  });
+
+  test("a 'not found' that names no ledger is refused, because it proves nothing", async () => {
     const { server, endpoint } = fakeNode((method) => {
       if (method === "server_info") return FULL_INFO;
       return { status: "error", error: "entryNotFound" };
     });
     try {
       const snapshot = await (await LoopbackLedger.open(endpoint)).snapshot();
-      expect(await snapshot.mptoken("rNobody", "00".repeat(24))).toBeNull();
+      await expect(snapshot.mptoken("rSomeone", "00".repeat(24))).rejects.toThrow(/REFUSED_LEDGER_TORN/);
+    } finally {
+      server.stop(true);
+    }
+  });
+
+  test("an entry of the wrong type is refused rather than read field by field", async () => {
+    // An MPTokenIssuance returned where an MPToken was asked for would
+    // otherwise be read for whichever fields share a name.
+    const { server, endpoint } = fakeNode((method) => {
+      if (method === "server_info") return FULL_INFO;
+      return { ledger_index: 4_800_000, validated: true, node: { LedgerEntryType: "MPTokenIssuance", MPTAmount: "5" } };
+    });
+    try {
+      const snapshot = await (await LoopbackLedger.open(endpoint)).snapshot();
+      await expect(snapshot.mptoken("rSomeone", "00".repeat(24))).rejects.toThrow(/REFUSED_LEDGER_MALFORMED/);
+    } finally {
+      server.stop(true);
+    }
+  });
+
+  // REVIEW-058 round two (R2-4, R2-5): the Rust reader's `came_from` requires
+  // `validated: true` and a numeric `ledger_index`, on positive and negative
+  // answers alike. Round one's fix stopped at the index of a negative answer.
+  const ORIGIN_CASES: Array<[string, Record<string, unknown>]> = [
+    ["a positive answer marked validated: false", { ledger_index: 4_800_000, validated: false, account_data: { Sequence: 7 } }],
+    ["a positive answer naming its ledger as a string", { ledger_index: "4800000", validated: true, account_data: { Sequence: 7 } }],
+    ["a positive answer naming only ledger_current_index", { ledger_current_index: 4_800_000, validated: true, account_data: { Sequence: 7 } }],
+  ];
+  test("ORIGIN_CASES is not empty, so the loop below cannot pass by running nothing", () => {
+    expect(ORIGIN_CASES.length).toBe(3);
+  });
+  for (const [why, answer] of ORIGIN_CASES) {
+    test(`refuses ${why}`, async () => {
+      const { server, endpoint } = fakeNode((method) => (method === "server_info" ? FULL_INFO : answer));
+      try {
+        const snapshot = await (await LoopbackLedger.open(endpoint)).snapshot();
+        await expect(snapshot.sequenceOf("rTest")).rejects.toThrow(/REFUSED_LEDGER_TORN/);
+      } finally {
+        server.stop(true);
+      }
+    });
+  }
+
+  test("a 'not found' marked validated: false is refused, not read as an empty position", async () => {
+    const { server, endpoint } = fakeNode((method) => {
+      if (method === "server_info") return FULL_INFO;
+      return { status: "error", error: "entryNotFound", ledger_index: 4_800_000, validated: false };
+    });
+    try {
+      const snapshot = await (await LoopbackLedger.open(endpoint)).snapshot();
+      await expect(snapshot.mptoken("rSomeone", "00".repeat(24))).rejects.toThrow(/REFUSED_LEDGER_TORN/);
+    } finally {
+      server.stop(true);
+    }
+  });
+
+  test("an issuance read of the wrong entry type is refused (the issuance call site, not only mptoken)", async () => {
+    const { server, endpoint } = fakeNode((method) => {
+      if (method === "server_info") return FULL_INFO;
+      return { ledger_index: 4_800_000, validated: true, node: { LedgerEntryType: "MPToken", Issuer: "rBank" } };
+    });
+    try {
+      const snapshot = await (await LoopbackLedger.open(endpoint)).snapshot();
+      await expect(snapshot.issuance("00".repeat(24))).rejects.toThrow(/REFUSED_LEDGER_MALFORMED/);
     } finally {
       server.stop(true);
     }

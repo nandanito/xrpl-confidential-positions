@@ -3,8 +3,13 @@
  *
  * Architecture §6 step 8, decision D1 (`ADR-0003`): the web tier may send
  * `Request::Status` and nothing else. `Pair` and `Prepare` are the requests
- * that carry authority, and neither is constructible from anywhere under
- * `web/`. This file is what `tools/check-web-readonly.ts` pins.
+ * that carry authority. `tools/check-web-readonly.ts` asserts that nothing
+ * under `web/api` constructs either, and separately that nothing under
+ * `web/app` reaches the socket at all; this file is what it pins. ⚠ This said
+ * ~~neither is constructible from anywhere under `web/`~~ until 2026-10-19, a
+ * copy of the sentence E-224 retracted that survived because it wrapped across
+ * two comment lines, found when `check-disclosure-phrases` learned to join them
+ * (`CLAIMS.md` E-330).
  *
  * # Why this file exists in `web/api/` and not in `web/app/`
  *

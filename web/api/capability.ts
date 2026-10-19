@@ -73,7 +73,9 @@ export const MASTER_SEED_DISCLOSURE =
  *
  * ⚠ **It is excluded from the reasoning on purpose.** It is a version fact an
  * upstream release can close at any time; the three reasons the row DOES give
- * are structural and no wallet update can close them. A demonstration resting
+ * are structural, so no codec release closes them, and only a wallet that held
+ * the viewing key and produced the proofs itself would (`CLAIMS.md` E-330).
+ * A demonstration resting
  * on this one would be falsified by a release note.
  */
 export const WALLET_CODEC_GAP =
@@ -165,13 +167,13 @@ export const CAPABILITY_MATRIX: KeySourceRow[] = [
     decryptOwnBalance: {
       verdict: "no",
       detail:
-        "Decryption needs the ElGamal secret. Under the ruled keygen that secret is derived from the master seed, and a wallet extension exists in order not to release seed material. There is no path from a connected wallet to a viewing key.",
+        "Decryption needs the ElGamal secret. Under the ruled keygen that secret is derived from the master seed, and a wallet extension exists in order not to release seed material. None of the three wallets examined on 2026-08-28 (Xaman, GemWallet, Crossmark) gives a page a viewing key or decrypts for it. A wallet that derived the key and decrypted internally would; none observed does (CLAIMS.md E-329).",
       citation: "REVIEW-012 (derivation from master seed); ADR-0003 D2",
     },
     proveAndSign: {
       verdict: "no",
       detail:
-        "A confidential operation needs the ElGamal secret AND the account key. The wallet can supply the second and cannot supply the first, so the operation cannot be assembled at all — it is not a permissions gap that a different API would close.",
+        "A confidential operation needs the ElGamal secret AND the account key. The wallets examined can supply the second and not the first, so a page cannot assemble the operation through them. A wallet that held the viewing key and produced the proofs itself would close this; none observed does (CLAIMS.md E-329).",
       citation: "ADR-0003 D2; signer/src/keygen.rs",
     },
     publicTransactions: {

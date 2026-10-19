@@ -22,13 +22,13 @@ identifier pass leaves out because every package's dependency list looks alike, 
 only the line pass sees a manifest, and only unreflowed.
 
 **What is compared.** On the tracked side, every file `git ls-files` lists with a text
-extension (655 files), except lockfiles, `LICENSE`, `NOTICE`, `LICENSES/`
+extension (680 files), except lockfiles, `LICENSE`, `NOTICE`, `LICENSES/`
 and this directory; lines lose a line-number prefix first. On the upstream side, 110
 corpora are configured in 106 projects:
 **96 were compared and 14 were unavailable**, listed
 at the end. A corpus's files over 2 MB, and minified files, are not tokenised.
 
-**9 projects reproduced.**
+**11 projects reproduced.**
 
 ## XRPLF/XRPL-Standards — MIT
 
@@ -36,7 +36,7 @@ Compared at `master`, `9fbf7ef8eb69973f43d44836875e01e6364a3ecb`.
 
 | file | kind | lines |
 |---|---|---|
-| `CLAIMS.md` | prose | 213–216, 462–465 |
+| `CLAIMS.md` | prose | 213–216, 469–472 |
 | `docs/reviews/REVIEW-012-REQUEST-keygen-2026-08-18.md` | prose | 65–68 |
 | `docs/reviews/REVIEW-021-REQUEST-step7-convert-back-2026-08-25.md` | code, prose | 148–176, 184–188 |
 | `docs/reviews/REVIEW-046b-gemini-custody-request-2026-09-13.md` | code, prose | 11–22 |
@@ -46,6 +46,8 @@ Compared at `master`, `9fbf7ef8eb69973f43d44836875e01e6364a3ecb`.
 | `docs/reviews/REVIEW-054-packets/f13-round-two-transcript.txt` | code | 587–621 |
 | `docs/reviews/REVIEW-057-packets/round-one-stderr.txt` | code | 10371–10388 |
 | `docs/reviews/REVIEW-057-packets/round-two-stderr.txt` | code | 6760, 6942 |
+| `docs/reviews/REVIEW-058-packets/round-one-codex-stderr.txt` | code | 7784–7839, 8474–8475, 9572–9619 |
+| `docs/reviews/REVIEW-058-packets/round-one-prompt-gemini.md` | code, prose | 2954–2957, 2960–4041 |
 | `docs/task-zero/SOURCES-2026-08-18.md` | prose | 96–98 |
 | `docs/task-zero/XLS-66-INVESTIGATION-2026-08-16.md` | prose | 323–326 |
 | `docs/upstream-filings/2026-08-26/01-devportal-enczero.md` | code, prose | 27–30 |
@@ -88,6 +90,7 @@ Compared at `85dbac73d033241b73f0565ae7cce86d07005c70`, `main`.
 | `docs/reviews/REVIEW-055-packets/f12-round-two-transcript.txt` | code | 586–975, 978–1050, 1694–1713 |
 | `docs/reviews/REVIEW-057-packets/round-one-stderr.txt` | code | 6968–6977, 7024–7041, 10421–10430, 10566–10575 |
 | `docs/reviews/REVIEW-057-packets/round-two-stderr.txt` | code | 6817–6822, 7080–7085, 8668–8701 |
+| `docs/reviews/REVIEW-058-packets/round-one-codex-stderr.txt` | code | 7723–7732, 7939–7943, 8399–8403 |
 | `tools/mpt-crypto-bench/wconf_bench.c` | code | 91–100, 147–177, 180–186, 193–197, 201–213, 216–220, 265–271 |
 | `tools/spike-2026-08-17/mptool.c` | code | 10–13 |
 | `tools/spike-2026-08-18/wconf-nonces.patch` | code | 71–81, 96–104, 280–285, 305–310, 312–335, 379–401, 436–446, 480–484, 517–560, 670–674, 693–699, 724–727, 753–757, 764–823, 828–831, 908–911, 938–942, 951–1005, 1010–1013, 1210–1225, 1244–1284, 1320–1325, 1354–1422, 1429–1436, 1495–1498, 1569–1605, 1610–1613 |
@@ -116,6 +119,7 @@ Compared at `master, paths matching /confidential/i`.
 | `UPSTREAM-FEEDBACK.md` | prose | 241–244 |
 | `docs/reviews/REVIEW-021-REQUEST-step7-convert-back-2026-08-25.md` | prose | 150–153 |
 | `docs/reviews/REVIEW-046b-gemini-custody-request-2026-09-13.md` | prose | 19–22 |
+| `docs/reviews/REVIEW-058-packets/round-one-prompt-gemini.md` | prose | 3054–3057, 3062–3065, 3069–3076, 3244–3247, 3268–3272, 3306–3309, 3339–3342, 3365–3368, 3406–3409, 3531–3536, 4030–4033 |
 | `docs/task-zero/ADDENDUM-2026-08-16.md` | prose | 61–64 |
 | `docs/upstream-filings/2026-08-26/01-devportal-enczero.md` | prose | 19–22 |
 | `docs/upstream-filings/2026-08-26/correction-608.md` | prose | 2–5 |
@@ -131,6 +135,14 @@ Compared at `2.2.0`.
 | `docs/reviews/REVIEW-027a-gemini-b21-e171-2026-08-27.md` | code | 49–56 |
 | `docs/reviews/REVIEW-057-packets/round-one-stderr.txt` | code | 10039–10075, 10086–10108, 10113–10125, 10131–10143, 10287–10295 |
 | `docs/reviews/REVIEW-057-packets/round-two-stderr.txt` | code | 8603–8610 |
+
+## crate serde_json — MIT OR Apache-2.0
+
+Compared at `1.0.151`.
+
+| file | kind | lines |
+|---|---|---|
+| `docs/reviews/REVIEW-058-packets/round-three-codex-stderr.txt` | code | 7488–7506, 7509–7530, 7970–7981 |
 
 ## emscripten-core/emscripten — MIT and University of Illinois/NCSA, per its LICENSE
 
@@ -152,6 +164,14 @@ Compared at `1.9.7`.
 | file | kind | lines |
 |---|---|---|
 | `docs/reviews/REVIEW-057-packets/round-two-stderr.txt` | code | 7559–7707 |
+
+## npm @xrplf/mpt-crypto — ISC
+
+Compared at `0.1.0`.
+
+| file | kind | lines |
+|---|---|---|
+| `docs/reviews/REVIEW-058-packets/round-one-codex-stderr.txt` | code | 5900–6244, 7844–7860, 7885–7891, 8283–8299, 8324–8330 |
 
 ## npm ripple-binary-codec — ISC
 

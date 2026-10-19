@@ -15,7 +15,7 @@ invisible here** — a reader in `REVIEW-040` put their confidence at ~60% for *
 about secrets"* and said they would fall back to grep. **They were right to.** For an
 exhaustive sweep, search `CLAIMS.md` directly.
 
-**30 rows.**
+**31 rows.**
 
 | id | section | headline | grade |
 |---|---|---|---|
@@ -41,11 +41,12 @@ exhaustive sweep, search `CLAIMS.md` directly.
 | [E-317](../../../CLAIMS.md#L377) | Established | The phase 1 secret sweep is a gate, make check-no-secrets, and its first run found no stored secret, no credential and no non-public seed in the tree… | A, executed |
 | [E-319](../../../CLAIMS.md#L379) | Established | The four Devnet transactions the README offers a stranger can no longer be fetched from the public Devnet endpoint, and Devnet was not reset. | A, executed |
 | [E-323](../../../CLAIMS.md#L383) | Established | REVIEW-057, one Codex leg on the phase 1 publication plan before any step ran, found that the plan as the owner ruled it could not produce what it… | A, measured |
-| [B-22](../../../CLAIMS.md#L395) | Pending | The KEY-DERIVATION path leaves secret material unwiped, and B-21 deliberately did not cover it. sha512half is used for public transaction digests… | 268 tests at B-22;… |
-| [B-28](../../../CLAIMS.md#L401) | Pending | Whether this repository becomes public, for what purpose, and in which form. | A ruling by the… |
-| [F-1](../../../CLAIMS.md#L437) | Findings | Docs claim the reset inbox value is indistinguishable; it is the canonical EncZero, recomputable by any observer from public inputs, and used on… | A |
-| [F-9](../../../CLAIMS.md#L445) | Findings | mpt-crypto's committed conan.lock cannot be resolved from public remotes does not resolve from conancenter, or from the remote rippled's setup adds… | A |
-| [F-19](../../../CLAIMS.md#L458) | Findings | mpt-crypto's exported PoK API makes account binding optional, and the public header does not say so. | A (E-162) |
-| [F-16](../../../CLAIMS.md#L460) | Findings | A LoanSet in which both parties signed the same pre-CounterpartySignature payload was accepted, first attempt. | A |
-| [R-1](../../../CLAIMS.md#L481) | Retracted | TASK ZERO §9 rev 1: the restructured facility "shows nothing about which supplier drew how much" | Found independently… |
-| [R-5](../../../CLAIMS.md#L486) | Retracted | TASK ZERO §9: the vault converts the whole facility float in one transaction | The retraction was… |
+| [E-332](../../../CLAIMS.md#L392) | Established | The public-update procedure ran the third-party inventory before git add, and the inventory reads only tracked files, so it passed on 9 projects… | A, measured |
+| [B-22](../../../CLAIMS.md#L402) | Pending | The KEY-DERIVATION path leaves secret material unwiped, and B-21 deliberately did not cover it. sha512half is used for public transaction digests… | 268 tests at B-22;… |
+| [B-28](../../../CLAIMS.md#L408) | Pending | Whether this repository becomes public, for what purpose, and in which form. | A ruling by the… |
+| [F-1](../../../CLAIMS.md#L444) | Findings | Docs claim the reset inbox value is indistinguishable; it is the canonical EncZero, recomputable by any observer from public inputs, and used on… | A |
+| [F-9](../../../CLAIMS.md#L452) | Findings | mpt-crypto's committed conan.lock cannot be resolved from public remotes does not resolve from conancenter, or from the remote rippled's setup adds… | A |
+| [F-19](../../../CLAIMS.md#L465) | Findings | mpt-crypto's exported PoK API makes account binding optional, and the public header does not say so. | A (E-162) |
+| [F-16](../../../CLAIMS.md#L467) | Findings | A LoanSet in which both parties signed the same pre-CounterpartySignature payload was accepted, first attempt. | A |
+| [R-1](../../../CLAIMS.md#L488) | Retracted | TASK ZERO §9 rev 1: the restructured facility "shows nothing about which supplier drew how much" | Found independently… |
+| [R-5](../../../CLAIMS.md#L493) | Retracted | TASK ZERO §9: the vault converts the whole facility float in one transaction | The retraction was… |

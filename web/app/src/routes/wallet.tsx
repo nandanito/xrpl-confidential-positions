@@ -42,8 +42,8 @@ function Wallet() {
           </li>
         </ol>
         <p className="text-sm mt-4">
-          So the operation cannot be assembled at all. The wallet is not being denied permission —
-          there is nothing to grant.
+          So a page cannot assemble the operation through the wallets examined. They are not
+          denying a permission: they hold nothing they are built to release to a page.
         </p>
       </Panel>
 
@@ -75,7 +75,8 @@ function Wallet() {
         <p className="text-xs opacity-60 mt-3">
           CLAIMS.md E-206. Recorded because an earlier draft of this project’s reasoning led with
           exactly this point, and it is a version fact an upstream release could close at any time.
-          The three reasons above cannot be closed by any release.
+          The three reasons above cannot be closed by a codec release. A wallet that held the
+          viewing key and produced the proofs itself would close them, and none observed does.
         </p>
       </Panel>
     </>

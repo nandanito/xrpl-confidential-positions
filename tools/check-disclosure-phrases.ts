@@ -34,6 +34,12 @@
  *    unreviewable. Same rule as part 4.
  * 4. **This file is exempt from itself.** It necessarily contains every phrase.
  *    Stated rather than left as an accident of the marker window.
+ * 5. **It reads text, not a rendering.** It joins lines, and drops a leading
+ *    blockquote, comment or bullet marker and JSX's `{" "}`; a tag, an entity,
+ *    emphasis or any other markup between two words of a phrase still hides a
+ *    copy (`REVIEW-058` R3-5, `CLAIMS.md` E-330). Joining lines also means a
+ *    TRUE sentence wrapped to contain a phrase is now rejected, which is the
+ *    loud direction.
  */
 
 import { readdirSync, readFileSync, statSync } from "node:fs";
@@ -56,6 +62,39 @@ interface Retracted {
  * two-consumers lesson), so each entry names the row that retracted it.
  */
 const RETRACTED: Retracted[] = [
+  // ⚠ **ADDED 2026-10-19 BY `REVIEW-058` ROUND ONE (`CLAIMS.md` E-328).** The
+  // front page promised the issuer view showed the holder *"decrypted"* for six
+  // weeks after E-241 removed the figure, two lines below a paragraph saying
+  // the opposite; and the wallet page said three reasons *"cannot be closed by
+  // any release"* fifty lines after saying a wallet that held the key would.
+  // ⚠ **ADDED BY `REVIEW-058` ROUND THREE (`CLAIMS.md` E-330).** The same
+  // permanence claim, in the wallet page's conclusion and the walkthrough, and
+  // in the capability matrix's comment, found by the last round's sweep.
+  {
+    phrase: "So the operation cannot be assembled at all",
+    why: "Scoped to the wallets examined: a wallet that held the viewing key and produced the proofs itself would close it; E-330.",
+    markers: ["E-330", "~~", "STRUCK", "RETRACTED"],
+  },
+  {
+    phrase: "no wallet update can close them",
+    why: "A wallet that held the viewing key and produced the proofs itself would close them; E-330.",
+    markers: ["E-330", "~~", "STRUCK", "RETRACTED"],
+  },
+  {
+    phrase: "the same holder, decrypted",
+    why: "The issuer view has reported only whether a balance decrypted since 2026-09-05 (E-241); E-328.",
+    markers: ["E-328", "~~", "STRUCK", "RETRACTED"],
+  },
+  {
+    phrase: "three reasons above cannot be closed by any release",
+    why: "A wallet that held the viewing key and produced the proofs itself would close all three reasons; E-328.",
+    markers: ["E-328", "~~", "STRUCK", "RETRACTED"],
+  },
+  {
+    phrase: "reasons 1–3 are **structural** and cannot be closed by any wallet update",
+    why: "A wallet that held the viewing key and produced the proofs itself would close all three reasons; E-328.",
+    markers: ["E-328", "~~", "STRUCK", "RETRACTED"],
+  },
   // ⚠⚠ **THE EMPHASIS-GATE ROUNDS, ADDED BY `REVIEW-045`.** Three rounds each
   // corrected a sentence at the site somebody was looking at, and the next
   // round found it standing elsewhere: *"a crash cannot print this line"* in
@@ -199,6 +238,45 @@ function liveFiles(dir = "."): string[] {
 }
 
 /**
+ * The text as a reader would see it, flattened: on each line a leading
+ * blockquote, line-comment, comment-continuation or bullet marker is dropped,
+ * JSX's `{" "}` becomes a space, and then every run of whitespace, newlines
+ * included, becomes one space. Returns, for each character of the result, the
+ * 0-based source line it came from.
+ *
+ * ⚠ **`REVIEW-058` round three (R3-5, `CLAIMS.md` E-330)**: whitespace alone
+ * was not enough. A copy wrapped inside a blockquote kept `> ` between its words,
+ * and a JSX copy wrapped after `{" "}` kept the braces, and both passed with
+ * the real page edited. Other markup between words, a tag or an entity or
+ * emphasis, still hides a copy, and the gate's printed limits say so.
+ */
+function flatten(text: string): { flat: string; lineAt: number[] } {
+  let flat = "";
+  const lineAt: number[] = [];
+  let inSpace = false;
+  text.split("\n").forEach((raw, line) => {
+    const body =
+      raw
+        .replace(/^\s*(?:(?:>\s*)+|\/\/+\s*|\*+\s+|-\s+)/, "")
+        .replace(/\{\s*(["'`])\s*\1\s*\}/g, " ") + "\n";
+    for (const ch of body) {
+      if (/\s/.test(ch)) {
+        if (!inSpace) {
+          flat += " ";
+          lineAt.push(line);
+          inSpace = true;
+        }
+        continue;
+      }
+      inSpace = false;
+      flat += ch;
+      for (let k = 0; k < ch.length; k++) lineAt.push(line);
+    }
+  });
+  return { flat, lineAt };
+}
+
+/**
  * The REAL detector. Every control below calls THIS — a control that
  * re-implements the check proves only that the re-implementation works
  * (`CLAIMS.md` E-182).
@@ -209,9 +287,17 @@ export function scan(extra?: { name: string; text: string }): Hit[] {
   if (extra) items.push([extra.name, extra.text]);
   for (const [file, text] of items) {
     const lines = text.split("\n");
-    for (let i = 0; i < lines.length; i++) {
-      for (const r of RETRACTED) {
-        if (!lines[i].includes(r.phrase)) continue;
+    // ⚠⚠ **A COPY WRAPPED ACROSS TWO LINES PASSED — `REVIEW-058` R2-11,
+    // `CLAIMS.md` E-329.** This matched each phrase within one source line, so
+    // the front page's false sentence passed once a line break fell after its
+    // comma, and so did the wallet sentence split before "release". JSX and
+    // Markdown both wrap prose. The text is now flattened, every run of
+    // whitespace to one space, and each hit reports the line it starts on.
+    const { flat, lineAt } = flatten(text);
+    for (const r of RETRACTED) {
+      const needle = r.phrase.replace(/\s+/g, " ");
+      for (let at = flat.indexOf(needle); at >= 0; at = flat.indexOf(needle, at + 1)) {
+        const i = lineAt[at];
         const window = lines.slice(Math.max(0, i - WINDOW), i + WINDOW + 1).join("\n");
         // ⚠⚠ **A RETRACTION TOKEN IS REQUIRED, NOT MERELY A CITATION —
         // `CLAIMS.md` E-238.** E-232 tightened the marker LISTS after a review
@@ -304,6 +390,51 @@ if (import.meta.main) {
   control(
     "clean prose is NOT caught",
     scan({ name: "<injected>", text: "nothing retracted here at all\n" }).length === hits.length,
+  );
+  // ⚠ REVIEW-058 R2-11 and R2-12 (E-329): wrapped copies, and a true sentence
+  // that shares words with a retracted one.
+  const wrapped = p.phrase.replace(/ /, "\n");
+  control(
+    "a copy WRAPPED across two lines IS caught",
+    wrapped !== p.phrase &&
+      scan({ name: "<injected>", text: `prose\n${wrapped}\nmore prose` }).some((h) => h.file === "<injected>"),
+  );
+  control(
+    "a copy wrapped and INDENTED, as JSX wraps it, IS caught",
+    scan({
+      name: "<injected>",
+      text: "          The three reasons above cannot be\n          closed by any release.\n",
+    }).some((h) => h.file === "<injected>"),
+  );
+  control(
+    "a TRUE sentence that shares the retracted words is NOT caught",
+    !scan({
+      name: "<injected>",
+      text: "The protocol-mandated issuer mirror cannot be closed by any wallet update or any release.\n",
+    }).some((h) => h.file === "<injected>"),
+  );
+  // ⚠ R3-4 (E-330): the control above lacked each pattern's full predicate, so
+  // it could not protect a pattern that had lost its subject. Each of these keeps
+  // a wallet phrase's whole predicate and changes only the subject.
+  control(
+    "each wallet phrase's predicate, on ANOTHER subject, is NOT caught",
+    ![
+      "The two mandatory mirrors are **structural** and cannot be closed by any wallet update.\n",
+      "The issuer's two powers above cannot be closed by any release.\n",
+      "For a wallet that held the key, no wallet update can close them would be false.\n",
+    ].some((t) => scan({ name: "<injected>", text: t }).some((h) => h.file === "<injected>" && h.phrase !== "no wallet update can close them")),
+  );
+  control(
+    "a copy wrapped inside a BLOCKQUOTE is caught",
+    scan({ name: "<injected>", text: "> The issuer shows the same holder,\n> decrypted.\n" }).some((h) => h.file === "<injected>"),
+  );
+  control(
+    "a copy wrapped after JSX's {\" \"} is caught",
+    scan({ name: "<injected>", text: '<li>Issuer view — the same holder,{" "}\n decrypted.</li>\n' }).some((h) => h.file === "<injected>"),
+  );
+  control(
+    "a copy wrapped across LINE COMMENTS is caught",
+    scan({ name: "<injected>", text: "// So the operation cannot be\n// assembled at all.\n" }).some((h) => h.file === "<injected>"),
   );
   control(
     "EVERY phrase in the list is detectable, not just the first",

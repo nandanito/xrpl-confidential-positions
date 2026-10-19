@@ -16,8 +16,8 @@
  * The tier signs nothing and holds no key, so an XSS in the browser
  * application reaches no SIGNING authority.
  *
- * ⚠⚠ **THIS SAID AN XSS *"reaches exactly what a `curl` against a public node
- * reaches"* UNTIL 2026-09-04, AND THAT WAS FALSE — `CLAIMS.md` E-239.** This
+ * ⚠⚠ **THIS SAID AN XSS ~~*"reaches exactly what a `curl` against a public node
+ * reaches"*~~ UNTIL 2026-09-04, AND THAT WAS FALSE — `CLAIMS.md` E-239.** This
  * same process served a **decrypted issuer snapshot** and **signer-local
  * status**, including a record count that includes attempts which never reached
  * the ledger and the local socket path. **None of that is on a public node.**

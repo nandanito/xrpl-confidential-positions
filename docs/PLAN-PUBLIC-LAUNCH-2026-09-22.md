@@ -142,8 +142,9 @@ just written the trigger (E-212).
      2026-09-05 (E-241)**, before this plan was written: no route serves the figure,
      the record count or the socket path. The hosted design starts from that, and
      this note was added on 2026-10-18 (`REVIEW-057` R1-11). The first is removed
-     from the hosted build. The second is the point of the demo and becomes a deliberately published static artifact over
-     throwaway Devnet accounts, with the disclosure beside it.
+     from the hosted build. ~~The second is the point of the demo and becomes a deliberately published static artifact over
+     throwaway Devnet accounts, with the disclosure beside it.~~ ⚠ Superseded 2026-10-19: the owner ruled
+     `ADR-0004` D-H3 option A, so the hosted page publishes no issuer figure (`CLAIMS.md` E-331).
    - **The ledger endpoint.** B-15's named risk acceptance was written for a local
      operator. A hosted page needs its own wording: a lying source makes the page show
      wrong numbers, and nothing signs, so no amount can be published by it.
@@ -151,10 +152,20 @@ just written the trigger (E-212).
      say so rather than fall back to another source, which is the substitution
      `CLAUDE.md` forbids.
    - Abuse, rate limiting and caching, since the endpoint is no longer one operator's.
+   **Drafted 2026-10-19: `ADR-0004`, `Proposed`, and architecture §6 step 9** (`CLAIMS.md` E-327).
+   It answers each question above and puts four decisions to the owner, D-H1 to D-H4. The
+   snapshot sentence in the first question is D-H3 and ~~is not ruled~~ was ruled A. Under the recommended
+   hosting shape there is no server, so step 3's CORS item and step 4's request-time checks
+   change; the ADR says how. Step 2's round one ran the same day (`REVIEW-058`, E-328) and moved
+   D-H1's recommendation to prerendered pages. Round two ran too and its stopping condition
+   fired (E-329), and round three closed the rotation (E-330). **The owner ruled all four on
+   2026-10-19, each as recommended, and `ADR-0004` is `Accepted`** (E-331): prerendered pages from
+   one pinned snapshot, rebuilt by hand on an isolated build machine; the hosted risk wording;
+   no issuer figure; and the prebuilt CLI deploy.
 2. **The rotation.** Three legs, differed packets, before implementation.
 3. **Build.** A hosted build target that excludes the socket client entirely; CORS for
-   the deployed origin, which today is a localhost regex; the static issuer snapshot;
-   a page that tells a visitor how to run the signer locally to transact.
+   the deployed origin, which today is a localhost regex; ~~the static issuer snapshot~~ (dropped
+   by D-H3, E-331); a page that tells a visitor how to run the signer locally to transact.
 4. **Extend the gate.** `tools/check-web-readonly.ts` asserts the local shape. The
    hosted surface needs its own part: zero socket clients in the deployed bundle,
    no decryption at request time, and the deployed origin checked against what the
@@ -162,8 +173,8 @@ just written the trigger (E-212).
 5. **Deploy to Vercel and check the live surface** against the ADR's list, from a
    machine that has never run the project.
 
-**Exit:** a live URL that serves public ledger data and one published snapshot,
-carries its disclosures on the page, and cannot sign.
+**Exit:** a live URL that serves public ledger data ~~and one published snapshot~~ (dropped by
+D-H3, E-331), carries its disclosures on the page, and cannot sign.
 
 ---
 
