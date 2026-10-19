@@ -9,7 +9,7 @@ the file first contains its id — not to one that merely edits or mentions it.
 
 ⚠ **Simplified, and that word is load-bearing.** `git log -- <path>` prunes a merge
 that is TREESAME to its first parent, so this is NOT every commit whose tree touched
-the file: `--full-history` reports **208** against the 167 listed below. The
+the file: `--full-history` reports **1** against the 1 listed below. The
 pruned ones are merges that introduced nothing the branch had not already introduced,
 which is what makes this the readable history. ⚠ **The append-only check does NOT run
 on this walk** — it runs over every reachable commit against every parent, precisely
@@ -20,10 +20,10 @@ because pruning could hide a row dropped at a merge.
 table for the entries that have one. The rest are deliberately not reconstructed:
 a narrative written now would be one session's reading of other sessions' work.
 
-- **Commits in the simplified walk:** 167, spanning 2026-08-16 to 2026-10-19 (`--full-history`: 208)
-- **Of those, commits that introduced at least one row:** 135
-- **Rows in the register at `79d2b7c`:** 404
-- **History covered up to:** `79d2b7c0b8d6fc6521ebbdfbb8de2423c4bd503e`
+- **Commits in the simplified walk:** 1, spanning 2026-10-19 to 2026-10-19 (`--full-history`: 1)
+- **Of those, commits that introduced at least one row:** 1
+- **Rows in the register at `d7fc148`:** 404
+- **History covered up to:** `d7fc1484321960a714374180451b054cce82df98`
 
 ⚠ Every number above is derived from the git query its own label names — the first
 three from the list below, the `--full-history` figure from a separate query that
@@ -45,170 +45,4 @@ corrected by E-271.
 
 | Date | Commit | Rows first appearing | Subject |
 |---|---|---|---|
-| 2026-10-19 | `79d2b7c` | E-326 | REVIEW-057 round three: guard hardened, inventory widened, E-326 |
-| 2026-10-18 | `6a5cd97` | E-325 | REVIEW-057 round two: the guard redesigned, the inventory rebuilt, E-325 |
-| 2026-10-18 | `ed1fab1` | E-324 | Step 1: the third-party inventory, NOTICE and LICENSES; E-324 |
-| 2026-10-18 | `df4207f` | E-323 | REVIEW-057: the publication plan reviewed before any step ran, and fixed |
-| 2026-10-18 | `b0afb07` | E-322 | README claims-check fixes, and E-241's closure carried to every surface |
-| 2026-10-18 | `1e687c4` | E-321 | CLAIMS.md E-321: REVIEW-056 round three, and E-320 corrected |
-| 2026-10-18 | `db2fd12` | E-320 | CLAIMS.md E-320: REVIEW-056 round two, and E-318 corrected |
-| 2026-10-18 | `65da631` | E-319 | CLAIMS.md: E-18 and F-29 superseded upstream, and E-319 |
-| 2026-10-18 | `9b27316` | E-318 | CLAIMS.md E-318: REVIEW-056 round one on check-no-secrets |
-| 2026-10-18 | `ce0646d` | E-317 | CLAIMS.md E-317: the secret sweep is a gate, and what its first run found |
-| 2026-10-18 | `7de7893` | E-316 | Finish the upstream-outcome record: per-row notes, the Open items, and E-316 |
-| 2026-10-18 | `bce99df` | B-31, E-315 | File F-17, F-12 and F-13 as mpt-crypto#153, #154, #155: E-315, B-31, REVIEW-053 to -055 |
-| 2026-09-28 | `44a238f` | E-314 | File F-9 as mpt-crypto#148, reviewed before sending: E-314, REVIEW-052 |
-| 2026-09-28 | `09f6325` | — | Correct E-313: build.yml:71 is the macOS job, not all of CI |
-| 2026-09-22 | `ff4db1a` | E-313 | Record the filing preparation: E-313, and one Codex leg on it |
-| 2026-09-22 | `717d3a9` | E-312 | Round three, narrow: five surviving copies fixed, and the rotation is closed |
-| 2026-09-22 | `f894847` | E-311 | Round two on REVIEW-048's fixes: eight findings, and the stopping condition fired |
-| 2026-09-22 | `eb1c9aa` | B-30, E-310 | Fix the twelve rows REVIEW-048 found overreaching, and record B-30 |
-| 2026-09-22 | `520423f` | E-309 | Plan the public launch: repo, hosted demo, and the two posts |
-| 2026-09-14 | `688a518` | E-308 | Record the owner's rulings on F-11, F-13, F-16, F-17 and F-21, and hand over |
-| 2026-09-14 | `27b263f` | E-303 – E-307 | Re-check the last five of B-28's unruled findings at upstream HEAD |
-| 2026-09-14 | `52d34f8` | E-302 | Record the owner's rulings on F-7, F-9, F-12 and F-15 |
-| 2026-09-14 | `102da40` | — | Name Trail of Bits' appendices in the audit rule, and hand over |
-| 2026-09-14 | `e36dde4` | — | Correct two evidence sentences in E-296 and E-300 found on re-reading |
-| 2026-09-14 | `b3519ba` | E-298 – E-301 | Re-check five mpt-crypto findings at upstream HEAD; record three not-to-file |
-| 2026-09-14 | `d190466` | E-296, E-297 | Check F-19 and F-8 at source: one is Trail of Bits', one is fixed upstream |
-| 2026-09-13 | `6c658d2` | E-295 | Fix REVIEW-047 in the documents and the register |
-| 2026-09-13 | `ed6c98a` | E-294 | Record the owner's rulings: B-27 accepted by name, B-28 private for now |
-| 2026-09-13 | `0e0f358` | E-293 | Record B-29 as built: E-293, with the sweep that broke it at eleven sites |
-| 2026-09-13 | `adf63b5` | B-29, E-290 – E-292 | Fix REVIEW-046 in the custody request, and withdraw its recommendation |
-| 2026-09-13 | `e009909` | B-28, E-288, E-289 | Assemble the public/private inputs: 12 unfiled findings, and history is the question |
-| 2026-09-13 | `d2441ce` | E-286, E-287 | Fix round nine: the falsifier could not see the regression it exists for |
-| 2026-09-13 | `3089277` | E-284, E-285 | Fix round eight: SIGHUP stranded a mutation, and the lock had no falsifier |
-| 2026-09-12 | `d5988ee` | E-282, E-283 | Fix round seven: the denylist missed a member, and a quorum is not a second holder |
-| 2026-09-12 | `4159672` | E-280, E-281 | Fix round six: GIT_DIR wrote into a foreign repository, and the summary contradicted its own fix |
-| 2026-09-12 | `91f8151` | E-278, E-279 | Fix round five: an option priced out of existence, and two git settings that crash the tool |
-| 2026-09-12 | `eb48789` | E-276, E-277 | Fix round four: a Set at the parse layer hid a whole class of defect |
-| 2026-09-12 | `f33659d` | E-274, E-275 | Fix round three: the prescribed workflow broke the generator it was written for |
-| 2026-09-12 | `d355924` | E-272, E-273 | Fix round two: the lock was wrong twice, and a retired sentence regenerates |
-| 2026-09-12 | `88b228a` | E-271 | Fix five review findings, and the sharpest refutes a row written the day before |
-| 2026-09-11 | `2b9f2db` | E-269, E-270 | Announce the zeroize gate's mutation window, and refuse the run that would corrupt source |
-| 2026-09-11 | `c4aabc9` | E-267, E-268 | Derive the CLAIMS revision log from git, and find that it cannot contain its own commit |
-| 2026-09-11 | `f511518` | B-27, E-266 | Write the custody decision request, and find the second power E-117 never named |
-| 2026-09-10 | `382774e` | E-265 | The /tmp cleaner took the build tree again, and this time the backup paid for itself |
-| 2026-09-09 | `da013cf` | E-264 | Close the emphasis-gate rotation at three rounds, with the reasons and the reopeners |
-| 2026-09-09 | `0e77b8e` | E-263 | Round three's own fix made two probes stale, and the harness is what said so |
-| 2026-09-09 | `474e642` | — | E-262 landed with two gates red, and the check that said otherwise was unconditional |
-| 2026-09-09 | `c402169` | E-262 | Fix the handover head, which round two reported as updated and never wrote |
-| 2026-09-09 | `c7602ce` | E-261 | REVIEW-045 round three: the block splitter false-passed six real walls |
-| 2026-09-09 | `f8bce8b` | E-260 | The needle check false-passed, and running it is what showed that |
-| 2026-09-09 | `cb66ac4` | E-259 | REVIEW-044 round two: a live false-pass, a defect a fix introduced, and a false sentence |
-| 2026-09-08 | `ec2e4c5` | E-258 | REVIEW-043: five defects in the gate, and the harness had the one it exists to catch |
-| 2026-09-08 | `b97966c` | E-249 – E-257 | Enforce the emphasis discipline, and audit what the wall was hiding |
-| 2026-09-06 | `589dd0f` | E-248 | REVIEW-042 round three: run against GitHub's own parser, and round two was wrong about escapes |
-| 2026-09-06 | `dc0e415` | E-247 | REVIEW-041 round two: the gate's founding rationale was false |
-| 2026-09-06 | `1733bfd` | E-246 | REVIEW-040 fixes, and verifying one of them found a live defect nobody reported |
-| 2026-09-05 | `cb72368` | E-245 | Topic views of the register: generated, not a split |
-| 2026-09-05 | `307cb4f` | E-244 | E-243's fix left 96 rows outside the tables, and the gate said PASS |
-| 2026-09-05 | `c88f2b6` | E-243 | CLAIMS.md rendered as ~20 fragments: 24 blank lines inside its tables |
-| 2026-09-05 | `74063e9` | E-242 | Note what the "broken paper" finding actually says, and refresh the handover |
-| 2026-09-05 | `d1e3d29` | E-241 | Rule the issuer route: remove the disclosure, do not guard it |
-| 2026-09-05 | `e04cb81` | — | Disclose the history exposure rather than erase it |
-| 2026-09-05 | `5be5b68` | E-240 | Withhold the Observed section from the public tree |
-| 2026-09-05 | `b7d81fb` | E-239 | REVIEW-039: the publication rotation — entry points honest, interior not |
-| 2026-09-04 | `7d7149c` | — | Make CLAIMS.md navigable: generated index, compact header, tenth gate |
-| 2026-09-04 | `fc8812c` | E-237, E-238 | REVIEW-038 spot-check: the detectors were broken, and so was the fix for them |
-| 2026-09-04 | `002e07c` | — | Translate tapFailHard for publication, and clear two empty files |
-| 2026-09-02 | `533a6bb` | E-231 – E-236 | REVIEW-037: round two — both new gates false-passed, and one on its own target |
-| 2026-09-02 | `f7e7b43` | E-226 – E-230 | REVIEW-036: ADR-0003's central claim is unsound — four legs, differed packets |
-| 2026-09-02 | `ae6d055` | E-225 | The disclosure-phrase gate — and it failed on its first run |
-| 2026-09-02 | `9017e69` | E-224 | REVIEW-035: the signer told holders their conversion amounts were hidden |
-| 2026-09-02 | `72576f7` | E-223 | REVIEW-034: round three found two P1s five earlier legs missed |
-| 2026-09-01 | `b197315` | E-222 | README rewritten — and a fresh reader falsified a HARD RULE from it |
-| 2026-09-01 | `189c178` | — | Merge main into the skills branch — both divergent check-filing fixes kept |
-| 2026-09-01 | `621ea8b` | E-221 | Round two on step 8: 4 of 5 findings were defects in round one's fixes |
-| 2026-09-01 | `c9fa946` | E-220 | Step 8's first independent review: 9 findings, and 2 were functional bugs |
-| 2026-09-01 | `1a19e71` | E-219 | Codex round four: two of the four were defects in round three's fixes |
-| 2026-09-01 | `027ea7e` | E-218 | Codex round three: all 6 fixed — and my self-review's sweep lied by using head -1 |
-| 2026-09-01 | `42cbe0d` | E-216, E-217 | Upstream filing protocol, its gate, and an audit that found nothing to withdraw |
-| 2026-08-29 | `7458cf0` | E-215 | Codex round two: all 5 fixed — round one's FIX made the P1, and its new test FALSE-PASSED |
-| 2026-08-28 | `87368d6` | E-212 – E-214 | Codex review: all 7 fixed — and the P1 was ADR-0003's own trigger, missed by its author |
-| 2026-08-28 | `a4213b1` | E-210, E-211 | Issuer view DECRYPTS, account picker, and a FALSE SENTENCE the page was shipping |
-| 2026-08-28 | `b4b73d7` | E-209 | Step 8: RUNNING the page found two defects every gate had passed |
-| 2026-08-28 | `4764577` | E-204 – E-208 | Architecture §6 step 8: the web tier is SCOPED, RULED, BUILT and READ-ONLY |
-| 2026-08-28 | `c08e036` | — | The rotation is CLOSED: B-26 executed on Devnet, and the handover says don't run round four |
-| 2026-08-28 | `080a1a8` | B-26, E-202, E-203 | B-26: REVIEW-033's fixes — the falsifier was UB, and there is no safe direction |
-| 2026-08-28 | `7eab33f` | — | B-25 executed on Devnet |
-| 2026-08-28 | `8acb334` | B-25, E-200, E-201 | B-25: REVIEW-032's fixes — the producer again, and a comment that named the wrong crate |
-| 2026-08-28 | `5a20acb` | — | B-24 executed on Devnet, and the handover for round two |
-| 2026-08-28 | `9878046` | B-24, E-194 – E-199 | B-24: REVIEW-031's fixes — the producer, not the call sites |
-| 2026-08-27 | `5230686` | E-193 | E-193: a test written this session to pin B-23's parse swap FALSE-PASSED |
-| 2026-08-27 | `517a1b8` | E-183 – E-192 | B-23 registered: ten E-rows, the B-23 row flipped, and two counts this commit falsified |
-| 2026-08-27 | `5623648` | E-181, E-182 | REVIEW-030 round two: the build had not implemented its own ruling |
-| 2026-08-27 | `cbfda07` | B-23, E-177 – E-180 | B-22 Option B built: the derivation path wipes, under REVIEW-029c's conditions |
-| 2026-08-27 | `cd7637b` | E-176 | B-21 executed on Devnet — REVIEW-027 finding 8 closed (E-176) |
-| 2026-08-27 | `af1cc3e` | E-175 | REVIEW-028 round two: the fixes reproduced the defect they fixed |
-| 2026-08-27 | `d535589` | B-22, E-172 – E-174 | REVIEW-027 round one: three legs, and the gate had a hole |
-| 2026-08-27 | `d8eb7a3` | E-171 | B-21 built — and building it proved B-19 wrong (E-171) |
-| 2026-08-27 | `432dad4` | E-168 – E-170 | REVIEW-026 round two: the fixes, and round one had overstated them |
-| 2026-08-27 | `2615215` | B-21, E-163 – E-167 | REVIEW-025 round one: eleven findings, none of them the construction |
-| 2026-08-27 | `14e82a7` | B-19, B-20, E-158 – E-162 | Rule B-16: the ed25519 nonce is hedged, ruled and not built |
-| 2026-08-26 | `894608b` | E-157 | File U-24 and U-34; rule issue #10 as Option 3 |
-| 2026-08-26 | `64c3788` | P-12 | Gate the sentence shape that failed three times: P-12 and check-negative-claims |
-| 2026-08-26 | `876e5bc` | E-156 | Codex found 13 more; the worst was praising a property the spec advertises twice |
-| 2026-08-26 | `65e606d` | — | Restore E-148's Evidence and Grade columns, dropped by its own correction |
-| 2026-08-26 | `b6195a3` | — | Review round two: my own filing asked a question its test suite answers |
-| 2026-08-26 | `90dc037` | E-155, F-29 | Five items filed upstream; three of eleven did not survive re-verification |
-| 2026-08-26 | `acaa108` | E-154 | CLAUDE.md said two pieces of work preceded application logic; both were done |
-| 2026-08-26 | `03ee699` | E-153 | REVIEW-023 round two: "every one is fixed" was false, and three legs proved it |
-| 2026-08-25 | `7ec094d` | E-152, F-28 | REVIEW-023: four of seven findings were about what an execution PROVES |
-| 2026-08-25 | `d17b8ee` | E-151, F-27 | Step 7 executed: 27 validated transactions, and the ledger found F-27 |
-| 2026-08-25 | `8f5b8bd` | — | Memory was a ceiling, not the constraint — E-148, corrected a second time |
-| 2026-08-25 | `1822b9e` | — | E-148 was wrong about why the node stopped: it was OOM-killed, not slow |
-| 2026-08-25 | `19864cf` | B-18, E-146 – E-150, F-25, F-26 | Registers and docs: step 7 built, F-26, and the cost B-15's Option A actually had |
-| 2026-08-25 | `e60d58a` | — | B-15 ruled: loopback for the facility, tapFailHard on whoever submits |
-| 2026-08-25 | `f9e9eb9` | E-141 – E-145 | REVIEW-021 round two: the fixes, and they were worse than the feature |
-| 2026-08-25 | `4cc3ae1` | B-17, E-135 – E-140 | REVIEW-021 round one: eight findings upheld, seven fixed, one named as a gap |
-| 2026-08-25 | `aa1f349` | E-129 – E-134, F-24 | Open architecture §6 step 7: the facility's exit, and E-76 closed |
-| 2026-08-20 | `9167f9d` | E-124 – E-128 | REVIEW-020 round two, and the claims-check gate |
-| 2026-08-20 | `0e6b625` | E-118 – E-123 | Architecture §6 step 6: real key generation and onboarding |
-| 2026-08-20 | `c34dcec` | E-117 | E-117: rejecting the Vault traded away a custody property nobody priced |
-| 2026-08-20 | `c6403f5` | E-116 | Document the facility end to end, and register a premise nobody had checked |
-| 2026-08-20 | `9d23757` | E-115 | ADR-0002 rev 4: merge Decisions A and B, reject the hybrid on blocker 1 |
-| 2026-08-20 | `be6e502` | E-114 | E-114: ADR-0002's open question may be premised on the wrong facility |
-| 2026-08-20 | `379bc47` | E-113 | Enforce the ECDSA aux-entropy budget instead of asserting it |
-| 2026-08-20 | `3ff4010` | B-16, E-109 – E-112 | Rule B-14 and B-15; ADR-0002 round two produces revision 3 |
-| 2026-08-19 | `f4d0cbb` | — | E-105: say the test count after round two, and that three reverts failed to build |
-| 2026-08-19 | `1b8eb83` | E-107, E-108 | REVIEW-016 round two: fix what the fixes broke |
-| 2026-08-19 | `3db9788` | E-105, E-106 | REVIEW-016 round one: fix what two legs found, execute F-23 |
-| 2026-08-19 | `388cb3a` | — | Hand wire_fields the snapshot instead of letting it look one up |
-| 2026-08-19 | `5ad61d2` | B-15, E-99 – E-104, F-23 | Architecture §6 step 2: the signer reads the ledger itself |
-| 2026-08-19 | `2a5537f` | E-98 | Fix a flaky test hook: entropy injection was global, tests are parallel |
-| 2026-08-19 | `835c861` | E-96, E-97 | REVIEW-015 round three, and rebuild the environment /tmp destroyed |
-| 2026-08-18 | `0955d7b` | E-89 – E-95, F-22 | REVIEW-015 round two: fix what the fixes broke, and what the spec says |
-| 2026-08-18 | `9d42545` | — | REVIEW-015: fix what two adversarial legs found |
-| 2026-08-18 | `16e2e58` | B-14, E-80 – E-88, F-21 | Wire the vendored prover into the signer — architecture §6 step 3 |
-| 2026-08-18 | `1403f4c` | E-78, E-79 | Review the signer implementation and fix what it found |
-| 2026-08-18 | `f7ef8a8` | E-75 – E-77 | Implement the r/rho ruling and its A4-A9 ledger |
-| 2026-08-18 | `de8cd99` | E-73, E-74 | Build the signer skeleton: no keys, and the falsifier passes |
-| 2026-08-18 | `85550e5` | E-71, E-72, F-20 | Accept ADR-0001: Option 2 re-weighed on risk, Option 3 confirmed |
-| 2026-08-18 | `84dd046` | E-68 – E-70 | Rule ADR-0001 s(e) keygen: derivation upheld, with conditions |
-| 2026-08-18 | `722a1d5` | B-13, E-66, E-67, F-19 | Close the three missing documents; write the keygen packet |
-| 2026-08-18 | `020c248` | — | Three-leg review of the decision branch: nine findings, one refuted |
-| 2026-08-18 | `97bbe73` | — | Give the observer harness a randomness-reuse detector |
-| 2026-08-18 | `7e3ca18` | B-12 | Sharpen U-37 with the shared-C1 consequence, and record B-12 |
-| 2026-08-18 | `77cf9ee` | E-63 – E-65 | Execute issue #3's repeated-r attack: confirmed, and it costs nothing |
-| 2026-08-18 | `bdfa4c7` | — | Clear the merge gate: five blockers, two of which undercut round one's claims |
-| 2026-08-17 | `a9f7898` | — | Fix the adversarial review's findings: one HIGH, three LOW, two evidence gaps |
-| 2026-08-17 | `8f19114` | — | Correct the version chain: 85dbac7 IS tag 1.0.4, and F-18's emphasis was wrong |
-| 2026-08-17 | `1f16869` | E-60 – E-62, F-18 | Replace mpt-crypto's sigma nonces with ours, and get a Send accepted |
-| 2026-08-17 | `5930430` | — | Merge review/adr-0001-nonce-construction |
-| 2026-08-17 | `cd1eda0` | F-17 | Adjudicate REVIEW-005: both legs agree the ADR is wrong; they disagree on the fix |
-| 2026-08-17 | `59f9632` | — | Merge research/gap-8-lending-lifecycle |
-| 2026-08-17 | `2b9af6d` | — | Adjudicate REVIEW-007: both legs were right, and the gap is closed by experiment |
-| 2026-08-17 | `11415a2` | F-16 | Close GAP-8: all fifteen vault and lending transactors executed |
-| 2026-08-17 | `80d6a19` | — | Adjudicate REVIEW-006 and fix the tools branch |
-| 2026-08-17 | `7401ab9` | E-59 | Build the observer harness and the issuer-view tool CLAUDE.md requires |
-| 2026-08-17 | `391e48f` | — | Audit the register against the ledger, and replicate two claims on fresh data |
-| 2026-08-17 | `1115985` | E-57, E-58 | Close GAP-11 and the n=3 limitation: E-4 measured at four participants |
-| 2026-08-17 | `750e8ee` | — | Adjudicate REVIEW-004: 11 accepted, 2 rejected, and two findings neither leg saw |
-| 2026-08-17 | `8f3fbe8` | F-15 | Queue REVIEW-004, and correct a clause of the GAP-9 result that was wrong |
-| 2026-08-17 | `a2b8bef` | E-45 – E-56, F-12 – F-14 | Get a Confidential MPT transaction accepted, and settle E-4 and E-22 against the wire |
-| 2026-08-17 | `86f9c4b` | — | Standardise the requireAuth exemption citation to :350-351 |
-| 2026-08-17 | `528bb0f` | R-6 | Apply REVIEW-003 round 1: withdraw a wrong inference, reopen the hybrid |
-| 2026-08-17 | `7fb6afa` | B-11, E-37 – E-44, F-10, F-11 | Settle the XLS-66 domain question: build as application logic, not on XLS-66 |
-| 2026-08-16 | `5507485` | — | Add E-22 falsification to Session 3's spike objectives |
-| 2026-08-16 | `b71638c` | B-1 – B-7, B-9, B-10, E-1 – E-3, E-3a, E-4 – E-36, F-1 – F-9, P-1 – P-11, R-1 – R-5 | Scaffold plus Session 1: close GAP-1, GAP-3 and GAP-6 |
+| 2026-10-19 | `d7fc148` | B-1 – B-7, B-9 – B-31, E-1 – E-3, E-3a, E-4 – E-326, F-1 – F-29, P-1 – P-12, R-1 – R-6 | W-CONF: a Confidential MPT reference application for the XRP Ledger |
