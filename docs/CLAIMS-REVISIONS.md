@@ -9,7 +9,7 @@ the file first contains its id — not to one that merely edits or mentions it.
 
 ⚠ **Simplified, and that word is load-bearing.** `git log -- <path>` prunes a merge
 that is TREESAME to its first parent, so this is NOT every commit whose tree touched
-the file: `--full-history` reports **1** against the 1 listed below. The
+the file: `--full-history` reports **2** against the 2 listed below. The
 pruned ones are merges that introduced nothing the branch had not already introduced,
 which is what makes this the readable history. ⚠ **The append-only check does NOT run
 on this walk** — it runs over every reachable commit against every parent, precisely
@@ -20,10 +20,10 @@ because pruning could hide a row dropped at a merge.
 table for the entries that have one. The rest are deliberately not reconstructed:
 a narrative written now would be one session's reading of other sessions' work.
 
-- **Commits in the simplified walk:** 1, spanning 2026-10-19 to 2026-10-19 (`--full-history`: 1)
+- **Commits in the simplified walk:** 2, spanning 2026-10-19 to 2026-10-19 (`--full-history`: 2)
 - **Of those, commits that introduced at least one row:** 1
-- **Rows in the register at `d7fc148`:** 404
-- **History covered up to:** `d7fc1484321960a714374180451b054cce82df98`
+- **Rows in the register at `b9101bb`:** 404
+- **History covered up to:** `b9101bb8bca0e3e768c3d1d40a696eec20e0dadc`
 
 ⚠ Every number above is derived from the git query its own label names — the first
 three from the list below, the `--full-history` figure from a separate query that
@@ -45,4 +45,5 @@ corrected by E-271.
 
 | Date | Commit | Rows first appearing | Subject |
 |---|---|---|---|
+| 2026-10-19 | `b9101bb` | — | README rewritten for public readers; CI pinned to Node 24 and ubuntu-24.04 |
 | 2026-10-19 | `d7fc148` | B-1 – B-7, B-9 – B-31, E-1 – E-3, E-3a, E-4 – E-326, F-1 – F-29, P-1 – P-12, R-1 – R-6 | W-CONF: a Confidential MPT reference application for the XRP Ledger |
