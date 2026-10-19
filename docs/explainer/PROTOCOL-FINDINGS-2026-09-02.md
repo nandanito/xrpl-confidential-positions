@@ -159,5 +159,5 @@ it rather than inheriting this sentence** — a named gap is a correct output.
 ⚠ **A demo of the happy path is not evidence of confidentiality.** That is what
 `tools/observer-harness.ts` is for. The disclosure findings — what the ledger publishes,
 who can decrypt, and the exact scope of the recognisable encrypted zero — are in the
-README's **Trust model**, not here, because they bear on whether to use the protocol at
+README's section [*What XLS-96 hides, and what it does not*](../../README.md#what-xls-96-hides-and-what-it-does-not), not here, because they bear on whether to use the protocol at
 all rather than on how it performs.

@@ -427,6 +427,16 @@ the first Linux CI run only after going public (R1-9).
    `! git grep -n -w DATE -- README.md`, so no placeholder is published (R3-12).
    Record `git rev-parse HEAD`. ⚠ **Any later change to the export goes back to
    step 5.**
+
+   **Steps 5 to 7 done 2026-10-19**, in `…/ripple/xrpl-confidential-positions-public`,
+   exported from `main` at `a17285b` and dated 2026-10-19. Two commits, `d7fc148` and
+   `9edf965`; the withheld file and the unscrubbed logs absent, `NOTICE` and the eight
+   `LICENSES/` files present. The strict gate with the local store: 97/97 controls, 19
+   stored secrets searched, 673 files and 672 history objects, PASS. `make ci`: 227
+   pass, 5 skipped, 0 fail. The inventory: nine projects, and no diff on the re-run.
+   No `DATE` left. **Recorded: `9edf965f33d122be9a4afb36992ad6c15059a36d`.** ⚠ If
+   publication happens on a later day, the README's date is wrong and step 5 runs
+   again.
 8. **Apply D4 and D8.** Rename the private repository to
    `xrpl-confidential-positions-private`. In every private clone on the inventory,
    run `git config --unset-all remote.origin.pushurl` (a stale push URL would
@@ -434,7 +444,10 @@ the first Linux CI run only after going public (R1-9).
    the new HTTPS URL, confirm with `git ls-remote origin` and
    `git remote get-url --push --all origin`, and run `make install-push-guard`. It
    keeps the recorded archive id, because the id survives the rename, and refuses if
-   any push URL resolves elsewhere.
+   any push URL resolves elsewhere. **Done 2026-10-19**: renamed with the id
+   `1335911613` unchanged and still private; `origin` repointed, no stale `pushurl`;
+   the guard reinstalled with the same id; the old name redirects to the archive
+   until step 9 takes it. The only clone, so the inventory needs nothing more.
 9. **Stage it privately.** Create `nandanito/xrpl-confidential-positions` as a
    private repository and push **only the recorded commit**:
    `git push <url> <recorded-sha>:refs/heads/main`. Confirm with `git ls-remote`
@@ -445,6 +458,15 @@ the first Linux CI run only after going public (R1-9).
    delete it and start step 9 again.** GitHub can keep serving a pushed commit by
    its hash after the ref that pointed at it is gone, so a mistake there cannot be
    tidied away before the repository goes public.
+
+   **Done 2026-10-19.** Created private as id `1424974282`, Discussions and wiki off;
+   the guard in the archive clone then refused a dry run to that name by id. Pushed
+   only `9edf965`: one ref, nothing else. The first Linux CI run passed, `tools/ci.sh`
+   to the end with 227 pass, 5 skipped, 0 fail; the check context is **`checks`**.
+   Its warnings: `actions/checkout` v4.4.0 targets the deprecated Node 20, and
+   `ubuntu-latest` begins moving to Ubuntu 26. The 13 issues were created in order
+   from the swept files; one 502 from GitHub created nothing and was retried, and
+   every issue read back identical to its files, the ten stubs closed.
 10. **Make it public**, then set private vulnerability reporting on, which
     `SECURITY.md` and `CODE_OF_CONDUCT.md` rely on, and branch protection requiring
     the check step 9 recorded. Clone it fresh and re-run step 7's gate on that clone.
@@ -455,6 +477,14 @@ the first Linux CI run only after going public (R1-9).
     from a fresh clone of the public repository, using your everyday credentials,
     push a new branch holding one empty commit. GitHub must refuse it. If rulesets or
     a deploy-key bypass are not available, record that here and rely on A.
+
+    **Published 2026-10-19.** `nandanito/xrpl-confidential-positions` is public, id
+    `1424974282`; anonymous requests for its page and API return 200, and for the
+    archive 404. Private vulnerability reporting is on. `main` requires `checks` and
+    refuses force pushes and deletion. A fresh clone holds `9edf965` and nothing
+    else, and passed step 7's strict gate with the local store: 97/97 controls, 19
+    stored secrets searched, 673 files and 672 history objects. ⚠ **D8's C is not yet
+    applied**: the owner chose to check the public page first.
 
 ## Found this session, and not in the plan
 

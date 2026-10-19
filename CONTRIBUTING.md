@@ -20,7 +20,7 @@ here is wrong.**
   mutation that shows it.
 - **Fixes** to the signer, the facility, the web tier or the tools, with a test
   that fails without the fix.
-- **Documentation for a stranger.** If the README's five-minute path did not work
+- **Documentation for a stranger.** If the README's *Run it* section did not work
   for you, say where it stopped.
 
 ## What is out of scope

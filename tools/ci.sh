@@ -5,7 +5,7 @@
 #   tools/ci.sh        # or: make ci
 #
 # GitHub Actions runs exactly this script (.github/workflows/ci.yml), and the
-# README's five-minute path tells a stranger to run it too. One list, so the
+# README's *Run it* section tells a stranger to run it too. One list, so the
 # workflow, the README and CONTRIBUTING.md cannot drift apart on what is covered.
 #
 # ⚠ **What this does NOT run, and why** — printed at the end of every run too:

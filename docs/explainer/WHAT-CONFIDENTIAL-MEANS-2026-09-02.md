@@ -132,8 +132,8 @@ reason to look** (**P-9**).
 > **It hides the shape of the book, not the size of the book.**
 
 That is real, and it is a good deal less than "confidential positions" sounds
-like — which is why [`README.md`](../../README.md)'s trust model leads with what
-is **public** rather than with what is hidden.
+like — which is why [`README.md`](../../README.md) states what is **public** as
+plainly as what is hidden.
 
 ⚠ **If you need the amounts entering and leaving to be private too, this
 protocol does not do that**, and no configuration of it will.
