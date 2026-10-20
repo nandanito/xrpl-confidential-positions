@@ -299,6 +299,76 @@ describe("Snapshot", () => {
     }
   });
 
+  // ADR-0004: a Devnet reset must render as a missing account, not as an
+  // account holding nothing, so existence is read from the pinned ledger too.
+  test("accountExists reads an AccountRoot from the pinned ledger", async () => {
+    const asked: any[] = [];
+    const { server, endpoint } = fakeNode((method, params) => {
+      if (method === "server_info") return FULL_INFO;
+      asked.push(params);
+      return { ledger_index: 4_800_000, validated: true, node: { LedgerEntryType: "AccountRoot", Account: "rHere" } };
+    });
+    try {
+      const snapshot = await (await LoopbackLedger.open(endpoint)).snapshot();
+      expect(await snapshot.accountExists("rHere")).toBe(true);
+      expect(asked).toEqual([{ account_root: "rHere", ledger_index: 4_800_000 }]);
+    } finally {
+      server.stop(true);
+    }
+  });
+
+  test("accountExists reads a pinned 'not found' as absent", async () => {
+    const { server, endpoint } = fakeNode((method) => {
+      if (method === "server_info") return FULL_INFO;
+      return { status: "error", error: "entryNotFound", ledger_index: 4_800_000, validated: true };
+    });
+    try {
+      const snapshot = await (await LoopbackLedger.open(endpoint)).snapshot();
+      expect(await snapshot.accountExists("rGone")).toBe(false);
+    } finally {
+      server.stop(true);
+    }
+  });
+
+  test("accountExists refuses a 'not found' from another ledger rather than reporting a reset", async () => {
+    const { server, endpoint } = fakeNode((method) => {
+      if (method === "server_info") return FULL_INFO;
+      return { status: "error", error: "entryNotFound", ledger_index: 4_799_999, validated: true };
+    });
+    try {
+      const snapshot = await (await LoopbackLedger.open(endpoint)).snapshot();
+      await expect(snapshot.accountExists("rGone")).rejects.toThrow(/REFUSED_LEDGER_TORN/);
+    } finally {
+      server.stop(true);
+    }
+  });
+
+  test("accountExists refuses an entry that is not an AccountRoot", async () => {
+    const { server, endpoint } = fakeNode((method) => {
+      if (method === "server_info") return FULL_INFO;
+      return { ledger_index: 4_800_000, validated: true, node: { LedgerEntryType: "MPToken" } };
+    });
+    try {
+      const snapshot = await (await LoopbackLedger.open(endpoint)).snapshot();
+      await expect(snapshot.accountExists("rHere")).rejects.toThrow(/REFUSED_LEDGER_MALFORMED/);
+    } finally {
+      server.stop(true);
+    }
+  });
+
+  test("accountExists does not read a real error as a missing account", async () => {
+    const { server, endpoint } = fakeNode((method) => {
+      if (method === "server_info") return FULL_INFO;
+      return { status: "error", error: "actMalformed", ledger_index: 4_800_000, validated: true };
+    });
+    try {
+      const snapshot = await (await LoopbackLedger.open(endpoint)).snapshot();
+      await expect(snapshot.accountExists("rBad")).rejects.toThrow(/REFUSED_LEDGER_ERROR/);
+    } finally {
+      server.stop(true);
+    }
+  });
+
   test("a real error is not swallowed as an absent entry", async () => {
     const { server, endpoint } = fakeNode((method) => {
       if (method === "server_info") return FULL_INFO;

@@ -159,9 +159,10 @@ describe("P-9 — a holder is never private from the issuer", () => {
     expect(claimsPrivateFromIssuer("Nothing makes a holder private from the issuer.")).toBe(false);
   });
 
-  test("the issuer view states P-9 positively rather than omitting it", () => {
-    const issuer = TIER.find((s) => s.rel.endsWith("routes/issuer.tsx"))!;
-    expect(issuer.text).toMatch(/never private from the issuer/i);
+  test("the issuer view states P-9 positively rather than omitting it, on both tiers", () => {
+    const issuers = TIER.filter((s) => s.rel.endsWith("routes/issuer.tsx"));
+    expect(issuers.map((s) => s.rel).sort()).toEqual(["web/app/src/hosted/routes/issuer.tsx", "web/app/src/routes/issuer.tsx"]);
+    for (const issuer of issuers) expect(issuer.text).toMatch(/never private from the issuer/i);
   });
 
   test("P-9 is in the invariants the overview renders", () => {
@@ -454,7 +455,8 @@ describe("REVIEW-012 condition 2 — the ruled disclosure, before the seed is as
   });
 
   test("the capability page renders the disclosure, not just the matrix", () => {
-    const page = readFileSync(join(REPO, "web/app/src/routes/capabilities.tsx"), "utf8");
+    // ⚠ The page body moved into a view both tiers render (ADR-0004).
+    const page = readFileSync(join(REPO, "web/app/src/views/CapabilitiesView.tsx"), "utf8");
     expect(page).toMatch(/disclosures\.masterSeed/);
   });
 });
@@ -490,7 +492,7 @@ describe("E-206 — the wallet codec gap is disclosed and is NOT load-bearing", 
   });
 
   test("the wallet page states the three structural reasons", () => {
-    const page = readFileSync(join(REPO, "web/app/src/routes/wallet.tsx"), "utf8");
+    const page = readFileSync(join(REPO, "web/app/src/views/WalletView.tsx"), "utf8");
     expect(page).toMatch(/ElGamal secret/);
     expect(page).toMatch(/derived from the master\s*\n?\s*seed/i);
     expect(page).toMatch(/not to release seed material/i);
@@ -499,7 +501,7 @@ describe("E-206 — the wallet codec gap is disclosed and is NOT load-bearing", 
 
 describe("the custody demo is a simulation on every surface", () => {
   test("the custody page says so before it says anything else", () => {
-    const page = readFileSync(join(REPO, "web/app/src/routes/custody.tsx"), "utf8");
+    const page = readFileSync(join(REPO, "web/app/src/views/CustodyView.tsx"), "utf8");
     const sim = page.indexOf("This is a simulation");
     expect(sim).toBeGreaterThan(-1);
     // Before any capability verdict is rendered.
@@ -546,5 +548,28 @@ describe("the tier never claims to sign", () => {
     const server = readFileSync(join(REPO, "web/api/server.ts"), "utf8");
     expect(server).toMatch(/signs:\s*false/);
     expect(server).toMatch(/holdsKeys:\s*false/);
+  });
+});
+
+describe("ADR-0004: the hosted tier renders the same pages and reaches nothing", () => {
+  const SHARED: [string, string][] = [
+    ["capabilities", "CapabilitiesView"], ["wallet", "WalletView"], ["custody", "CustodyView"], ["observer", "ObserverReading"],
+  ];
+  test("each shared page body is rendered by BOTH tiers' routes, so there is one copy of its text", () => {
+    for (const [route, view] of SHARED) {
+      for (const dir of ["web/app/src/routes", "web/app/src/hosted/routes"]) {
+        const src = readFileSync(join(REPO, dir, `${route}.tsx`), "utf8");
+        expect(src).toMatch(new RegExp(`import \\{ ${view} \\} from "(\\.\\./)+views/${view}"`));
+      }
+    }
+  });
+
+  test("no hosted source imports the local API client, and the only fetch is the verdict file", () => {
+    const hosted = TIER.filter((s) => s.rel.startsWith("web/app/src/hosted/"));
+    expect(hosted.length).toBeGreaterThan(5);
+    for (const s of hosted) {
+      expect(s.text).not.toMatch(/from "(\.\.\/)+api"/);
+      for (const m of s.text.matchAll(/fetch\(\s*([^,)]+)/g)) expect(m[1].trim()).toBe('"/gate-verdict.json"');
+    }
   });
 });

@@ -14,5 +14,8 @@
     "noFallthroughCasesInSwitch": true,
     "types": ["vite/client"]
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts"],
+  // The hosted build has its own router, and TanStack's `Register` can be
+  // augmented once per program: `tsconfig.hosted.json` checks it.
+  "exclude": ["src/hosted/**"]
 }

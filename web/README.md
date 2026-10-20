@@ -45,7 +45,7 @@ make web-app          # http://127.0.0.1:3000
 ## Tests
 
 ```bash
-bun test web/api      # 89 tests: wording tests over every rendered sentence, plus citation checks
+bun test web/api      # wording tests over every rendered sentence, plus citation checks
 ```
 
 ⚠ **`web/api/disclosure.test.ts` is the load-bearing one.** `claims-check` is necessary and **not sufficient** — a false disclosure sentence has already survived that gate in this project (F-24). These fail if any surface claims privacy from the issuer, claims identities are hidden, presents a zero balance as hidden, drops the ruled master-seed disclosure, calls the custody simulation an integration, or leaks this project's `tapFailHard` shorthand, which is not a real name, into rendered copy. **Every one was verified by writing the violating sentence and watching it fail.**
@@ -64,6 +64,8 @@ bun test web/api      # 89 tests: wording tests over every rendered sentence, pl
 | `api/capability.ts` | The capability matrix, derived from the signer's own `KeySource` variants. |
 | `api/custody-sim.ts` | ⚠ **A SIMULATION.** Verdicts computed from a declared key-source shape, not written per flow. |
 | `app/src/routes/` | Overview, capability matrix, observer, issuer, wallet, custody, API doc. |
+| `app/src/views/` | The page bodies the local routes and the hosted routes both render, so each page's text exists once. |
+| `app/src/hosted/`, `hosted/` | Architecture §6 step 9, the hosted demo: static pages built from one pinned snapshot. See `hosted/README.md`. |
 
 ## What it does not establish
 

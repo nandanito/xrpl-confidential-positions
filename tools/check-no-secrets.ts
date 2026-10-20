@@ -4,6 +4,7 @@
  *   bun run tools/check-no-secrets.ts                 # tree + history + local store
  *   bun run tools/check-no-secrets.ts --no-local-store  # shape classes only (CI)
  *   bun run tools/check-no-secrets.ts --repo <dir> --rev <commit>   # one exact tree
+ *   bun run tools/check-no-secrets.ts --dir <build output>          # every file, no git
  *
  * # Why this exists
  *
@@ -52,6 +53,13 @@
  *   stays the private archive. Secrets fail in history like anywhere else.
  *   `--strict-history` fails on both, and is the form for the export: its two
  *   commits are published history, so nothing in them may be merely reported.
+ * * **`--dir`:** every regular file under one directory, read from disk with
+ *   no git at all, dotfiles and gitignored files included. It is the form for a
+ *   build output, which is uploaded whole: under the tree mode an ignored
+ *   `dist/` file went unscanned (`REVIEW-058` R1-9). A symlink, a non-regular
+ *   file and an archive it cannot open are refused. A whole file in gzip (found
+ *   by its magic bytes) or brotli (by its `.br` name) is read decompressed as
+ *   well as raw.
  *
  * **No path is exempt, including `docs/reviews/` and this file.** Exempting a
  * file is how a gate false-passes. This file contains no planted secret
@@ -79,7 +87,7 @@ import {
 } from "node:fs";
 import { homedir, tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { gzipSync } from "node:zlib";
+import { brotliCompressSync, brotliDecompressSync, gunzipSync, gzipSync } from "node:zlib";
 import { encodeSeed } from "ripple-address-codec";
 import { deriveKeypair } from "ripple-keypairs";
 import { deriveElGamalKey } from "./wconf-keygen.ts";
@@ -685,6 +693,59 @@ export function treeUnits(repo: string): Unit[] {
   return units;
 }
 
+/**
+ * Magic bytes of archives this gate cannot open. A build output holding one is
+ * refused rather than scanned as opaque bytes.
+ */
+const UNREADABLE_ARCHIVES: [string, number[]][] = [
+  ["zip", [0x50, 0x4b, 0x03, 0x04]], ["zip", [0x50, 0x4b, 0x05, 0x06]],
+  ["zstd", [0x28, 0xb5, 0x2f, 0xfd]], ["xz", [0xfd, 0x37, 0x7a, 0x58, 0x5a, 0x00]],
+  ["7z", [0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c]],
+];
+const DECOMPRESS_LIMIT = 256 * 1024 * 1024;
+const startsWith = (b: Uint8Array, m: number[]) => b.length >= m.length && m.every((x, i) => b[i] === x);
+
+/** The decompressed bytes of a whole-file gzip or brotli member, or null. */
+function decompressed(path: string, body: Uint8Array): Uint8Array | null {
+  for (const [name, magic] of UNREADABLE_ARCHIVES) if (startsWith(body, magic)) throw new Error(`${path} is a ${name} archive, which this gate cannot open`);
+  let inner: Uint8Array | null = null;
+  if (startsWith(body, [0x1f, 0x8b])) inner = gunzipSync(body, { maxOutputLength: DECOMPRESS_LIMIT });
+  else if (/\.br$/i.test(path)) {
+    try { inner = brotliDecompressSync(body, { maxOutputLength: DECOMPRESS_LIMIT }); }
+    catch (e) { throw new Error(`${path} is named as brotli and does not decompress: ${String(e)}`); }
+  }
+  if (inner && (startsWith(inner, [0x1f, 0x8b]) || UNREADABLE_ARCHIVES.some(([, m]) => startsWith(inner!, m)))) {
+    throw new Error(`${path} decompresses to another archive, which this gate does not open`);
+  }
+  return inner;
+}
+
+/**
+ * Every regular file under `dir`, read from disk with no git filter. Paths are
+ * relative to `dir`. ⚠ A decompressed copy is a second unit with `paths: 0`, so
+ * the file count still counts files on disk.
+ */
+export function dirUnits(dir: string): Unit[] {
+  const units: Unit[] = [];
+  const walk = (rel: string) => {
+    for (const name of readdirSync(join(dir, rel)).sort()) {
+      const r = rel ? `${rel}/${name}` : name;
+      const s = lstatSync(join(dir, r));
+      if (s.isSymbolicLink()) throw new Error(`a symlink at ${r}: an upload may follow it, and its target is not scanned`);
+      units.push({ where: r, text: r, scope: "tree", kind: "path" });
+      if (s.isDirectory()) { walk(r); continue; }
+      if (!s.isFile()) throw new Error(`${r} is not a regular file`);
+      const body = readFileSync(join(dir, r));
+      units.push({ where: r, text: asText(body), scope: "tree", kind: "file" });
+      const inner = decompressed(r, body);
+      if (inner) units.push({ where: `${r} (decompressed)`, text: asText(inner), scope: "tree", kind: "file", paths: 0 });
+    }
+  };
+  if (!lstatSync(dir).isDirectory()) throw new Error(`${dir} is not a directory`);
+  walk("");
+  return units;
+}
+
 /** Exactly the blobs of one commit's tree. */
 export function revUnits(repo: string, rev: string): Unit[] {
   // ⚠ Split at the FIRST tab only: a path may itself contain one (REVIEW-056 S2-3).
@@ -813,6 +874,7 @@ export function runControls(): { run: number; failed: string[] } {
   const env = { GIT_CONFIG_NOSYSTEM: "1", GIT_CONFIG_GLOBAL: "/dev/null", GIT_AUTHOR_NAME: "control", GIT_AUTHOR_EMAIL: "control@example.invalid", GIT_COMMITTER_NAME: "control", GIT_COMMITTER_EMAIL: "control@example.invalid" };
   const g = (...a: string[]) => git(repo, a, undefined, env);
   const put = (p: string, body: string | Uint8Array) => { mkdirSync(dirname(join(repo, p)), { recursive: true }); writeFileSync(join(repo, p), body); };
+  const refuses = (fn: () => unknown, needle: string) => { try { fn(); return false; } catch (e) { return String(e).includes(needle); } };
   try {
     g("init", "-q", "-b", "main");
     const name = randName();
@@ -902,8 +964,15 @@ export function runControls(): { run: number; failed: string[] } {
       `| ${sc()} | tx hash |`,
       `sk_A = ${"01".repeat(32)}`, `aws_secret_access_key = ${"A".repeat(40)}`,
     ].join("\n") + "\n");
-    put(".gitignore", "*.log\n");
+    put(".gitignore", "*.log\ndist/\n");
     put("ignored.log", `${realSeed("ed25519")}\n`);
+    // ---- a build output: gitignored, so the tree mode must miss it and --dir must not (REVIEW-058 R1-9)
+    put("dist/assets/app.js", `const k = "${realSeed("ed25519")}";\n`);
+    put("dist/.hidden.json", `{"issuerElGamal": {"sk": "${sc()}"}}\n`);
+    put("dist/assets/app.js.gz", gzipSync(Buffer.from(`x = "${realSeed("secp256k1")}"\n`)));
+    put("dist/assets/style.css.br", brotliCompressSync(Buffer.from(`/* ${users}${name}/x */\n`)));
+    put("dist/assets/disguised.txt", gzipSync(Buffer.from(`${known.sk}\n`)));
+    put("dist/clean.html", `<p>${pubEd} sk: "${pubSk}"</p>\n`);
 
     // ---- asserted uncaught: the LIMITS, each planted and each required NOT found
     const lim = realSeed("ed25519");
@@ -995,6 +1064,35 @@ export function runControls(): { run: number; failed: string[] } {
     // reported); the file it points at, which holds a seed, must not be read.
     control("tree does not follow a symlink out of the repository", !has(tree.findings, "link-out", "seed"));
     control("tree does not scan a gitignored file (it is not published)", none(tree.findings, "ignored.log"));
+
+    // ---- --dir, through the same scanRepo(): ignored build files are read (REVIEW-058 R1-9)
+    control("tree does not scan a gitignored build output", none(tree.findings, "dist/"));
+    const dist = scanRepo(repo, store, { tree: true, history: false, dir: join(repo, "dist") });
+    const mustDir: [string, Cls, string][] = [
+      ["assets/app.js", "seed", "a seed in a gitignored build file"],
+      [".hidden.json", "labelled-scalar", "a labelled secret in a dotfile"],
+      ["assets/app.js.gz (decompressed)", "seed", "a seed inside a gzip file"],
+      ["assets/style.css.br (decompressed)", "personal-path", "a home path inside a brotli file"],
+      ["assets/disguised.txt (decompressed)", "known-value", "a stored secret in gzip under a .txt name"],
+    ];
+    for (const [w, c, why] of mustDir) control(`--dir finds ${why}`, has(dist.findings, w, c), `${w} ${c}`);
+    control("--dir finds nothing in a clean file", none(dist.findings, "clean.html"), dist.findings.filter((f) => f.where.startsWith("clean.html")).map((f) => `${f.cls} ${f.why}`).join("; "));
+    control("--dir counts files on disk, not decompressed copies", dist.unitsTree === 6, `unitsTree=${dist.unitsTree}`);
+    const dirRefuses = (name: string, setup: (d: string) => void, want: string) => {
+      const d = join(root, `dir-${name}`);
+      mkdirSync(d);
+      setup(d);
+      control(`--dir REFUSES ${name}`, refuses(() => scanRepo(repo, store, { tree: true, history: false, dir: d }), want));
+    };
+    dirRefuses("a symlink", (d) => { writeFileSync(join(d, "a.txt"), "x\n"); symlinkSync(join(d, "a.txt"), join(d, "link")); }, "a symlink");
+    dirRefuses("a zip archive", (d) => writeFileSync(join(d, "bundle.js"), Buffer.from([0x50, 0x4b, 0x03, 0x04, 0, 0])), "zip archive");
+    dirRefuses("a brotli name that does not decompress", (d) => writeFileSync(join(d, "x.js.br"), Buffer.from("not brotli at all")), "does not decompress");
+    dirRefuses("gzip inside gzip", (d) => writeFileSync(join(d, "x.gz"), gzipSync(gzipSync(Buffer.from("x")))), "another archive");
+    const emptyDir = join(root, "dir-empty");
+    mkdirSync(emptyDir);
+    const empty = scanRepo(repo, store, { tree: true, history: false, dir: emptyDir });
+    control("--dir over an empty directory REFUSES", decide({ findings: empty.findings, store, requireStore: true, strictHistory: false, unitsTree: empty.unitsTree, unitsHistory: 0, tree: true, history: false }).exit === 2);
+    control("--dir cannot be combined with history", refuses(() => scanRepo(repo, store, { tree: true, history: true, dir: emptyDir }), "no history"));
     control("tree does not see a file deleted in history", none(tree.findings, "gone.txt"));
     control("tree finds nothing in the must-pass file", none(tree.findings, "pass/"), tree.findings.filter((f) => f.where.startsWith("pass/")).map((f) => `${f.cls} ${f.why}`).join("; "));
     control("history finds a seed in a file deleted later", has(hist.findings, "gone.txt", "seed"));
@@ -1020,7 +1118,6 @@ export function runControls(): { run: number; failed: string[] } {
     // ---- refusals and the git environment, each in a repository of its own (REVIEW-056 S2).
     const sub = (n: string) => { const r = join(root, n); mkdirSync(r); git(r, ["init", "-q", "-b", "main"], undefined, env); return r; };
     const gx = (r: string, ...a: string[]) => git(r, a, undefined, env);
-    const refuses = (fn: () => unknown, needle: string) => { try { fn(); return false; } catch (e) { return String(e).includes(needle); } };
 
     const fr = sub("filter");
     writeFileSync(join(fr, ".gitattributes"), "payload.txt filter=inject\n");
@@ -1121,8 +1218,9 @@ const dummy = (cls: Cls): Finding => ({ cls, at: 0, shown: "x", why: "x", where:
 
 export interface ScanResult { findings: Finding[]; allowed: Map<string, number>; seenAllowed: Set<string>; unitsTree: number; unitsHistory: number }
 
-export function scanRepo(repo: string, store: Store, o: { tree: boolean; history: boolean; rev?: string }): ScanResult {
-  const t = o.tree ? (o.rev ? revUnits(repo, o.rev) : treeUnits(repo)) : [];
+export function scanRepo(repo: string, store: Store, o: { tree: boolean; history: boolean; rev?: string; dir?: string }): ScanResult {
+  if (o.dir && (o.history || o.rev)) throw new Error("--dir scans one directory; it has no history and no revision");
+  const t = o.tree ? (o.dir ? dirUnits(o.dir) : o.rev ? revUnits(repo, o.rev) : treeUnits(repo)) : [];
   const h = o.history ? historyUnits(repo) : [];
   const r = scanUnits([...t, ...h], store);
   // ⚠ Files are counted by PATH, not by unique blob (REVIEW-056 S5-3): two paths
@@ -1169,11 +1267,11 @@ function printFindings(title: string, fs: Finding[], cap = 25) {
  * missing value or a contradictory pair is refused: a misspelled
  * `--strict-histroy` used to be ignored and the run reported a pass.
  */
-export function parseArgs(argv: string[]): { flags: Set<string>; repo?: string; rev?: string; stores: string[] } {
+export function parseArgs(argv: string[]): { flags: Set<string>; repo?: string; rev?: string; dir?: string; stores: string[] } {
   const FLAGS = new Set(["--no-local-store", "--history-only", "--tree-only", "--strict-history", "--controls-only"]);
-  const OPTS = new Set(["--repo", "--rev", "--store"]);
+  const OPTS = new Set(["--repo", "--rev", "--store", "--dir"]);
   const flags = new Set<string>();
-  const out: { flags: Set<string>; repo?: string; rev?: string; stores: string[] } = { flags, stores: [] };
+  const out: { flags: Set<string>; repo?: string; rev?: string; dir?: string; stores: string[] } = { flags, stores: [] };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (FLAGS.has(a)) { flags.add(a); continue; }
@@ -1182,7 +1280,11 @@ export function parseArgs(argv: string[]): { flags: Set<string>; repo?: string; 
     if (v === undefined || v.startsWith("--")) throw new Error(`${a} needs a value`);
     if (a === "--store") out.stores.push(v);
     else if (a === "--repo") out.repo = v;
+    else if (a === "--dir") out.dir = v;
     else out.rev = v;
+  }
+  if (out.dir && (out.repo || out.rev || flags.has("--history-only") || flags.has("--strict-history"))) {
+    throw new Error("--dir scans one directory with no git; it cannot be combined with --repo, --rev, --history-only or --strict-history");
   }
   if (flags.has("--tree-only") && flags.has("--history-only")) throw new Error("--tree-only and --history-only together select nothing");
   if (out.rev && flags.has("--history-only")) throw new Error("--rev scans one tree; it cannot be combined with --history-only");
@@ -1200,11 +1302,12 @@ if (import.meta.main) {
     const flag = (f: string) => a.flags.has(f);
     const repo = realpathSync(a.repo ?? join(import.meta.dir, ".."));
     const rev = a.rev;
+    const dir = a.dir ? realpathSync(a.dir) : undefined;
     const requireStore = !flag("--no-local-store");
     const doTree = !flag("--history-only");
-    const doHistory = !flag("--tree-only") && !rev;
+    const doHistory = !flag("--tree-only") && !rev && !dir;
 
-    console.log(`check-no-secrets over ${rev ? `the tree of ${rev}` : doTree ? "the publication set (what git add -A would commit)" : "nothing in the tree"}${doHistory ? " and all history" : ""}`);
+    console.log(`check-no-secrets over ${dir ? `every file under ${dir}, with no git filter` : rev ? `the tree of ${rev}` : doTree ? "the publication set (what git add -A would commit)" : "nothing in the tree"}${doHistory ? " and all history" : ""}`);
     const c = runControls();
     console.log(`controls: ${c.run - c.failed.length}/${c.run} passed, run through the same scanRepo() as the real check`);
     if (c.failed.length) {
@@ -1219,12 +1322,12 @@ if (import.meta.main) {
     if (requireStore) console.log(`known-value: ${store.secrets} secret(s) from ${store.files.length} file(s) in the local store, ${store.needles.length} encodings searched; ${store.publicSkipped} stored seed(s) skipped as public by construction`);
     else console.log("known-value: NOT RUN (--no-local-store). An unlabelled ElGamal secret is invisible to this run. This is NOT the phase 1 gate.");
 
-    const r = scanRepo(repo, store, { tree: doTree, history: doHistory, rev });
+    const r = scanRepo(repo, store, { tree: doTree, history: doHistory, rev, dir });
     console.log(`scanned: ${r.unitsTree} file(s) in the tree, ${r.unitsHistory} history object(s)`);
     console.log("allowed (each rule, and how many hits it permitted):");
     for (const [k, n] of [...r.allowed].sort()) console.log(`  ${n}  ${k}`);
 
-    if (doTree && !rev) {
+    if (doTree && !rev && !dir) {
       const stale = CITED_VECTORS.map((v) => v.source).filter((src) => !r.seenAllowed.has(src));
       if (stale.length) {
         for (const s of stale) console.log(`  STALE CITED VECTOR: ${s} — no longer present; remove it from CITED_VECTORS`);

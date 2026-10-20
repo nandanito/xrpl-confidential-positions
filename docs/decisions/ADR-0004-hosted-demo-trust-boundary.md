@@ -3,7 +3,8 @@
 - **Status:** `Accepted`, **revision 5**. The project owner ruled D-H1 to D-H4 on
   2026-10-19, each as recommended (`CLAIMS.md` E-331). The rotation, `REVIEW-058`,
   ran three rounds and is closed; round three's fixes are reviewed by their tests
-  and controls only. Nothing is built yet.
+  and controls only. ~~Nothing is built yet.~~ Built and gated 2026-10-20, not
+  deployed (`CLAIMS.md` E-334); `web/hosted/README.md` is the release procedure.
 - **Revision 5, 2026-10-20.** Records the owner's rulings: H3, prerendered pages,
   with an indefinite snapshot rebuilt by hand and an isolated build machine; the
   D-H2 wording accepted as written; A, no issuer figure; and the prebuilt CLI
@@ -187,7 +188,7 @@ the host receives (B1-2).
 
 | option | cost | what it buys |
 |---|---|---|
-| **H3. Prerendered pages** *(recommended)* | a build step that opens one pinned snapshot with the existing reader, naming its endpoint and the remote-risk acceptance input in the build's allowlist; replacing the application's runtime dependency on the API, because every route today passes the root's `/api/meta` check and the wallet and custody loaders call the API, with data baked at build time and checked by loading each page directly and by navigating, with no API running (`REVIEW-058` R2-9); a check that each demo account exists, so a reset, a missing token and a failed read render differently; a rebuild cadence the owner names, or an accepted indefinite snapshot; a visitor cannot enter an account | no visitor request leaves Vercel; no second ledger reader; no WebSocket, reconnection or `Buffer` problem; every value is a dated reading, P-3's habit. ⚠ The build still reads one node, so D-H2's first paragraph still applies |
+| **H3. Prerendered pages** *(recommended)* | a build step that opens one pinned snapshot with the existing reader, naming its endpoint and the remote-risk acceptance input in the build's allowlist; replacing the application's runtime dependency on the API, because every route today passes the root's `/api/meta` check and the wallet and custody loaders call the API, with data baked at build time and checked by loading each page directly and by navigating, with no API running (`REVIEW-058` R2-9); a check that each demo account exists, so a reset, a missing token and a failed read render differently; a rebuild cadence the owner names, or an accepted indefinite snapshot; a visitor cannot enter an account | no visitor request leaves Vercel; no second ledger reader; no WebSocket, reconnection or `Buffer` problem; every value is a dated reading, P-3's habit. ⚠ The build still reads ~~one node~~ one public endpoint, a pool of servers (M3), so D-H2's first paragraph still applies. This cell said *"one node"* after `629f216` corrected the phrase elsewhere (`CLAIMS.md` E-335) |
 | H1. Static site, the visitor's browser reads Devnet | a WebSocket transport under `Snapshot`, after `loopback.ts` is refactored to separate its transport (`REVIEW-058` B1-9); a browser-safe replacement for the harness's `Buffer` helpers; snapshot integrity across reconnects; a Content Security Policy that admits the node; no loader cache reused across navigation | a visitor can look up any Devnet account. ⚠ Their IP and every lookup go to Ripple's node. Port 51233 is not 443, and networks that block other ports will fail the page (B1-1); whether a Devnet WebSocket endpoint on 443 exists has **not been searched** |
 | H2. Vercel functions running the Elysia API against Devnet over JSON-RPC, with SSR | the API on the public internet: CORS for the deployed origin, rate limiting, caching, function logs holding visitors' IPs and queries, and billing exposure on the owner's account | the existing reader unchanged, and visitors' IPs hidden from Ripple's node. ⚠ Every route added later runs our code per request, which is trigger 4's shape |
 
@@ -394,7 +395,7 @@ configuration**, not the source:
 - no server function, API route, serverless function or middleware, in the files
   or in `.vercel/output/config.json`;
 - no socket client, no signer socket path, no decryption routine and no secret-
-  shaped value. ⚠ **`check-no-secrets` cannot do the last part today**: it selects
+  shaped value. ⚠ ~~**`check-no-secrets` cannot do the last part today**~~ It could not until 2026-10-20, when `--dir` was built (E-334): it selects
   files through git (`tools/check-no-secrets.ts:665-683`) and has no directory
   mode, and the repository leg showed an ignored `dist/` file going unscanned
   (`REVIEW-058` R1-9). The hosted part needs a directory mode with controls that

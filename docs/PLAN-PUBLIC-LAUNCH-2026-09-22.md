@@ -170,6 +170,10 @@ just written the trigger (E-212).
    hosted surface needs its own part: zero socket clients in the deployed bundle,
    no decryption at request time, and the deployed origin checked against what the
    ADR allows. Verify it by breaking it.
+   **Steps 3 and 4 built 2026-10-20** (`CLAIMS.md` E-334): the hosted build, its
+   gate and a headless-browser check, with `web/hosted/README.md` as the procedure.
+   Step 5 waits on the owner's Vercel setup and on one ruling: the email address in
+   a bundled package's licence notice, which the secret sweep refuses.
 5. **Deploy to Vercel and check the live surface** against the ADR's list, from a
    machine that has never run the project.
 

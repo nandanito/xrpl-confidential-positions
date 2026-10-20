@@ -23,6 +23,12 @@
 #   store and runs on the owner's machine. Its verdict word says which it was.
 # * `check-filing` on the historical drafts. It runs on the template, as a positive
 #   control; 15 of the 20 committed drafts predate the rules it enforces.
+# * The hosted demo's build, gate and browser check (architecture §6 step 9).
+#   The build reads Devnet inside a container, the gate's secret sweep needs the
+#   local store, and the browser check needs Chrome: `make hosted-build`,
+#   `make check-web-hosted` and `make hosted-browser-check` on the owner's
+#   machine are the release procedure. CI type-checks the hosted pages and runs
+#   `web/hosted`'s tests.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -33,7 +39,11 @@ step() {
 }
 
 step bunx tsc --noEmit
-step env WCONF_SKIP_SIGNER_TESTS=1 bun test facility web/api tools
+# The browser application has its own JSX configuration, and the hosted build
+# (architecture §6 step 9) its own route tree, so each is a program of its own.
+step bunx tsc --noEmit -p web/app
+step bunx tsc --noEmit -p web/app/tsconfig.hosted.json
+step env WCONF_SKIP_SIGNER_TESTS=1 bun test facility web/api web/hosted tools
 for gate in check-tables check-negative-claims check-personas check-blinding \
             check-loopback check-web-readonly check-disclosure-phrases \
             check-claims-index check-claims-topics check-claims-revisions \
@@ -48,8 +58,9 @@ cat <<'EOF'
 === NOT RUN by this script (see its header): cargo test, check-test-support,
     check-zeroize-bounds and break-zeroize-lock, which need the vendored build;
     five facility tests that start a real signer, reported as skip; the
-    known-value half of the secret sweep, which needs the local store; and
-    check-filing on the historical drafts.
+    known-value half of the secret sweep, which needs the local store;
+    check-filing on the historical drafts; and the hosted demo's build, gate
+    and browser check, which need Devnet, the local store and Chrome.
 EOF
 
 if [ "${#FAILED[@]}" -gt 0 ]; then

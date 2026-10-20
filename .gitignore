@@ -51,3 +51,6 @@ docs/upstream-observed-WITHHELD.md
 # break-no-secrets-gate.ts writes a mutated copy of the gate beside it, so its
 # relative imports resolve. Never tracked, and so never scanned.
 tools/.mutant-*
+
+# Hosted build scratch: the snapshot the build takes and the output it assembles
+web/hosted/.build/

@@ -15,7 +15,7 @@ invisible here** — a reader in `REVIEW-040` put their confidence at ~60% for *
 about secrets"* and said they would fall back to grep. **They were right to.** For an
 exhaustive sweep, search `CLAIMS.md` directly.
 
-**85 rows.**
+**86 rows.**
 
 | id | section | headline | grade |
 |---|---|---|---|
@@ -101,6 +101,7 @@ exhaustive sweep, search `CLAIMS.md` directly.
 | [E-318](../../../CLAIMS.md#L378) | Established | REVIEW-056 round one found 13 defects in make check-no-secrets, and the gate's own controls had caught none of them. | A, executed |
 | [E-324](../../../CLAIMS.md#L384) | Established | Step 1's inventory found six third-party projects reproduced in the tracked tree, and NOTICE is written from it rather than from memory. | A, measured |
 | [E-333](../../../CLAIMS.md#L393) | Established | vite's only root licence file aggregates the licences of everything it bundles and carries 35 personal email addresses, so a verbatim copy cannot… | A, measured |
-| [B-24](../../../CLAIMS.md#L404) | Pending | REVIEW-031's fixes — the seed residue B-23 left, and the gate that could not see it. | BUILT 2026-08-28. The… |
-| [B-26](../../../CLAIMS.md#L406) | Pending | REVIEW-033's fixes — the falsifier that was UB, and the gate's fourth round of false passes. | BUILT 2026-08-28. The… |
-| [F-23](../../../CLAIMS.md#L462) | Findings | A wrong ledger read is a CONFIDENTIALITY break, not a rejected transaction — and the signer cannot control which. | A, executed |
+| [E-334](../../../CLAIMS.md#L394) | Established | Architecture §6 step 9 is built and gated but not deployed, and the browser check caught a policy the gate had passed. | A, measured |
+| [B-24](../../../CLAIMS.md#L406) | Pending | REVIEW-031's fixes — the seed residue B-23 left, and the gate that could not see it. | BUILT 2026-08-28. The… |
+| [B-26](../../../CLAIMS.md#L408) | Pending | REVIEW-033's fixes — the falsifier that was UB, and the gate's fourth round of false passes. | BUILT 2026-08-28. The… |
+| [F-23](../../../CLAIMS.md#L464) | Findings | A wrong ledger read is a CONFIDENTIALITY break, not a rejected transaction — and the signer cannot control which. | A, executed |

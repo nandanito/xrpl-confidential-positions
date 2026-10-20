@@ -61,8 +61,19 @@
 
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
+import { SOCKET_NEEDLES, SECRET_NEEDLES } from "./web-readonly-needles.ts";
 
 const REPO = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
+
+/**
+ * ⚠ `--hosted <output root> --commit <sha>` runs the HOSTED part, architecture
+ * §6 step 9's gate, over a build's `.vercel/output`, and nothing else: the
+ * source checks below are the local tier's (`ADR-0004`).
+ */
+if (process.argv.includes("--hosted")) {
+  const { runHosted } = await import("./check-web-hosted.ts");
+  process.exit(await runHosted(process.argv.slice(2)));
+}
 
 // ---------------------------------------------------------------------------
 // The stripper. Comments out, string literals IN.
@@ -281,17 +292,11 @@ function make(rel: string, raw: string, path = rel): Source {
 // The detectors. ⚠ Every control below calls THESE functions, not a copy.
 // ---------------------------------------------------------------------------
 
-/** Anything that reaches the signer's socket. */
-export const SOCKET_NEEDLES = [
-  "signer.sock",
-  "WCONF_SIGNER_SOCKET",
-  "signerSocketPath",
-  "signer-status",
-  "Bun.connect",
-  "node:net",
-  "createConnection",
-  "unix:",
-];
+// ⚠ The socket and secret needle lists live in `web-readonly-needles.ts`, which
+// has no side effects, so the hosted part (`check-web-hosted.ts`) reads the same
+// lists rather than a copy (`CLAIMS.md` E-141's shape).
+export { SOCKET_NEEDLES, SECRET_NEEDLES };
+
 
 /** The two requests that carry authority. Never constructible from this tier. */
 export const AUTHORITY_NEEDLES = [
@@ -354,19 +359,6 @@ export function secretEnvReads(sources: Source[]): { rel: string; needle: string
   }
   return hits;
 }
-
-export const SECRET_NEEDLES = [
-  // ⚠ Env names are handled by `secretEnvReads` (structural). Keeping them here
-  // as well is harmless for the ident pass and catches a bare identifier use.
-  "WCONF_ELGAMAL_SK",
-  "WCONF_SIGNER_PROFILE",
-  "decryptInRange",
-  "decryptAmount",
-  "elgamal_sk",
-  "account_seed",
-  "Bun.spawn",
-  "child_process",
-];
 
 /** Every needle in `needles` that occurs in `sources`, with where. */
 export function findNeedles(

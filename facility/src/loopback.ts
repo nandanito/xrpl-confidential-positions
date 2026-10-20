@@ -279,6 +279,26 @@ export class Snapshot {
     return Number(r.account_data.Sequence);
   }
 
+  /**
+   * Whether `address` has an `AccountRoot` in the pinned ledger.
+   *
+   * Through `ledger_entry` rather than `account_info`, because a missing root
+   * answers `entryNotFound`, the one negative answer `pinned` checks for its
+   * ledger. Measured on Devnet with rippled 3.4.1 on 2026-10-20: a random
+   * address answered `entryNotFound` with `validated: true` and the pinned
+   * index. `ADR-0004` needs it so a Devnet reset renders as a missing account
+   * and not as an account holding nothing.
+   */
+  async accountExists(address: string): Promise<boolean> {
+    try {
+      entryOfType(await this.pinned("ledger_entry", { account_root: address }), "AccountRoot");
+      return true;
+    } catch (e) {
+      if (e instanceof LedgerRefusal && e.code === "REFUSED_LEDGER_ENTRY_MISSING") return false;
+      throw e;
+    }
+  }
+
   /** Every field of one holder's position, or `null` if they hold no MPToken. */
   async mptoken(address: string, issuanceId: string): Promise<MPTokenState | null> {
     let r: any;

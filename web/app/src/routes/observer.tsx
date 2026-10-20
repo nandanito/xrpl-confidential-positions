@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { api } from "../api";
 import { Panel } from "../components/Verdict";
 import { AccountPicker } from "../components/AccountPicker";
+import { ObserverReading } from "../views/ObserverReading";
 
 export const Route = createFileRoute("/observer")({
   validateSearch: (s: Record<string, unknown>) => ({
@@ -60,41 +61,7 @@ function Observer() {
         </p>
       </Panel>
 
-      {view && !view.error && (
-        <>
-          <Panel title="What a full-ledger observer sees">
-            <div className="text-sm space-y-1 mb-4">
-              <div><span className="opacity-60">public MPT balance</span> <code>{view.publicAmount}</code> — plaintext, hidden from nobody</div>
-              <div><span className="opacity-60">registered</span> <code>{String(view.registered)}</code></div>
-              <div><span className="opacity-60">ConfidentialBalanceVersion</span> <code>{view.confidentialBalanceVersion}</code></div>
-              <div><span className="opacity-60">ConfidentialOutstandingAmount</span> <code>{view.issuance.confidentialOutstandingAmount}</code> — plaintext on the issuance, the sum of every hidden position</div>
-            </div>
-            {["spending", "inbox"].map((k) => {
-              const ct = (view as any)[k];
-              if (!ct) return <p key={k} className="text-sm opacity-60">no {k} ciphertext</p>;
-              return (
-                <div key={k} className={`mt-3 p-3 rounded border ${ct.publiclyKnownZero ? "border-[var(--color-warn)]" : "border-black/10 dark:border-white/15"}`}>
-                  <div className="text-xs font-semibold uppercase tracking-wide opacity-60">{k}</div>
-                  <code className="text-[10px] break-all block my-1 opacity-80">{ct.ciphertext}</code>
-                  <p className="text-sm">{ct.note}</p>
-                </div>
-              );
-            })}
-          </Panel>
-
-          <Panel title="Public" >
-            <ul className="text-sm space-y-1 list-disc pl-5">
-              {view.whatIsPublic.map((s: string) => <li key={s}>{s}</li>)}
-            </ul>
-          </Panel>
-
-          <Panel title="Hidden">
-            <ul className="text-sm space-y-1 list-disc pl-5">
-              {view.whatIsHidden.map((s: string) => <li key={s}>{s}</li>)}
-            </ul>
-          </Panel>
-        </>
-      )}
+      {view && !view.error && <ObserverReading view={view} />}
       {view?.error && <Panel title="Read failed"><p className="text-sm">{view.error}</p></Panel>}
     </>
   );

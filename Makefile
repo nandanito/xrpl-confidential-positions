@@ -1,4 +1,4 @@
-.PHONY: ci check-vocabulary install-push-guard check-push-guard inventory-third-party check-no-secrets check-no-secrets-shapes break-no-secrets-gate break-no-secrets-gate-self-test check-emphasis break-emphasis-gate break-emphasis-gate-self-test sync-personas check-amendments check-tables rebuild-env vendor-verify vendor-build signer signer-test check-test-support check-zeroize-bounds signer-test-devnet ledger-read signer-run signer-release xrpl-vectors step3 step3-clean facility-test typecheck check-loopback check-blinding check-personas check-web-readonly check-filing node-start node-wait node-status facility web-api web-app check-negative-claims check-claims-index check-claims-topics check-disclosure-phrases check-claims-revisions break-zeroize-lock
+.PHONY: ci check-vocabulary install-push-guard check-push-guard inventory-third-party check-no-secrets check-no-secrets-shapes break-no-secrets-gate break-no-secrets-gate-self-test check-emphasis break-emphasis-gate break-emphasis-gate-self-test sync-personas check-amendments check-tables rebuild-env vendor-verify vendor-build signer signer-test check-test-support check-zeroize-bounds signer-test-devnet ledger-read signer-run signer-release xrpl-vectors step3 step3-clean facility-test typecheck check-loopback check-blinding check-personas check-web-readonly check-filing node-start node-wait node-status facility web-api web-app check-negative-claims check-claims-index check-claims-topics check-disclosure-phrases check-claims-revisions break-zeroize-lock hosted-build check-web-hosted hosted-browser-check
 
 # Part C delta: .claude/agents/ is generated from docs/personas/.
 # Regenerate whenever a persona changes or the two will drift.
@@ -424,3 +424,22 @@ node-status:
 # ⚠ Refuses to start unless the node above reports `full`.
 facility:
 	@bun run facility/run-facility.ts --auto-confirm
+
+# --- architecture §6 step 9, the hosted demo (ADR-0004) -------------------------
+# The release procedure, in order: build in the isolated container from a COMMIT,
+# gate the output (needs the local secret store), then load it in a headless
+# browser under its own policy. OUT must be outside the repository.
+#   make hosted-build REPO=<git repo> COMMIT=<sha> URL=https://<name>.vercel.app OUT=<dir>
+#   make check-web-hosted OUT=<dir> COMMIT=<sha>
+#   make hosted-browser-check OUT=<dir>
+hosted-build:
+	@test -n "$(REPO)" -a -n "$(COMMIT)" -a -n "$(URL)" -a -n "$(OUT)" || { echo "usage: make hosted-build REPO=<git repo> COMMIT=<sha> URL=<https origin> OUT=<dir>"; exit 2; }
+	@bun run web/hosted/build.ts --repo "$(REPO)" --commit "$(COMMIT)" --canonical-url "$(URL)" --out "$(OUT)"
+
+check-web-hosted:
+	@test -n "$(OUT)" -a -n "$(COMMIT)" || { echo "usage: make check-web-hosted OUT=<dir> COMMIT=<sha>"; exit 2; }
+	@bun run tools/check-web-readonly.ts --hosted "$(OUT)" --commit "$(COMMIT)"
+
+hosted-browser-check:
+	@test -n "$(OUT)" || { echo "usage: make hosted-browser-check OUT=<dir>"; exit 2; }
+	@bun run web/hosted/browser-check.ts "$(OUT)"

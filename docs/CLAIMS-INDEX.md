@@ -11,7 +11,7 @@ so they do not rot the way a hand-written index would (`CLAIMS.md` E-199, E-236)
 ⚠ **A summary is not a claim.** Each line below is a truncated, markup-stripped
 excerpt for finding things. **The row is the authority** — never cite the index.
 
-**411 rows** across **5 sections**, counted where they are parsed.
+**413 rows** across **5 sections**, counted where they are parsed.
 
 ## Standing prohibitions — never claim — 12 rows
 
@@ -30,7 +30,7 @@ excerpt for finding things. **The row is the authority** — never cite the inde
 | [P-11](../CLAIMS.md#L32) | That confidential transfers hide *who* transacts, or *when*, or *how often* | Only amounts are… |
 | [P-12](../CLAIMS.md#L33) | Any claim that a source does NOT say something — *nothing documents it*, *no such field*, *not exported*, *nobody has… | It is an assertion… |
 
-## Established — 334 rows
+## Established — 336 rows
 
 | id | summary | grade |
 |---|---|---|
@@ -368,83 +368,85 @@ excerpt for finding things. **The row is the authority** — never cite the inde
 | [E-331](../CLAIMS.md#L391) | The project owner ruled ADR-0004's four decisions on 2026-10-19, each as recommended, and the ADR is Accepted at… | A, recorded |
 | [E-332](../CLAIMS.md#L392) | The public-update procedure ran the third-party inventory before git add, and the inventory reads only tracked files,… | A, measured |
 | [E-333](../CLAIMS.md#L393) | vite's only root licence file aggregates the licences of everything it bundles and carries 35 personal email addresses,… | A, measured |
+| [E-334](../CLAIMS.md#L394) | Architecture §6 step 9 is built and gated but not deployed, and the browser check caught a policy the gate had passed.… | A, measured |
+| [E-335](../CLAIMS.md#L395) | The owner ruled the licence email redacted and kept the CLI deploy, and claims-check found five overstatements in the… | A, measured |
 
 ## Pending — asserted, not yet supportable — 30 rows
 
 | id | summary | grade |
 |---|---|---|
-| [B-21](../CLAIMS.md#L401) | Secret material on the stack is not wiped: the SHA-512 expansion, the nonce mask, and fresh_aux's 32-byte buffer. BUILT… | CLOSED as a build.… |
-| [B-22](../CLAIMS.md#L402) | The KEY-DERIVATION path leaves secret material unwiped, and B-21 deliberately did not cover it. sha512half is used for… | 268 tests at B-22;… |
-| [B-23](../CLAIMS.md#L403) | The seed's residue in holder.rs — the second half of B-22's ruled unit, IN SCOPE and NOT deferred. REVIEW-029c ruling… | BUILT AND EXECUTED… |
-| [B-24](../CLAIMS.md#L404) | REVIEW-031's fixes — the seed residue B-23 left, and the gate that could not see it. The HIGH finding is that… | BUILT 2026-08-28. The… |
-| [B-25](../CLAIMS.md#L405) | REVIEW-032's fixes — the derived ElGamal secret, and the pin that did not pin. The HIGH is that keygen::finish() never… | BUILT 2026-08-28. The… |
-| [B-26](../CLAIMS.md#L406) | REVIEW-033's fixes — the falsifier that was UB, and the gate's fourth round of false passes. The HIGH is that… | BUILT 2026-08-28. The… |
-| [B-27](../CLAIMS.md#L407) | RULED 2026-09-13 by the project owner (E-294). The question was: who holds the Dedicated Account's key, and what the… | A ruling by the… |
-| [B-28](../CLAIMS.md#L408) | Whether this repository becomes public, for what purpose, and in which form. Ruled in part on 2026-09-13 (E-294): it… | A ruling by the… |
-| [B-29](../CLAIMS.md#L409) | BUILT 2026-09-13 (E-293). The facility writes its seeds, the issuer's ElGamal secret and its plaintext book with no… | An explicit 0600 on… |
-| [B-30](../CLAIMS.md#L410) | Anything about what the Sherlock XRP Ledger Attackathon found, beyond the findings upstream cites by number in public… | NOT OBTAINABLE, and… |
-| [B-31](../CLAIMS.md#L411) | Anything about what the Zellic scan of mpt-crypto 3baaaac found, beyond the three findings mpt-crypto#147 cites by… | NOT OBTAINABLE, and… |
-| [B-20](../CLAIMS.md#L412) | The deterministic signing arm is pub in an ordinary release build, and only a doc comment says it is for vectors.… | CLOSED, with a REAL… |
-| [B-19](../CLAIMS.md#L413) | ed25519-dalek is configured default-features = false, features = ["std"], so zeroize is OFF. THAT PREMISE IS FALSE —… | CLOSED → docs/decision… |
-| [B-17](../CLAIMS.md#L414) | Whether the signer should preflight terFROZEN, and what exactly it would have to read. XLS-0096 §10.4.2 item 9 refuses… | Raised 2026-08-25 by… |
-| [B-18](../CLAIMS.md#L415) | LARGELY CLOSED 2026-08-25 → E-146, E-149, F-27. What remains is narrower and is stated at the end of this row. rippled… | A loopback rippled… |
-| [B-15](../CLAIMS.md#L416) | AMENDED AGAIN 2026-08-25 → E-151: the named risk acceptance is EXTENDED to the facility's Devnet demo, because Option A… | RESOLVED → REVIEW-019-… |
-| [B-16](../CLAIMS.md#L417) | The ed25519 signing nonce — B-14's other half, and the LIVE path. RULED 2026-08-27 → E-158. BUILT AND EXECUTED the same… | CLOSED as a build →… |
-| [B-14](../CLAIMS.md#L418) | Where the transaction's own ECDSA signing nonce k comes from — a fifth randomness site, and no packet has covered it.… | RESOLVED → REVIEW-018-… |
-| [B-12](../CLAIMS.md#L419) | Whether XLS-0096 anywhere states that the ElGamal encryption randomness r must not be reused across transactions | RESOLVED 2026-08-18 →… |
-| [B-13](../CLAIMS.md#L420) | Anything about what the Trail of Bits May 2026 revision audit says, beyond the two findings upstream cites by identifier | NOT OBTAINABLE, and… |
-| [B-1](../CLAIMS.md#L421) | Bulletproof proving ~44.8 ms, verification ~22.6 ms | RESOLVED 2026-08-16 →… |
-| [B-2](../CLAIMS.md#L422) | "ConfidentialTransfer is not enabled on Mainnet" | RESOLVED 2026-08-16 →… |
-| [B-3](../CLAIMS.md#L423) | "The Confidential Devnet has ConfidentialTransfer, PermissionedDomains and SingleAssetVault enabled" | RESOLVED 2026-08-16 →… |
-| [B-4](../CLAIMS.md#L424) | "MPTokensV1 activated in October 2025" | Secondary coverage… |
-| [B-5](../CLAIMS.md#L425) | "rippled 3.3.0 released ~2026-08-07, voting under way" | Secondary coverage… |
-| [B-6](../CLAIMS.md#L426) | Anything about computational vs unconditional hiding in XLS-96 | ePrint 2026/602… |
-| [B-7](../CLAIMS.md#L427) | Any statement about what the 192-byte sigma proof proves — including ADR-0001's premise that balance linkage requires… | RESOLVED 2026-08-16 →… |
-| [B-9](../CLAIMS.md#L428) | Confidential transaction metadata stays within kOversizeMetaDataCap = 5200 | RESOLVED 2026-08-17 →… |
-| [B-10](../CLAIMS.md#L429) | Scheduled cover traffic conceals drawdown frequency | Not blocked — E-22… |
-| [B-11](../CLAIMS.md#L430) | XLS-96 and XLS-66 provide no encrypted loan accounting as at rippled 3.3.0, and adding it would require a new proof… | Rewritten 2026-08-17… |
+| [B-21](../CLAIMS.md#L403) | Secret material on the stack is not wiped: the SHA-512 expansion, the nonce mask, and fresh_aux's 32-byte buffer. BUILT… | CLOSED as a build.… |
+| [B-22](../CLAIMS.md#L404) | The KEY-DERIVATION path leaves secret material unwiped, and B-21 deliberately did not cover it. sha512half is used for… | 268 tests at B-22;… |
+| [B-23](../CLAIMS.md#L405) | The seed's residue in holder.rs — the second half of B-22's ruled unit, IN SCOPE and NOT deferred. REVIEW-029c ruling… | BUILT AND EXECUTED… |
+| [B-24](../CLAIMS.md#L406) | REVIEW-031's fixes — the seed residue B-23 left, and the gate that could not see it. The HIGH finding is that… | BUILT 2026-08-28. The… |
+| [B-25](../CLAIMS.md#L407) | REVIEW-032's fixes — the derived ElGamal secret, and the pin that did not pin. The HIGH is that keygen::finish() never… | BUILT 2026-08-28. The… |
+| [B-26](../CLAIMS.md#L408) | REVIEW-033's fixes — the falsifier that was UB, and the gate's fourth round of false passes. The HIGH is that… | BUILT 2026-08-28. The… |
+| [B-27](../CLAIMS.md#L409) | RULED 2026-09-13 by the project owner (E-294). The question was: who holds the Dedicated Account's key, and what the… | A ruling by the… |
+| [B-28](../CLAIMS.md#L410) | Whether this repository becomes public, for what purpose, and in which form. Ruled in part on 2026-09-13 (E-294): it… | A ruling by the… |
+| [B-29](../CLAIMS.md#L411) | BUILT 2026-09-13 (E-293). The facility writes its seeds, the issuer's ElGamal secret and its plaintext book with no… | An explicit 0600 on… |
+| [B-30](../CLAIMS.md#L412) | Anything about what the Sherlock XRP Ledger Attackathon found, beyond the findings upstream cites by number in public… | NOT OBTAINABLE, and… |
+| [B-31](../CLAIMS.md#L413) | Anything about what the Zellic scan of mpt-crypto 3baaaac found, beyond the three findings mpt-crypto#147 cites by… | NOT OBTAINABLE, and… |
+| [B-20](../CLAIMS.md#L414) | The deterministic signing arm is pub in an ordinary release build, and only a doc comment says it is for vectors.… | CLOSED, with a REAL… |
+| [B-19](../CLAIMS.md#L415) | ed25519-dalek is configured default-features = false, features = ["std"], so zeroize is OFF. THAT PREMISE IS FALSE —… | CLOSED → docs/decision… |
+| [B-17](../CLAIMS.md#L416) | Whether the signer should preflight terFROZEN, and what exactly it would have to read. XLS-0096 §10.4.2 item 9 refuses… | Raised 2026-08-25 by… |
+| [B-18](../CLAIMS.md#L417) | LARGELY CLOSED 2026-08-25 → E-146, E-149, F-27. What remains is narrower and is stated at the end of this row. rippled… | A loopback rippled… |
+| [B-15](../CLAIMS.md#L418) | AMENDED AGAIN 2026-08-25 → E-151: the named risk acceptance is EXTENDED to the facility's Devnet demo, because Option A… | RESOLVED → REVIEW-019-… |
+| [B-16](../CLAIMS.md#L419) | The ed25519 signing nonce — B-14's other half, and the LIVE path. RULED 2026-08-27 → E-158. BUILT AND EXECUTED the same… | CLOSED as a build →… |
+| [B-14](../CLAIMS.md#L420) | Where the transaction's own ECDSA signing nonce k comes from — a fifth randomness site, and no packet has covered it.… | RESOLVED → REVIEW-018-… |
+| [B-12](../CLAIMS.md#L421) | Whether XLS-0096 anywhere states that the ElGamal encryption randomness r must not be reused across transactions | RESOLVED 2026-08-18 →… |
+| [B-13](../CLAIMS.md#L422) | Anything about what the Trail of Bits May 2026 revision audit says, beyond the two findings upstream cites by identifier | NOT OBTAINABLE, and… |
+| [B-1](../CLAIMS.md#L423) | Bulletproof proving ~44.8 ms, verification ~22.6 ms | RESOLVED 2026-08-16 →… |
+| [B-2](../CLAIMS.md#L424) | "ConfidentialTransfer is not enabled on Mainnet" | RESOLVED 2026-08-16 →… |
+| [B-3](../CLAIMS.md#L425) | "The Confidential Devnet has ConfidentialTransfer, PermissionedDomains and SingleAssetVault enabled" | RESOLVED 2026-08-16 →… |
+| [B-4](../CLAIMS.md#L426) | "MPTokensV1 activated in October 2025" | Secondary coverage… |
+| [B-5](../CLAIMS.md#L427) | "rippled 3.3.0 released ~2026-08-07, voting under way" | Secondary coverage… |
+| [B-6](../CLAIMS.md#L428) | Anything about computational vs unconditional hiding in XLS-96 | ePrint 2026/602… |
+| [B-7](../CLAIMS.md#L429) | Any statement about what the 192-byte sigma proof proves — including ADR-0001's premise that balance linkage requires… | RESOLVED 2026-08-16 →… |
+| [B-9](../CLAIMS.md#L430) | Confidential transaction metadata stays within kOversizeMetaDataCap = 5200 | RESOLVED 2026-08-17 →… |
+| [B-10](../CLAIMS.md#L431) | Scheduled cover traffic conceals drawdown frequency | Not blocked — E-22… |
+| [B-11](../CLAIMS.md#L432) | XLS-96 and XLS-66 provide no encrypted loan accounting as at rippled 3.3.0, and adding it would require a new proof… | Rewritten 2026-08-17… |
 
 ## Findings — verified, file upstream before publishing — 29 rows
 
 | id | summary | grade |
 |---|---|---|
-| [F-1](../CLAIMS.md#L444) | Docs claim the reset inbox value is indistinguishable; it is the canonical EncZero, recomputable by any observer from… | A |
-| [F-2](../CLAIMS.md#L445) | Spec §13.2.2's "separate view keys" have no ledger field. Protocol layer: issuer keys are permanent. Operational layer:… | A / B |
-| [F-3](../CLAIMS.md#L446) | Docs say confidentiality can be toggled on and off; spec and transactor have no clear flag | A |
-| [F-4](../CLAIMS.md#L447) | Docs say clawback resets the version counter to 0; it increments | A |
-| [F-5](../CLAIMS.md#L448) | Spec §11.1 names a RevealedAmount field that does not exist; the field is sfMPTAmount | A |
-| [F-6](../CLAIMS.md#L449) | Spec §11.2 says clawed-back funds go to the issuer's reserve; §11/§11.4 and the transactor say burned | A |
-| [F-7](../CLAIMS.md#L450) | The 1,000,000 decryption "bound" is not a bound. It is a caller-supplied window [range_low, range_high]; the audit's… | A |
-| [F-8](../CLAIMS.md#L451) | mpt-crypto documents an escape hatch that does not exist. secp256k1_mpt.h:73 directs callers needing larger ranges to… | A |
-| [F-9](../CLAIMS.md#L452) | mpt-crypto's committed conan.lock cannot be resolved from public remotes does not resolve from conancenter, or from the… | A |
-| [F-10](../CLAIMS.md#L453) | LendingProtocol and ConfidentialTransfer are silently non-composable. Both are enabled on the same network. A… | A on the executed… |
-| [F-11](../CLAIMS.md#L454) | ConfidentialMPTClawback has no pseudo-account guard, where ordinary Clawback returns tecPSEUDO_ACCOUNT. Unreachable by… | A |
-| [F-17](../CLAIMS.md#L455) | cmpt-compact-sigma.pdf Remark 6.1's stated justification is false, and a reader who trusts it builds a key-extraction… | A |
-| [F-18](../CLAIMS.md#L456) | The published Rust FFI crate silently links an mpt-crypto four tag-generations behind rippled's, and it is not on the… | B — read, no Rust… |
-| [F-24](../CLAIMS.md#L457) | Our own facility walkthrough understates what a ConvertBack publishes. FACILITY-WALKTHROUGH-2026-08-20.md §3 step 9… | A, executed |
-| [F-25](../CLAIMS.md#L458) | tapFailHard cannot be bound into a transaction. It is a submission-time choice, and only the submitter can make it.… | A (E-162) |
-| [F-26](../CLAIMS.md#L459) | The facility walkthrough's *"After this, no plaintext amount appears again until the facility is retired or resized"*… | A on the reading, NOT… |
-| [F-27](../CLAIMS.md#L460) | ConfidentialMPTConvert deposits into the holder's INBOX, not into their spendable balance — a ConfidentialMPTMergeInbox… | A, executed |
-| [F-28](../CLAIMS.md#L461) | tapFailHard stops a tec reaching the LEDGER. It does not stop the ciphertext reaching the NODE you submitted to — and… | A on the reading, NOT… |
-| [F-23](../CLAIMS.md#L462) | A wrong ledger read is a CONFIDENTIALITY break, not a rejected transaction — and the signer cannot control which. A… | A, executed |
-| [F-22](../CLAIMS.md#L463) | This project's own signer built a four-participant proof and serialised three ciphertexts, and no test or Devnet run… | A (E-162) |
-| [F-21](../CLAIMS.md#L464) | Devnet rejects a transaction that carries an explicit NetworkID, and nothing a signer author reads says which networks… | A, executed (E-162) |
-| [F-19](../CLAIMS.md#L465) | mpt-crypto's exported PoK API makes account binding optional, and the public header does not say so.… | A (E-162) |
-| [F-20](../CLAIMS.md#L466) | REVIEW-012-RULING-keygen's domain-separation table named a label family that does not exist. Its row for r/ρ read *"the… | A |
-| [F-16](../CLAIMS.md#L467) | A LoanSet in which both parties signed the same pre-CounterpartySignature payload was accepted, first attempt. The… | A |
-| [F-12](../CLAIMS.md#L468) | mpt-crypto's shipped WASM build script fails at emsdk 6.0.6 and succeeds at its CI-pinned 6.0.2.… | A |
-| [F-13](../CLAIMS.md#L469) | cmpt-compact-sigma.pdf §2.1's "transmitted once on-chain" is not true of rippled 3.3.0. The paper's Table 2 totals a… | A |
-| [F-15](../CLAIMS.md#L470) | The published JS wrapper makes the tight-window decryption optimisation unreachable keeps the tight-window decryption… | A on the API shape;… |
-| [F-14](../CLAIMS.md#L471) | tecINSUFFICIENT_FUNDS misattributes the cause when a holder's balance is partly confidential — on vault AND lending… | A, executed (E-162) |
-| [F-29](../CLAIMS.md#L472) | XLS-0096 §7.4 states the MPToken deletion blocker unconditionally; rippled enforces it through two paths that disagree.… | A, not executed |
+| [F-1](../CLAIMS.md#L446) | Docs claim the reset inbox value is indistinguishable; it is the canonical EncZero, recomputable by any observer from… | A |
+| [F-2](../CLAIMS.md#L447) | Spec §13.2.2's "separate view keys" have no ledger field. Protocol layer: issuer keys are permanent. Operational layer:… | A / B |
+| [F-3](../CLAIMS.md#L448) | Docs say confidentiality can be toggled on and off; spec and transactor have no clear flag | A |
+| [F-4](../CLAIMS.md#L449) | Docs say clawback resets the version counter to 0; it increments | A |
+| [F-5](../CLAIMS.md#L450) | Spec §11.1 names a RevealedAmount field that does not exist; the field is sfMPTAmount | A |
+| [F-6](../CLAIMS.md#L451) | Spec §11.2 says clawed-back funds go to the issuer's reserve; §11/§11.4 and the transactor say burned | A |
+| [F-7](../CLAIMS.md#L452) | The 1,000,000 decryption "bound" is not a bound. It is a caller-supplied window [range_low, range_high]; the audit's… | A |
+| [F-8](../CLAIMS.md#L453) | mpt-crypto documents an escape hatch that does not exist. secp256k1_mpt.h:73 directs callers needing larger ranges to… | A |
+| [F-9](../CLAIMS.md#L454) | mpt-crypto's committed conan.lock cannot be resolved from public remotes does not resolve from conancenter, or from the… | A |
+| [F-10](../CLAIMS.md#L455) | LendingProtocol and ConfidentialTransfer are silently non-composable. Both are enabled on the same network. A… | A on the executed… |
+| [F-11](../CLAIMS.md#L456) | ConfidentialMPTClawback has no pseudo-account guard, where ordinary Clawback returns tecPSEUDO_ACCOUNT. Unreachable by… | A |
+| [F-17](../CLAIMS.md#L457) | cmpt-compact-sigma.pdf Remark 6.1's stated justification is false, and a reader who trusts it builds a key-extraction… | A |
+| [F-18](../CLAIMS.md#L458) | The published Rust FFI crate silently links an mpt-crypto four tag-generations behind rippled's, and it is not on the… | B — read, no Rust… |
+| [F-24](../CLAIMS.md#L459) | Our own facility walkthrough understates what a ConvertBack publishes. FACILITY-WALKTHROUGH-2026-08-20.md §3 step 9… | A, executed |
+| [F-25](../CLAIMS.md#L460) | tapFailHard cannot be bound into a transaction. It is a submission-time choice, and only the submitter can make it.… | A (E-162) |
+| [F-26](../CLAIMS.md#L461) | The facility walkthrough's *"After this, no plaintext amount appears again until the facility is retired or resized"*… | A on the reading, NOT… |
+| [F-27](../CLAIMS.md#L462) | ConfidentialMPTConvert deposits into the holder's INBOX, not into their spendable balance — a ConfidentialMPTMergeInbox… | A, executed |
+| [F-28](../CLAIMS.md#L463) | tapFailHard stops a tec reaching the LEDGER. It does not stop the ciphertext reaching the NODE you submitted to — and… | A on the reading, NOT… |
+| [F-23](../CLAIMS.md#L464) | A wrong ledger read is a CONFIDENTIALITY break, not a rejected transaction — and the signer cannot control which. A… | A, executed |
+| [F-22](../CLAIMS.md#L465) | This project's own signer built a four-participant proof and serialised three ciphertexts, and no test or Devnet run… | A (E-162) |
+| [F-21](../CLAIMS.md#L466) | Devnet rejects a transaction that carries an explicit NetworkID, and nothing a signer author reads says which networks… | A, executed (E-162) |
+| [F-19](../CLAIMS.md#L467) | mpt-crypto's exported PoK API makes account binding optional, and the public header does not say so.… | A (E-162) |
+| [F-20](../CLAIMS.md#L468) | REVIEW-012-RULING-keygen's domain-separation table named a label family that does not exist. Its row for r/ρ read *"the… | A |
+| [F-16](../CLAIMS.md#L469) | A LoanSet in which both parties signed the same pre-CounterpartySignature payload was accepted, first attempt. The… | A |
+| [F-12](../CLAIMS.md#L470) | mpt-crypto's shipped WASM build script fails at emsdk 6.0.6 and succeeds at its CI-pinned 6.0.2.… | A |
+| [F-13](../CLAIMS.md#L471) | cmpt-compact-sigma.pdf §2.1's "transmitted once on-chain" is not true of rippled 3.3.0. The paper's Table 2 totals a… | A |
+| [F-15](../CLAIMS.md#L472) | The published JS wrapper makes the tight-window decryption optimisation unreachable keeps the tight-window decryption… | A on the API shape;… |
+| [F-14](../CLAIMS.md#L473) | tecINSUFFICIENT_FUNDS misattributes the cause when a holder's balance is partly confidential — on vault AND lending… | A, executed (E-162) |
+| [F-29](../CLAIMS.md#L474) | XLS-0096 §7.4 states the MPToken deletion blocker unconditionally; rippled enforces it through two paths that disagree.… | A, not executed |
 
 ## Retracted — 6 rows
 
 | id | summary | grade |
 |---|---|---|
-| [R-1](../CLAIMS.md#L488) | TASK ZERO §9 rev 1: the restructured facility "shows nothing about which supplier drew how much" | Found independently… |
-| [R-2](../CLAIMS.md#L489) | ADR-0001 rev 1: local proving is "the only option under which the confidentiality claim is true" | Conflated custody… |
-| [R-3](../CLAIMS.md#L490) | F-3: "docs say confidentiality can be toggled on and off" | Corrected upstream.… |
-| [R-4](../CLAIMS.md#L491) | F-4: "docs say clawback resets the version counter" | Not a doc error.… |
-| [R-6](../CLAIMS.md#L492) | B-11 / ADR-0002 blocker 3 / investigation §12: that encrypted loan accounting is structurally blocked, because XLS-96's… | The mathematics was… |
-| [R-5](../CLAIMS.md#L493) | TASK ZERO §9: the vault converts the whole facility float in one transaction | The retraction was… |
+| [R-1](../CLAIMS.md#L490) | TASK ZERO §9 rev 1: the restructured facility "shows nothing about which supplier drew how much" | Found independently… |
+| [R-2](../CLAIMS.md#L491) | ADR-0001 rev 1: local proving is "the only option under which the confidentiality claim is true" | Conflated custody… |
+| [R-3](../CLAIMS.md#L492) | F-3: "docs say confidentiality can be toggled on and off" | Corrected upstream.… |
+| [R-4](../CLAIMS.md#L493) | F-4: "docs say clawback resets the version counter" | Not a doc error.… |
+| [R-6](../CLAIMS.md#L494) | B-11 / ADR-0002 blocker 3 / investigation §12: that encrypted loan accounting is structurally blocked, because XLS-96's… | The mathematics was… |
+| [R-5](../CLAIMS.md#L495) | TASK ZERO §9: the vault converts the whole facility float in one transaction | The retraction was… |

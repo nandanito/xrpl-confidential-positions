@@ -155,6 +155,14 @@ export const MUTATIONS: Mutation[] = [
     needle: "a planted stale entry",
     args: ["--tree-only", "--no-local-store"],
   },
+  // ---- ADR-0004 step 3: --dir, the build output's scan (REVIEW-058 R1-9).
+  { name: "--dir skips dotfiles", find: "    for (const name of readdirSync(join(dir, rel)).sort()) {", replace: "    for (const name of readdirSync(join(dir, rel)).sort().filter((n) => !n.startsWith(\".\"))) {", needle: "a labelled secret in a dotfile" },
+  { name: "--dir reads git's view, not the directory", find: "  const t = o.tree ? (o.dir ? dirUnits(o.dir) :", replace: "  const t = o.tree ? (o.dir ? treeUnits(o.dir) :", needle: "a seed in a gitignored build file" },
+  { name: "--dir does not decompress", find: "      const inner = decompressed(r, body);\n", replace: "      const inner = null as Uint8Array | null; void decompressed;\n", needle: "a seed inside a gzip file" },
+  { name: "--dir finds gzip by name only", find: "  if (startsWith(body, [0x1f, 0x8b])) inner =", replace: "  if (/\\.gz$/i.test(path)) inner =", needle: "in gzip under a .txt name" },
+  { name: "--dir follows symlinks", find: "      if (s.isSymbolicLink()) throw new Error(`a symlink at ${r}: an upload may follow it, and its target is not scanned`);\n", replace: "", needle: "REFUSES a symlink" },
+  { name: "--dir reads a zip as opaque bytes", find: "  for (const [name, magic] of UNREADABLE_ARCHIVES) if (startsWith(body, magic)) throw", replace: "  for (const [name, magic] of UNREADABLE_ARCHIVES) if (false && startsWith(body, magic)) throw", needle: "REFUSES a zip archive" },
+  { name: "--dir counts decompressed copies as files", find: "scope: \"tree\", kind: \"file\", paths: 0 });", replace: "scope: \"tree\", kind: \"file\" });", needle: "counts files on disk" },
 ];
 
 /**
@@ -175,6 +183,9 @@ const CLI_REFUSALS: string[][] = [
   ["--tree-only", "--strict-history"],
   ["--no-local-store", "--store", "/nonexistent"],
   ["--repo", "/nonexistent-break-no-secrets", "--no-local-store"],
+  ["--dir", "/tmp", "--rev", "HEAD"],
+  ["--dir", "/tmp", "--strict-history"],
+  ["--dir", "/nonexistent-break-no-secrets", "--no-local-store"],
 ];
 
 interface Plant { name: string; files: Record<string, string>; store?: Record<string, string>; expect: "FAIL" | "PASS"; needle?: string }

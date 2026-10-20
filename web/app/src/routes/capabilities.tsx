@@ -1,77 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { api } from "../api";
-import { Panel, Verdict } from "../components/Verdict";
+import { CapabilitiesView } from "../views/CapabilitiesView";
 
 export const Route = createFileRoute("/capabilities")({
   loader: () => api.capabilities(),
-  component: Capabilities,
+  component: () => <CapabilitiesView {...Route.useLoaderData()} />,
 });
-
-function Capabilities() {
-  const { rows, invariants, disclosures } = Route.useLoaderData();
-
-  return (
-    <>
-      <Panel title="Capability matrix">
-        <p className="text-sm mb-4 opacity-80">
-          What each key source can and cannot do, and why. Derived from the signer’s own types —
-          <code className="mx-1">KeySource</code> has exactly two variants, and the rows that are not
-          built say so.
-        </p>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="text-left border-b border-black/15 dark:border-white/20">
-                <th className="py-2 pr-4">key source</th>
-                <th className="py-2 pr-4">decrypt own balance</th>
-                <th className="py-2 pr-4">prove + sign confidential</th>
-                <th className="py-2 pr-4">public txns</th>
-                <th className="py-2">exists today</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r: any) => (
-                <tr key={r.id} className="border-b border-black/5 dark:border-white/10 align-top">
-                  <td className="py-3 pr-4 font-medium">
-                    {r.label}
-                    {r.profileToken && <div className="text-xs opacity-60 font-normal"><code>{r.profileToken}</code></div>}
-                  </td>
-                  {["decryptOwnBalance", "proveAndSign", "publicTransactions"].map((k) => (
-                    <td key={k} className="py-3 pr-4">
-                      <Verdict v={r[k].verdict} />
-                      <div className="text-xs opacity-75 mt-1 max-w-xs">{r[k].detail}</div>
-                      <div className="text-[10px] opacity-45 mt-1">{r[k].citation}</div>
-                    </td>
-                  ))}
-                  <td className="py-3 text-xs opacity-75">
-                    {r.existsToday.built ? "built" : "not built"}
-                    <div className="opacity-70 mt-1">{r.existsToday.where}</div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Panel>
-
-      <Panel title="The ruled disclosure — before the seed is asked for" tone="warn">
-        <p className="text-sm">{disclosures.masterSeed}</p>
-        <p className="text-sm mt-3">{disclosures.derivationNotPublished}</p>
-        <p className="text-xs opacity-60 mt-3">
-          REVIEW-012 condition 2. This is ruled, not optional, and it must reach the holder before
-          the seed is requested.
-        </p>
-      </Panel>
-
-      <Panel title="What no key source changes">
-        <ul className="text-sm space-y-2">
-          {invariants.map((i: any) => (
-            <li key={i.rule}>
-              <code className="text-xs font-semibold mr-2 opacity-70">{i.rule}</code>{i.text}
-            </li>
-          ))}
-        </ul>
-      </Panel>
-    </>
-  );
-}

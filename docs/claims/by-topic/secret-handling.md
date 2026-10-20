@@ -58,13 +58,13 @@ exhaustive sweep, search `CLAIMS.md` directly.
 | [E-317](../../../CLAIMS.md#L377) | Established | The phase 1 secret sweep is a gate, make check-no-secrets, and its first run found no stored secret, no credential and no non-public seed in the tree… | A, executed |
 | [E-318](../../../CLAIMS.md#L378) | Established | REVIEW-056 round one found 13 defects in make check-no-secrets, and the gate's own controls had caught none of them. | A, executed |
 | [E-333](../../../CLAIMS.md#L393) | Established | vite's only root licence file aggregates the licences of everything it bundles and carries 35 personal email addresses, so a verbatim copy cannot… | A, measured |
-| [B-21](../../../CLAIMS.md#L401) | Pending | Secret material on the stack is not wiped: the SHA-512 expansion, the nonce mask, and fresh_aux's 32-byte buffer. BUILT 2026-08-27. zeroize is a… | CLOSED as a build.… |
-| [B-22](../../../CLAIMS.md#L402) | Pending | The KEY-DERIVATION path leaves secret material unwiped, and B-21 deliberately did not cover it. sha512half is used for public transaction digests… | 268 tests at B-22;… |
-| [B-23](../../../CLAIMS.md#L403) | Pending | The seed's residue in holder.rs — the second half of B-22's ruled unit, IN SCOPE and NOT deferred. | BUILT AND EXECUTED… |
-| [B-24](../../../CLAIMS.md#L404) | Pending | REVIEW-031's fixes — the seed residue B-23 left, and the gate that could not see it. | BUILT 2026-08-28. The… |
-| [B-25](../../../CLAIMS.md#L405) | Pending | REVIEW-032's fixes — the derived ElGamal secret, and the pin that did not pin. | BUILT 2026-08-28. The… |
-| [B-27](../../../CLAIMS.md#L407) | Pending | RULED 2026-09-13 by the project owner (E-294). | A ruling by the… |
-| [B-29](../../../CLAIMS.md#L409) | Pending | BUILT 2026-09-13 (E-293). The facility writes its seeds, the issuer's ElGamal secret and its plaintext book with no file mode, and leaves each… | An explicit 0600 on… |
-| [B-20](../../../CLAIMS.md#L412) | Pending | The deterministic signing arm is pub in an ordinary release build, and only a doc comment says it is for vectors. CLOSED 2026-08-27, with the B-16… | CLOSED, with a REAL… |
-| [B-19](../../../CLAIMS.md#L413) | Pending | ed25519-dalek is configured default-features = false, features = ["std"], so zeroize is OFF. THAT PREMISE IS FALSE — E-171, 2026-08-27. ["std"]… | CLOSED → docs/decision… |
-| [B-7](../../../CLAIMS.md#L427) | Pending | Any statement about what the 192-byte sigma proof proves — including ADR-0001's premise that balance linkage requires the sender's secret key | RESOLVED 2026-08-16 →… |
+| [B-21](../../../CLAIMS.md#L403) | Pending | Secret material on the stack is not wiped: the SHA-512 expansion, the nonce mask, and fresh_aux's 32-byte buffer. BUILT 2026-08-27. zeroize is a… | CLOSED as a build.… |
+| [B-22](../../../CLAIMS.md#L404) | Pending | The KEY-DERIVATION path leaves secret material unwiped, and B-21 deliberately did not cover it. sha512half is used for public transaction digests… | 268 tests at B-22;… |
+| [B-23](../../../CLAIMS.md#L405) | Pending | The seed's residue in holder.rs — the second half of B-22's ruled unit, IN SCOPE and NOT deferred. | BUILT AND EXECUTED… |
+| [B-24](../../../CLAIMS.md#L406) | Pending | REVIEW-031's fixes — the seed residue B-23 left, and the gate that could not see it. | BUILT 2026-08-28. The… |
+| [B-25](../../../CLAIMS.md#L407) | Pending | REVIEW-032's fixes — the derived ElGamal secret, and the pin that did not pin. | BUILT 2026-08-28. The… |
+| [B-27](../../../CLAIMS.md#L409) | Pending | RULED 2026-09-13 by the project owner (E-294). | A ruling by the… |
+| [B-29](../../../CLAIMS.md#L411) | Pending | BUILT 2026-09-13 (E-293). The facility writes its seeds, the issuer's ElGamal secret and its plaintext book with no file mode, and leaves each… | An explicit 0600 on… |
+| [B-20](../../../CLAIMS.md#L414) | Pending | The deterministic signing arm is pub in an ordinary release build, and only a doc comment says it is for vectors. CLOSED 2026-08-27, with the B-16… | CLOSED, with a REAL… |
+| [B-19](../../../CLAIMS.md#L415) | Pending | ed25519-dalek is configured default-features = false, features = ["std"], so zeroize is OFF. THAT PREMISE IS FALSE — E-171, 2026-08-27. ["std"]… | CLOSED → docs/decision… |
+| [B-7](../../../CLAIMS.md#L429) | Pending | Any statement about what the 192-byte sigma proof proves — including ADR-0001's premise that balance linkage requires the sender's secret key | RESOLVED 2026-08-16 →… |

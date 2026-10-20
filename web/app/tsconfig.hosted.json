@@ -1,0 +1,13 @@
+{
+  // The hosted demo's type-check (ADR-0004). Its own program, because its
+  // router registers a different route tree from the local tier's.
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/hosted/**/*.ts",
+    "src/hosted/**/*.tsx",
+    "src/views/**/*.tsx",
+    "src/components/**/*.tsx",
+    "vite.hosted.config.ts"
+  ],
+  "exclude": []
+}

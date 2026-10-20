@@ -38,13 +38,19 @@
     "tools/break-no-secrets-gate.ts",
     "tools/redact-review-fixtures.ts",
     "tools/check-vocabulary.ts",
+    // Architecture §6 step 9's gate, and the needles it shares with step 8's.
+    "tools/check-web-hosted.ts",
+    "tools/web-readonly-needles.ts",
     // Architecture §6 step 8. ⚠ `web/api/**` is the Elysia process and it
     // typechecks with the rest of the repository, because E-145's lesson —
     // `bun build` is not a type-check — applies hardest to the tier that is
     // new. `web/app/**` is a Vite/React application with its own JSX
     // configuration and its own `tsconfig`; folding it in here would need
     // `jsx` and DOM-only libs that the facility does not want.
-    "web/api/**/*.ts"
+    "web/api/**/*.ts",
+    // Architecture §6 step 9: the hosted build's snapshot, output assembly and
+    // gate run on the build machine and decide what is uploaded.
+    "web/hosted/**/*.ts"
   ],
   "exclude": ["node_modules", "signer/target"]
 }

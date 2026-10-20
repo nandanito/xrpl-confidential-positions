@@ -15,7 +15,7 @@ invisible here** — a reader in `REVIEW-040` put their confidence at ~60% for *
 about secrets"* and said they would fall back to grep. **They were right to.** For an
 exhaustive sweep, search `CLAIMS.md` directly.
 
-**9 rows.**
+**10 rows.**
 
 | id | section | headline | grade |
 |---|---|---|---|
@@ -28,3 +28,4 @@ exhaustive sweep, search `CLAIMS.md` directly.
 | [E-234](../../../CLAIMS.md#L294) | Established | THE SOCKET FIX WAS WRITTEN AGAINST THE FINDING'S LIST RATHER THAN THE PROPERTY, THE DISCLOSURE GATE COULD NOT SEE THE RENDERED UI, AND THREE… | A, measured |
 | [E-254](../../../CLAIMS.md#L314) | Established | CLAUDE.md said bun test web/api is 89 tests and it is 129. | A, measured |
 | [E-322](../../../CLAIMS.md#L382) | Established | The README failed the owner's /claims-check on 2026-10-18 on claims that had gone stale, and the same stale claims stood on other surfaces, including… | A, read at source |
+| [E-334](../../../CLAIMS.md#L394) | Established | Architecture §6 step 9 is built and gated but not deployed, and the browser check caught a policy the gate had passed. | A, measured |
