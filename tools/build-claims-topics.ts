@@ -151,6 +151,9 @@ const OVERRIDES: Record<string, string[]> = {
   // E-324 is publication licensing, a subject no topic was built for; its
   // headline reaches none of the rules' vocabulary.
   "E-324": ["decisions-and-scope", "instruments-and-gates"],
+  // E-337 records an owner's answer about the hosted demo's availability; its
+  // headline names neither a ruling nor the web tier by keyword.
+  "E-337": ["decisions-and-scope", "web-tier"],
   // ⚠ E-256's headline is about a stale clause in another row and names no
   // instrument by keyword; the custody subject it settles is in the body.
   "E-256": ["claims-and-drift", "decisions-and-scope"],

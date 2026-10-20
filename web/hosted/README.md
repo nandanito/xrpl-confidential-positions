@@ -29,7 +29,7 @@ From `ADR-0004` D-H4 and "Abuse, availability and cost":
 - The **Vercel toolbar off** for production and preview. The policy's `script-src` would refuse a script from another origin, and step 7 sees any change to a page's bytes; neither has been tried against the real toolbar.
 - A **token scoped to the one project, with an expiry**, kept beside the publication export folder and absent from every build.
 - The project's own `vercel.app` name, or a domain used for nothing else. That name is the `URL` the build takes, because the footer names it.
-- The **plan, its limits, a spend cap** if the plan offers one, and **who acts when the page goes down**. The ADR asks for these to be named; they are not named yet.
+- The **plan, its limits, a spend cap** if the plan offers one, and **who acts when the page goes down**. The ADR asks for these to be named. For the 2026-10-20 deployment the plan is Vercel Hobby, which has no billing and so no spend to cap; the owner acts when it goes down (`CLAIMS.md` E-336, E-337).
 
 ## What these checks do not establish
 

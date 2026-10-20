@@ -32,11 +32,10 @@ export function LedgerReading() {
   );
 }
 
-/** One account's heading, with the ledger it was read at. */
-export function AccountHeading({ label, address, note }: { label: string; address: string; note: string }) {
+/** One account's address and note, with the ledger it was read at. The panel title carries its label. */
+export function AccountHeading({ address, note }: { address: string; note: string }) {
   return (
     <div className="mb-3">
-      <h3 className="font-semibold">{label}</h3>
       <code className="text-[10px] opacity-60 break-all" data-ledger-value="">{address}</code>
       <p className="text-xs opacity-75 mt-1">{note}</p>
       <p className="text-xs opacity-60 mt-1">read at validated ledger {SNAPSHOT.source.ledgerIndex}</p>

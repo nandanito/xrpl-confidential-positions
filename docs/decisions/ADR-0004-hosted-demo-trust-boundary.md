@@ -3,8 +3,8 @@
 - **Status:** `Accepted`, **revision 5**. The project owner ruled D-H1 to D-H4 on
   2026-10-19, each as recommended (`CLAIMS.md` E-331). The rotation, `REVIEW-058`,
   ran three rounds and is closed; round three's fixes are reviewed by their tests
-  and controls only. ~~Nothing is built yet.~~ Built and gated 2026-10-20, not
-  deployed (`CLAIMS.md` E-334); `web/hosted/README.md` is the release procedure.
+  and controls only. ~~Nothing is built yet.~~ Built and gated 2026-10-20 (`CLAIMS.md`
+  E-334), and deployed the same day; the served bytes matched the gated ones when compared (E-336); `web/hosted/README.md` is the release procedure.
 - **Revision 5, 2026-10-20.** Records the owner's rulings: H3, prerendered pages,
   with an indefinite snapshot rebuilt by hand and an isolated build machine; the
   D-H2 wording accepted as written; A, no issuer figure; and the prebuilt CLI
@@ -349,7 +349,9 @@ of ours to rate limit. ⚠ This said *"nothing of ours"* in revision 2, a copy o
 sentence round one corrected two sections up (`REVIEW-058` R2-1). Static hosting still has costs: page loads and transfer count against
 the owner's Vercel plan, and a flood of them can exhaust a free plan's quota or
 bill a paid one. Name the plan, its limits, a spend cap if the plan offers one, and
-who acts when the page goes down (`REVIEW-058` R1-11). Under H1 the node's limits
+who acts when the page goes down (`REVIEW-058` R1-11). Named 2026-10-20: Vercel Hobby,
+which is free, has no billing and pauses a feature that exceeds its limit, so there
+is no spend to cap. The owner acts when the page goes down (`CLAIMS.md` E-336, E-337). Under H1 the node's limits
 are Ripple's, and the page must render a refused, failed or rate-limited read as a
 named failure, never as an empty account. Under H2 all of it becomes ours.
 

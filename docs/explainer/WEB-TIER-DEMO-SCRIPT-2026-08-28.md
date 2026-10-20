@@ -119,7 +119,7 @@ Pick **Holder A** from the account list. Then:
 1. **The public column first.** Address, counterparties, timing, frequency, the
    plaintext MPT balance, and the issuance's `ConfidentialOutstandingAmount` —
    plaintext, and **the sum of every hidden position**.
-2. **`inbox` — ⚠ PUBLICLY KNOWN TO BE EXACTLY ZERO.** This is the moment worth
+2. **`inbox` — publicly known to be exactly zero.** This is the moment worth
    slowing down for. `EncZero` is canonical: anyone recomputes it from the
    holder's public key, the account id and the issuance id, **with no secret at
    all**. The page recomputes it and compares.

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Panel } from "../../components/Verdict";
-import { ObserverReading } from "../../views/ObserverReading";
+import { ObserverLists, ObserverReading } from "../../views/ObserverReading";
 import { SNAPSHOT } from "../data";
 import { AbsentReading, AccountHeading, LedgerReading } from "../LedgerReading";
 
@@ -14,13 +14,16 @@ export const Route = createFileRoute("/observer")({ component: Observer });
  * travels in a URL the host receives (`ADR-0004`).
  */
 function Observer() {
+  // What is public and what is hidden is the same for every position, so it is shown once.
+  const lists = SNAPSHOT.accounts.find((a) => a.state === "present" && a.observer)?.observer;
   return (
     <>
       <LedgerReading />
+      {lists && <ObserverLists view={lists} />}
       {SNAPSHOT.accounts.map((a) => (
         <Panel key={a.address} title={`Observer view: ${a.label}`}>
-          <AccountHeading label={a.label} address={a.address} note={a.note} />
-          {a.state === "present" && a.observer ? <ObserverReading view={a.observer} /> : <AbsentReading state={a.state} />}
+          <AccountHeading address={a.address} note={a.note} />
+          {a.state === "present" && a.observer ? <ObserverReading view={a.observer} lists={false} /> : <AbsentReading state={a.state} />}
         </Panel>
       ))}
     </>

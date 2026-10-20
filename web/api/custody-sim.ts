@@ -33,7 +33,7 @@ export type Requirement =
  * from a wish-list: seed material never leaves the platform (that is the
  * product), and an approval engine sees a proof rather than a value.
  */
-export const CUSTODY_SHAPE: Record<Requirement, { available: boolean; because: string }> = {
+export const CUSTODY_SHAPE: Record<Requirement, { available: boolean; because: string; caveat?: string }> = {
   "xrpl-signature": {
     available: true,
     because: "Signing is what a custody platform is for. The account key never leaves its boundary.",
@@ -41,20 +41,24 @@ export const CUSTODY_SHAPE: Record<Requirement, { available: boolean; because: s
   "elgamal-decrypt": {
     available: true,
     because:
-      "⚠ Only via a STANDALONE ElGamal key, which relocates the problem rather than solving it — " +
-      "something outside the custody boundary now holds a permanent decryption credential for every " +
-      "balance this account has ever held. Who that is has had no review (CLAIMS.md E-117).",
+      "Only with a standalone ElGamal key, which moves the problem rather than solving it: something " +
+      "outside the custody platform then holds a permanent decryption key for every balance this " +
+      "account has held. Who that should be has had no review (CLAIMS.md E-117).",
+    // ⚠ A flow that needs this survives only on that condition, so the walk
+    // reports it on each flow. It was keyed on a "⚠" inside `because` until
+    // 2026-10-20; the wording pass removed the marks, and a field cannot be
+    // dropped by rewording a sentence.
+    caveat: "Only with a standalone ElGamal key, held outside the custody platform (E-117).",
   },
   "elgamal-prove": {
     available: true,
-    because: "Same standalone key, same relocated problem. Proving needs the same secret decrypting does.",
+    because: "The same standalone key. Proving needs the same secret decrypting does.",
   },
   "policy-over-amount": {
     available: false,
     because:
-      "⚠ STRUCTURAL. A confidential transaction carries a proof, not a value. 'Require two approvers " +
-      "above $1M' has no input to read — the amount is exactly what has been hidden, and it is hidden " +
-      "from the policy engine too.",
+      "Structural: the transaction carries a proof, not a value, so a rule like 'two approvers above " +
+      "$1M' has no amount to read. It is hidden from the policy engine too.",
   },
   "policy-over-identity": {
     available: true,
@@ -65,8 +69,8 @@ export const CUSTODY_SHAPE: Record<Requirement, { available: boolean; because: s
   "seed-material": {
     available: false,
     because:
-      "⚠ STRUCTURAL. Never releasing seed material is the entire purpose of a custody platform. So a " +
-      "custodied account cannot perform the ruled key derivation and cannot derive its own viewing key.",
+      "Structural: a custody platform never releases seed material, so a custodied account cannot " +
+      "derive its own ElGamal key.",
   },
 };
 
@@ -102,12 +106,11 @@ export function walkFlows(): { simulation: true; disclaimer: string; flows: Flow
       .filter((r) => !CUSTODY_SHAPE[r].available)
       .map((r) => ({ requirement: r, because: CUSTODY_SHAPE[r].because }));
     const caveats = f.requires
-      .filter((r) => CUSTODY_SHAPE[r].available && CUSTODY_SHAPE[r].because.includes("⚠"))
-      .map((r) => CUSTODY_SHAPE[r].because);
+      .filter((r) => CUSTODY_SHAPE[r].available && CUSTODY_SHAPE[r].caveat)
+      .map((r) => CUSTODY_SHAPE[r].caveat!);
     if (f.id === "retire-tranches") {
       caveats.push(
-        "⚠ Every tranche size is published. MPTAmount is plaintext on each ConvertBack, so retiring " +
-        "in tranches discloses each amount and its timing even though the balance was hidden (CLAIMS.md F-24).",
+        "Each tranche size and its timing is public: the amount is plaintext on every ConvertBack (CLAIMS.md F-24).",
       );
     }
     return { id: f.id, label: f.label, survives: blockedBy.length === 0, blockedBy, caveats };
@@ -116,9 +119,8 @@ export function walkFlows(): { simulation: true; disclaimer: string; flows: Flow
   return {
     simulation: true,
     disclaimer:
-      "⚠ SIMULATION. There is no custody-platform integration behind this, no MPC and no HSM. What is " +
-      "modelled is a key-source shape — a standalone ElGamal key plus an external signer — so that the " +
-      "flows which survive and the flows which break can be shown rather than described. " +
+      "SIMULATION. No custody platform is integrated behind this: no MPC and no HSM. It models a " +
+      "standalone ElGamal key plus an external signer, to show which flows survive and which break. " +
       "See docs/research/CUSTODY-2026-08-28.md.",
     flows,
   };

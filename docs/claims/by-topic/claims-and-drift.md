@@ -15,7 +15,7 @@ invisible here** — a reader in `REVIEW-040` put their confidence at ~60% for *
 about secrets"* and said they would fall back to grep. **They were right to.** For an
 exhaustive sweep, search `CLAIMS.md` directly.
 
-**89 rows.**
+**90 rows.**
 
 | id | section | headline | grade |
 |---|---|---|---|
@@ -99,12 +99,13 @@ exhaustive sweep, search `CLAIMS.md` directly.
 | [E-322](../../../CLAIMS.md#L382) | Established | The README failed the owner's /claims-check on 2026-10-18 on claims that had gone stale, and the same stale claims stood on other surfaces, including… | A, read at source |
 | [E-328](../../../CLAIMS.md#L388) | Established | REVIEW-058 round one reviewed ADR-0004 with three differed legs and found its central sentence false, a gap in the facility's ledger reader, and two… | A, measured |
 | [E-335](../../../CLAIMS.md#L395) | Established | The owner ruled the licence email redacted and kept the CLI deploy, and claims-check found five overstatements in the hosted build's own README… | A, measured |
-| [B-20](../../../CLAIMS.md#L414) | Pending | The deterministic signing arm is pub in an ordinary release build, and only a doc comment says it is for vectors. CLOSED 2026-08-27, with the B-16… | CLOSED, with a REAL… |
-| [F-1](../../../CLAIMS.md#L446) | Findings | Docs claim the reset inbox value is indistinguishable; it is the canonical EncZero, recomputable by any observer from public inputs, and used on… | A |
-| [F-2](../../../CLAIMS.md#L447) | Findings | Spec §13.2.2's "separate view keys" have no ledger field. Protocol layer: issuer keys are permanent. Operational layer: an issuer choosing Mechanism… | A / B |
-| [F-3](../../../CLAIMS.md#L448) | Findings | Docs say confidentiality can be toggled on and off; spec and transactor have no clear flag | A |
-| [F-4](../../../CLAIMS.md#L449) | Findings | Docs say clawback resets the version counter to 0; it increments | A |
-| [F-24](../../../CLAIMS.md#L459) | Findings | Our own facility walkthrough understates what a ConvertBack publishes. | A, executed |
-| [F-26](../../../CLAIMS.md#L461) | Findings | The facility walkthrough's *"After this, no plaintext amount appears again until the facility is retired or resized"* was FALSE, and it is the SECOND… | A on the reading, NOT… |
-| [R-3](../../../CLAIMS.md#L492) | Retracted | F-3: "docs say confidentiality can be toggled on and off" | Corrected upstream.… |
-| [R-4](../../../CLAIMS.md#L493) | Retracted | F-4: "docs say clawback resets the version counter" | Not a doc error.… |
+| [E-338](../../../CLAIMS.md#L398) | Established | The hosted demo's text was cut by about a third and its register habits removed, with every disclosure kept; not yet deployed. | A, measured |
+| [B-20](../../../CLAIMS.md#L417) | Pending | The deterministic signing arm is pub in an ordinary release build, and only a doc comment says it is for vectors. CLOSED 2026-08-27, with the B-16… | CLOSED, with a REAL… |
+| [F-1](../../../CLAIMS.md#L449) | Findings | Docs claim the reset inbox value is indistinguishable; it is the canonical EncZero, recomputable by any observer from public inputs, and used on… | A |
+| [F-2](../../../CLAIMS.md#L450) | Findings | Spec §13.2.2's "separate view keys" have no ledger field. Protocol layer: issuer keys are permanent. Operational layer: an issuer choosing Mechanism… | A / B |
+| [F-3](../../../CLAIMS.md#L451) | Findings | Docs say confidentiality can be toggled on and off; spec and transactor have no clear flag | A |
+| [F-4](../../../CLAIMS.md#L452) | Findings | Docs say clawback resets the version counter to 0; it increments | A |
+| [F-24](../../../CLAIMS.md#L462) | Findings | Our own facility walkthrough understates what a ConvertBack publishes. | A, executed |
+| [F-26](../../../CLAIMS.md#L464) | Findings | The facility walkthrough's *"After this, no plaintext amount appears again until the facility is retired or resized"* was FALSE, and it is the SECOND… | A on the reading, NOT… |
+| [R-3](../../../CLAIMS.md#L495) | Retracted | F-3: "docs say confidentiality can be toggled on and off" | Corrected upstream.… |
+| [R-4](../../../CLAIMS.md#L496) | Retracted | F-4: "docs say clawback resets the version counter" | Not a doc error.… |

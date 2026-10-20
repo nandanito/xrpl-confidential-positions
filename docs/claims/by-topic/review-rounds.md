@@ -96,8 +96,8 @@ exhaustive sweep, search `CLAIMS.md` directly.
 | [E-328](../../../CLAIMS.md#L388) | Established | REVIEW-058 round one reviewed ADR-0004 with three differed legs and found its central sentence false, a gap in the facility's ledger reader, and two… | A, measured |
 | [E-329](../../../CLAIMS.md#L389) | Established | REVIEW-058 round two reviewed round one's fixes and its stopping condition fired: three fixes had not discharged their findings, all found by the leg… | A, measured |
 | [E-330](../../../CLAIMS.md#L390) | Established | REVIEW-058 round three, the last the owner's review policy allows, found six more defects in round two's fixes, and the rotation is closed with its… | A, measured |
-| [B-24](../../../CLAIMS.md#L406) | Pending | REVIEW-031's fixes — the seed residue B-23 left, and the gate that could not see it. | BUILT 2026-08-28. The… |
-| [B-25](../../../CLAIMS.md#L407) | Pending | REVIEW-032's fixes — the derived ElGamal secret, and the pin that did not pin. | BUILT 2026-08-28. The… |
-| [B-26](../../../CLAIMS.md#L408) | Pending | REVIEW-033's fixes — the falsifier that was UB, and the gate's fourth round of false passes. | BUILT 2026-08-28. The… |
-| [B-14](../../../CLAIMS.md#L420) | Pending | Where the transaction's own ECDSA signing nonce k comes from — a fifth randomness site, and no packet has covered it. RULED 2026-08-20 → E-109. Two… | RESOLVED → REVIEW-018-… |
-| [F-20](../../../CLAIMS.md#L468) | Findings | REVIEW-012-RULING-keygen's domain-separation table named a label family that does not exist. | A |
+| [B-24](../../../CLAIMS.md#L409) | Pending | REVIEW-031's fixes — the seed residue B-23 left, and the gate that could not see it. | BUILT 2026-08-28. The… |
+| [B-25](../../../CLAIMS.md#L410) | Pending | REVIEW-032's fixes — the derived ElGamal secret, and the pin that did not pin. | BUILT 2026-08-28. The… |
+| [B-26](../../../CLAIMS.md#L411) | Pending | REVIEW-033's fixes — the falsifier that was UB, and the gate's fourth round of false passes. | BUILT 2026-08-28. The… |
+| [B-14](../../../CLAIMS.md#L423) | Pending | Where the transaction's own ECDSA signing nonce k comes from — a fifth randomness site, and no packet has covered it. RULED 2026-08-20 → E-109. Two… | RESOLVED → REVIEW-018-… |
+| [F-20](../../../CLAIMS.md#L471) | Findings | REVIEW-012-RULING-keygen's domain-separation table named a label family that does not exist. | A |

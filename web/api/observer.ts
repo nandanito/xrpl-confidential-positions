@@ -55,33 +55,31 @@ export interface CiphertextView {
 
 /** Everything on an observer page that is readable with no secret at all. */
 export const WHAT_IS_PUBLIC: string[] = [
-      "This account's address, and every counterparty it has transacted with (P-4, P-11).",
-      "Every transaction's timing and frequency (P-11).",
-      "The public, plaintext MPT balance shown above.",
-      "The issuance's ConfidentialOutstandingAmount — plaintext, and the sum of every hidden position.",
-      "The holder's registered encryption key, once they have converted.",
-      "The ConfidentialBalanceVersion, which counts state changes.",
-      "⚠ Whether a confidential balance is exactly zero — but ONLY when it carries the canonical " +
-        "encryption of zero, which is used on first-time init, merge reset and clawback (F-1). " +
-        "⚠ A balance that reached zero by SPENDING is not publicly identifiable as zero (E-211).",
-      "⚠ Every individual tranche size when a position is retired in tranches — MPTAmount is plaintext on each ConvertBack (F-24).",
-    ];
+  "The account's address, and every account it has transacted with (P-4).",
+  "When each transaction happened, and how often (P-11).",
+  "The public MPT balance.",
+  "The issuance's ConfidentialOutstandingAmount: the total of all confidential balances.",
+  "The holder's encryption key, once registered.",
+  "The ConfidentialBalanceVersion, which counts changes to the balance.",
+  "Whether a confidential balance is exactly zero, when it holds the canonical encryption of zero. " +
+    "New, merged and clawed-back balances do; a balance spent down to zero does not (F-1, E-211).",
+  "Each tranche size, when a position is retired in tranches: the amount is plaintext on every ConvertBack (F-24).",
+];
 
 /**
  * ⚠ **The complete list, and it is two items.** Anything not here is public.
  */
 export const WHAT_IS_HIDDEN: string[] = [
-      "The value of a confidential balance that does not carry the canonical encryption of zero — " +
-        "⚠ including when that value happens to BE zero (E-211).",
-      "The amount moved by a ConfidentialMPTSend, from an observer.",
-      "⚠ That is the complete list. Nothing else on this page is hidden from anyone.",
-    ];
+  "The value of a confidential balance that is not the canonical encryption of zero, even when " +
+    "that value is zero (E-211).",
+  "The amount of each ConfidentialMPTSend.",
+  "Both are hidden from observers, not from the issuer (P-9). Nothing else here is hidden.",
+];
 
 /** ⚠ F-1, stated where it is true rather than in a footnote. */
 export const CANONICAL_ZERO_NOTE =
-  "⚠ PUBLICLY KNOWN TO BE EXACTLY ZERO. EncZero is canonical — anyone recomputes it from the " +
-  "holder's public key, the account id and the issuance id, with no secret at all. A zero " +
-  "confidential balance is not hidden (CLAIMS.md F-1).";
+  "Publicly known to be exactly zero. This is the canonical encryption of zero, which anyone can " +
+  "recompute from the holder's public key, the account and the issuance, with no secret (CLAIMS.md F-1).";
 
 /**
  * ⚠⚠ **THIS SAID "Non-zero, and the amount is hidden from an observer" AND THAT
@@ -100,12 +98,9 @@ export const CANONICAL_ZERO_NOTE =
  * a flat claim. **The correct source was one import away.**
  */
 export const NOT_CANONICAL_NOTE =
-  "Does NOT match the canonical encryption of zero, so an observer cannot determine this " +
-  "balance's value. ⚠ That is NOT the same as saying it is non-zero: a balance that reached " +
-  "zero by spending is a randomised encryption of zero and matches nothing, so it looks exactly " +
-  "like this. Only a freshly-initialised, post-merge or post-clawback balance uses the canonical " +
-  "form (CLAIMS.md F-1). ⚠ Whatever the value is, it is NOT hidden from the issuer — the " +
-  "decryption mirror is mandatory and no configuration disables it (P-9).";
+  "Not the canonical encryption of zero, so an observer cannot tell the value. That is not the " +
+  "same as saying it is non-zero: a balance that reached zero by spending looks exactly like this. " +
+  "The issuer can still decrypt it (P-9).";
 
 function classify(ciphertext: string | undefined, encZero: string | null): CiphertextView | null {
   if (!ciphertext) return null;

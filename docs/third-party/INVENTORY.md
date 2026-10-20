@@ -36,7 +36,7 @@ Compared at `master`, `9fbf7ef8eb69973f43d44836875e01e6364a3ecb`.
 
 | file | kind | lines |
 |---|---|---|
-| `CLAIMS.md` | prose | 213–216, 471–474 |
+| `CLAIMS.md` | prose | 213–216, 474–477 |
 | `docs/reviews/REVIEW-012-REQUEST-keygen-2026-08-18.md` | prose | 65–68 |
 | `docs/reviews/REVIEW-021-REQUEST-step7-convert-back-2026-08-25.md` | code, prose | 148–176, 184–188 |
 | `docs/reviews/REVIEW-046b-gemini-custody-request-2026-09-13.md` | code, prose | 11–22 |

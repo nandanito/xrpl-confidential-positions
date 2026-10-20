@@ -21,11 +21,14 @@ function Issuer() {
     <>
       <Panel title="A holder is never private from the issuer" tone="warn">
         <p className="text-sm leading-relaxed">
-          The issuer&rsquo;s decryption mirror is part of the protocol. No configuration removes it, and
-          no key source changes it. Every confidential balance also carries an
-          {" "}<code>IssuerEncryptedBalance</code>, and the issuer&rsquo;s secret key decrypts it.
+          The protocol keeps a second copy of every confidential balance, the
+          {" "}<code>IssuerEncryptedBalance</code>, encrypted to the issuer&rsquo;s key. The issuer can
+          always decrypt it, and no setting turns this off (CLAIMS.md P-9).
         </p>
-        <p className="text-xs opacity-60 mt-3">CLAIMS.md P-9.</p>
+        <p className="text-sm leading-relaxed mt-2">
+          This page shows that each copy is on the ledger. It does not show the decrypted figures: a
+          visitor could not check them, so this project does not publish them (ADR-0004 D-H3).
+        </p>
       </Panel>
 
       <LedgerReading />
@@ -47,7 +50,7 @@ function Issuer() {
 
       {SNAPSHOT.accounts.map((a) => (
         <Panel key={a.address} title={`Issuer's copy: ${a.label}`}>
-          <AccountHeading label={a.label} address={a.address} note={a.note} />
+          <AccountHeading address={a.address} note={a.note} />
           {a.state === "present" && a.issuerMirror ? (
             a.issuerMirror.present ? (
               <div className="text-sm space-y-2">
@@ -56,13 +59,8 @@ function Issuer() {
                   <code className="text-[10px] break-all block my-1 opacity-80" data-ledger-value="">{a.issuerMirror.ciphertext}</code>
                 </div>
                 <p>
-                  Present. XLS-0096 encrypts this copy under the issuance&rsquo;s{" "}
-                  <code>IssuerEncryptionKey</code> above, so the issuer can always decrypt it (P-9). It is
-                  a different ciphertext from the holder&rsquo;s own spending balance.
-                </p>
-                <p className="opacity-70">
-                  This page does not show the figure. Nothing a visitor can run would show that a
-                  published figure was true, so this project does not publish one (ADR-0004 D-H3).
+                  Present, encrypted to the <code>IssuerEncryptionKey</code> above. It is a different
+                  ciphertext from the holder&rsquo;s own balance.
                 </p>
               </div>
             ) : (

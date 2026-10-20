@@ -12,8 +12,9 @@ export function CapabilitiesView({ rows, invariants, disclosures }: { rows: any[
     <>
       <Panel title="Capability matrix">
         <p className="text-sm mb-4 opacity-80">
-          What each key source can and cannot do, and why. Derived from the signer’s own types —
-          <code className="mx-1">KeySource</code> has exactly two variants, and the rows that are not
+          What each key source can and cannot do. The ElGamal key encrypts and decrypts confidential
+          balances; the XRPL account key signs. The rows follow the signer&rsquo;s own
+          <code className="mx-1">KeySource</code> type, which has two variants, and rows that are not
           built say so.
         </p>
         <div className="overflow-x-auto">
@@ -23,7 +24,7 @@ export function CapabilitiesView({ rows, invariants, disclosures }: { rows: any[
                 <th className="py-2 pr-4">key source</th>
                 <th className="py-2 pr-4">decrypt own balance</th>
                 <th className="py-2 pr-4">prove + sign confidential</th>
-                <th className="py-2 pr-4">public txns</th>
+                <th className="py-2 pr-4">public transactions</th>
                 <th className="py-2">exists today</th>
               </tr>
             </thead>
@@ -52,12 +53,11 @@ export function CapabilitiesView({ rows, invariants, disclosures }: { rows: any[
         </div>
       </Panel>
 
-      <Panel title="The ruled disclosure — before the seed is asked for" tone="warn">
+      <Panel title="Shown before the seed is asked for" tone="warn">
         <p className="text-sm">{disclosures.masterSeed}</p>
         <p className="text-sm mt-3">{disclosures.derivationNotPublished}</p>
         <p className="text-xs opacity-60 mt-3">
-          REVIEW-012 condition 2. This is ruled, not optional, and it must reach the holder before
-          the seed is requested.
+          Required by the key-derivation ruling, REVIEW-012 condition 2.
         </p>
       </Panel>
 

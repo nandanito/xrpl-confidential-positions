@@ -35,30 +35,29 @@ export const DEMO_ACCOUNTS: DemoAccount[] = [
     issuanceId: DEMO_ISSUANCE,
     label: "Holder A — an active position",
     note:
-      "A non-zero spending balance the public cannot read, and an inbox that is publicly " +
-      "identifiable as exactly zero. The clearest single view of what is and is not hidden.",
+      "Its spending balance is not the canonical zero, so its value is hidden; its inbox is " +
+      "publicly known to be exactly zero.",
   },
   {
     address: "rDYMkRMh7o7QfkNaoGvtd7TgFzmt12FEM8",
     issuanceId: DEMO_ISSUANCE,
     label: "Holder B — a derived-key account",
     note:
-      "Onboarded under the ruled derivation, so its viewing key comes from its master seed. " +
-      "The capability matrix's first row, on the ledger.",
+      "Onboarded with the derived key, so its ElGamal key comes from its master seed.",
   },
   {
     address: "rsc9Z29Qz6w99TnpECxbeU6vBs2L3E3CbY",
     issuanceId: DEMO_ISSUANCE,
     label: "Holder C — the ed25519 signing account",
     note:
-      "The account the hedged-ed25519 work was executed on. Its ledger view is ordinary — which " +
-      "is the point: a signature change is invisible to an observer.",
+      "The account the hedged ed25519 signing ran on. Its ledger view is ordinary: an observer " +
+      "cannot see the signing change.",
   },
   {
     address: "rEVXh6wpmhKvuot95mNMb4DmkJsZqkdsWH",
     issuanceId: DEMO_ISSUANCE,
     label: "Holder D — an early spike account",
-    note: "Kept because a second non-zero position makes the contrast legible rather than anecdotal.",
+    note: "An early test account, kept as a second position to compare against.",
   },
 ];
 

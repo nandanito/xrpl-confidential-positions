@@ -56,8 +56,8 @@ export interface KeySourceRow {
 export const MASTER_SEED_DISCLOSURE =
   "The master seed becomes a permanent decryption credential. Anyone who ever " +
   "holds it can decrypt every confidential balance this account has held, past " +
-  "and future. XLS-96 has no key rotation and no key recovery (CLAIMS.md P-10), " +
-  "so this cannot be undone by rotating anything.";
+  "and future. XLS-96 has no key rotation and no key recovery (P-10), so this " +
+  "cannot be undone.";
 
 /**
  * ⚠ **Issue #10 is OPEN and no code discharges it.** The derivation is
@@ -79,16 +79,15 @@ export const MASTER_SEED_DISCLOSURE =
  * on this one would be falsified by a release note.
  */
 export const WALLET_CODEC_GAP =
-  "Not determined: whether any given wallet build can serialise XLS-0096 transaction types. " +
-  "The page-side SDKs carry no codec dependency, so serialisation happens inside the extension " +
-  "and no vendor publishes that version. ⚠ This is NOT why a wallet cannot hold a confidential " +
-  "position — the reasons above are structural, and this one is a version fact that could change " +
-  "with any release. Determining it would need testing against a live extension build.";
+  "Not determined: whether a given wallet build can serialise XLS-0096 transactions. The " +
+  "page-side SDKs carry no codec, so serialisation happens inside the extension, whose version no " +
+  "vendor publishes. This is not why a wallet cannot hold a confidential position: the reasons " +
+  "above are structural, and this one could change with any release.";
 
 export const DERIVATION_NOT_PUBLISHED =
-  "The derivation is specified in one document in this repository and is not a " +
-  "published standard. A holder who has their seed but not this repository " +
-  "cannot reconstruct their key. Issue #10 is open and no code closes it.";
+  "The derivation is specified only in this repository and is not a published " +
+  "standard. A holder with their seed but without this repository cannot " +
+  "reconstruct their key. Issue #10 tracks this.";
 
 export const CAPABILITY_MATRIX: KeySourceRow[] = [
   {
@@ -98,17 +97,17 @@ export const CAPABILITY_MATRIX: KeySourceRow[] = [
     existsToday: { built: true, where: "signer/src/onboarding.rs" },
     decryptOwnBalance: {
       verdict: "yes",
-      detail: "The ElGamal secret is derived from the master seed, so the signer reconstructs it from the seed alone.",
+      detail: "The ElGamal secret is derived from the master seed, so the signer rebuilds it from the seed alone.",
       citation: "docs/reviews/REVIEW-012-RULING-keygen-2026-08-18.md; signer/src/keygen.rs",
     },
     proveAndSign: {
       verdict: "yes",
-      detail: "One seed yields both the ElGamal secret and the XRPL account key, which is the whole benefit the ruling trades for.",
+      detail: "One seed gives both the ElGamal secret and the XRPL account key.",
       citation: "signer/src/keygen.rs; signer/src/onboarding.rs",
     },
     publicTransactions: {
       verdict: "yes",
-      detail: "An ordinary XRPL account. Public MPT and Payment transactions are unaffected by any of this.",
+      detail: "An ordinary XRPL account. Public transactions are unaffected.",
       citation: "signer/src/xrpl.rs",
     },
     ruledDisclosure: MASTER_SEED_DISCLOSURE,
@@ -120,13 +119,13 @@ export const CAPABILITY_MATRIX: KeySourceRow[] = [
     existsToday: { built: true, where: "signer/src/onboarding.rs" },
     decryptOwnBalance: {
       verdict: "yes",
-      detail: "Identical to the generated case — the derivation does not care where the seed came from.",
+      detail: "Same as a generated seed: the derivation does not depend on where the seed came from.",
       citation: "signer/src/keygen.rs",
     },
     proveAndSign: {
       verdict: "conditional",
       detail:
-        "⚠ Conditional on the account's own key state. If it carries lsfDisableMaster, a regular key or a signer list, the master seed is NOT spending authority and the ruling's argument for deriving from it does not hold — the signer must warn, and refuses outright on lsfDisableMaster.",
+        "Only if the master key controls the account. With a regular key or a signer list, spending authority may sit elsewhere, so the signer warns; with lsfDisableMaster it refuses.",
       citation: "signer/src/session.rs (REFUSED_MASTER_KEY_DISABLED); issue #11; REVIEW-012 condition 2",
     },
     publicTransactions: {
@@ -143,18 +142,18 @@ export const CAPABILITY_MATRIX: KeySourceRow[] = [
     existsToday: { built: true, where: "signer/src/holder.rs — KeySource::Standalone" },
     decryptOwnBalance: {
       verdict: "yes",
-      detail: "An independent ElGamal secret held in the profile. Two secrets to keep instead of one.",
+      detail: "A separate ElGamal secret kept in the profile: two secrets to keep instead of one.",
       citation: "signer/src/onboarding.rs:279; signer/src/holder.rs:48",
     },
     proveAndSign: {
       verdict: "conditional",
       detail:
-        "⚠ The ElGamal key decrypts and proves; it does not sign. The XRPL account key is still required and is a separate secret. This is the row a custody platform lands on, and who holds the ElGamal key then is CLAIMS.md E-117 — open and unreviewed.",
+        "The ElGamal key decrypts and proves but does not sign; the account key is a separate secret. A custody platform ends up here, and who then holds the ElGamal key is an open question (E-117).",
       citation: "CLAIMS.md E-117; signer/src/holder.rs",
     },
     publicTransactions: {
       verdict: "yes",
-      detail: "Unaffected — the ElGamal key has no role in a public transaction.",
+      detail: "Unaffected: the ElGamal key plays no part in public transactions.",
       citation: "signer/src/xrpl.rs",
     },
     ruledDisclosure: null,
@@ -163,47 +162,47 @@ export const CAPABILITY_MATRIX: KeySourceRow[] = [
     id: "browser-wallet",
     label: "Browser wallet extension",
     profileToken: null,
-    existsToday: { built: false, where: "not built — and the reasons are the demonstration" },
+    existsToday: { built: false, where: "not built, for the reasons in this row" },
     decryptOwnBalance: {
       verdict: "no",
       detail:
-        "Decryption needs the ElGamal secret. Under the ruled keygen that secret is derived from the master seed, and a wallet extension exists in order not to release seed material. None of the three wallets examined on 2026-08-28 (Xaman, GemWallet, Crossmark) gives a page a viewing key or decrypts for it. A wallet that derived the key and decrypted internally would; none observed does (CLAIMS.md E-329).",
+        "Decrypting needs the ElGamal secret, which is derived from the master seed, and a wallet exists to keep the seed in. None of the three wallets examined on 2026-08-28 (Xaman, GemWallet, Crossmark) decrypts for a page or gives it a key. A wallet that derived the key and decrypted internally could; none examined does (E-329).",
       citation: "REVIEW-012 (derivation from master seed); ADR-0003 D2",
     },
     proveAndSign: {
       verdict: "no",
       detail:
-        "A confidential operation needs the ElGamal secret AND the account key. The wallets examined can supply the second and not the first, so a page cannot assemble the operation through them. A wallet that held the viewing key and produced the proofs itself would close this; none observed does (CLAIMS.md E-329).",
+        "A confidential transaction needs the ElGamal secret and the account key. These wallets supply only the account key, so a page cannot assemble the transaction through them. A wallet that held the ElGamal key and built the proofs itself could; none examined does (E-329).",
       citation: "ADR-0003 D2; signer/src/keygen.rs",
     },
     publicTransactions: {
       verdict: "yes",
       detail:
-        "Ordinary XRPL transactions are exactly what a wallet is for. Checked at the vendors' own docs 2026-08-28: GemWallet publishes signTransaction/submitTransaction, Crossmark publishes sign/submit/signAndSubmit, and Xaman accepts txjson and a pre-serialised txblob — all over arbitrary TransactionTypes.",
+        "Ordinary transactions are what a wallet is for. Per each vendor's docs on 2026-08-28, the GemWallet, Crossmark and Xaman APIs accept any transaction type to sign and submit.",
       citation: "gemwallet.app API reference; docs.crossmark.io; docs.xaman.dev (all read 2026-08-28)",
     },
     ruledDisclosure: null,
   },
   {
     id: "custody-simulated",
-    label: "Custody platform (SIMULATED)",
+    label: "Custody platform (simulated)",
     profileToken: "standalone",
-    existsToday: { built: false, where: "⚠ SIMULATION — an external-signer stub. No MPC, no HSM, no integration." },
+    existsToday: { built: false, where: "Simulation: an external-signer stub. No MPC, no HSM, no integration." },
     decryptOwnBalance: {
       verdict: "conditional",
       detail:
-        "⚠ Only via KeySource::Standalone, and that moves the question rather than answering it: the custody platform is not holding the ElGamal key, something else is. A custodied account CANNOT derive its own viewing key, because derivation needs the seed and never releasing the seed is what a custody platform is for.",
+        "Only with a standalone ElGamal key, held by something other than the custody platform. A custodied account cannot derive its own key, because that needs the seed, and a custody platform never releases the seed.",
       citation: "REVIEW-012; CLAIMS.md E-117",
     },
     proveAndSign: {
       verdict: "conditional",
       detail:
-        "⚠ Splits in two. The external signer can sign. It cannot evaluate a policy on the amount, because the amount is a proof rather than a value — 'require two approvers above $1M' is unevaluable on a ConfidentialMPTSend.",
+        "The external signer can sign. It cannot apply a policy to the amount, because the transaction carries a proof, not a value: a rule like 'two approvers above $1M' has nothing to read.",
       citation: "docs/research/CUSTODY-2026-08-28.md; CLAIMS.md P-4",
     },
     publicTransactions: {
       verdict: "yes",
-      detail: "Public transactions carry plaintext amounts, so a policy engine evaluates them normally. The tension is specific to confidential ones.",
+      detail: "Public transactions carry plain amounts, so approval policies work as usual.",
       citation: "docs/research/CUSTODY-2026-08-28.md",
     },
     ruledDisclosure: null,
@@ -218,11 +217,11 @@ export const CAPABILITY_MATRIX: KeySourceRow[] = [
  * instances of exactly that.
  */
 export const INVARIANTS = [
-  { rule: "P-4", text: "No key source hides identities. Sender and receiver are public on every confidential transaction." },
-  { rule: "P-9", text: "No key source makes a holder private from the issuer. The issuer's decryption mirror is mandatory." },
-  { rule: "P-10", text: "No key source supports rotation or recovery. XLS-96 supports neither, at any level." },
+  { rule: "P-4", text: "No key source hides identities. The sender and receiver of every confidential transaction are public." },
+  { rule: "P-9", text: "A holder is never private from the issuer. The issuer can always decrypt." },
+  { rule: "P-10", text: "No key source supports rotation or recovery. XLS-96 supports neither." },
   { rule: "P-11", text: "No key source hides who transacts, when, or how often. Only amounts are hidden." },
-  { rule: "F-1", text: "A freshly-initialised balance is publicly identifiable as exactly zero, whatever the key source." },
-  { rule: "F-24", text: "Retiring a position in tranches publishes every tranche size — MPTAmount is plaintext on each ConvertBack." },
-  { rule: "P-5", text: "None of this is secure, audited, non-custodial or production-ready, and the demo mode is a simulation." },
+  { rule: "F-1", text: "A newly created confidential balance is publicly identifiable as exactly zero." },
+  { rule: "F-24", text: "Retiring a position in tranches publishes each tranche size." },
+  { rule: "P-5", text: "None of this is secure, audited, non-custodial or production-ready, and the custody mode is a simulation." },
 ];

@@ -5,18 +5,21 @@
  * so the observer text has one body (`ADR-0004`). `data-ledger-value` marks
  * each ledger datum, which is how the hosted gate finds the pages that must
  * carry the risk wording.
+ *
+ * `lists={false}` leaves out what is public and what is hidden, for a page
+ * that shows several positions and renders `ObserverLists` once above them.
  */
 import { Panel } from "../components/Verdict";
 
-export function ObserverReading({ view }: { view: any }) {
+export function ObserverReading({ view, lists = true }: { view: any; lists?: boolean }) {
   return (
     <>
       <Panel title="What a full-ledger observer sees">
         <div className="text-sm space-y-1 mb-4">
-          <div><span className="opacity-60">public MPT balance</span> <code data-ledger-value="">{view.publicAmount}</code> — plaintext, hidden from nobody</div>
+          <div><span className="opacity-60">public MPT balance</span> <code data-ledger-value="">{view.publicAmount}</code></div>
           <div><span className="opacity-60">registered</span> <code data-ledger-value="">{String(view.registered)}</code></div>
           <div><span className="opacity-60">ConfidentialBalanceVersion</span> <code data-ledger-value="">{view.confidentialBalanceVersion}</code></div>
-          <div><span className="opacity-60">ConfidentialOutstandingAmount</span> <code data-ledger-value="">{view.issuance.confidentialOutstandingAmount}</code> — plaintext on the issuance, the sum of every hidden position</div>
+          <div><span className="opacity-60">ConfidentialOutstandingAmount</span> <code data-ledger-value="">{view.issuance.confidentialOutstandingAmount}</code> (public: the total of all confidential balances)</div>
         </div>
         {["spending", "inbox"].map((k) => {
           const ct = (view as any)[k];
@@ -31,7 +34,16 @@ export function ObserverReading({ view }: { view: any }) {
         })}
       </Panel>
 
-      <Panel title="Public" >
+      {lists && <ObserverLists view={view} />}
+    </>
+  );
+}
+
+/** What is public and what is hidden, the same for every position. */
+export function ObserverLists({ view }: { view: any }) {
+  return (
+    <>
+      <Panel title="Public">
         <ul className="text-sm space-y-1 list-disc pl-5">
           {view.whatIsPublic.map((s: string) => <li key={s}>{s}</li>)}
         </ul>

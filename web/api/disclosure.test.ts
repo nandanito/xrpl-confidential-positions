@@ -18,6 +18,7 @@ import { join } from "node:path";
 import { CAPABILITY_MATRIX, INVARIANTS, MASTER_SEED_DISCLOSURE, DERIVATION_NOT_PUBLISHED, WALLET_CODEC_GAP } from "./capability.ts";
 import { CANONICAL_ZERO_NOTE, NOT_CANONICAL_NOTE, WHAT_IS_PUBLIC, WHAT_IS_HIDDEN } from "./observer.ts";
 import { MIRROR_FIELD_LEDGER_NAME, ISSUER_KEY_POLICY, FORBIDDEN_SECRET_ENV, issuerView } from "./issuer.ts";
+import { FLOWS, walkFlows } from "./custody-sim.ts";
 import { SECRET_NEEDLES, stripComments, stripStringLiterals } from "../../tools/check-web-readonly.ts";
 
 const REPO = new URL("../..", import.meta.url).pathname.replace(/\/$/, "");
@@ -203,13 +204,13 @@ describe("P-4 and P-11 — amounts are hidden; identities, timing and frequency 
 
 describe("F-1 — a zero confidential balance is publicly known", () => {
   test("the observer view says so in the ciphertext note, not in a footnote", () => {
-    expect(CANONICAL_ZERO_NOTE).toMatch(/PUBLICLY KNOWN TO BE EXACTLY ZERO/);
+    expect(CANONICAL_ZERO_NOTE).toMatch(/publicly known to be exactly zero/i);
     expect(CANONICAL_ZERO_NOTE).toMatch(/F-1/);
   });
 
   test("no sentence presents a canonically-zero balance as hidden", () => {
     expect(assertsHidden(CANONICAL_ZERO_NOTE)).toBe(false);
-    expect(CANONICAL_ZERO_NOTE).toMatch(/not hidden|PUBLICLY KNOWN/);
+    expect(CANONICAL_ZERO_NOTE).toMatch(/not hidden|publicly known/i);
   });
 
   test("...and that detector CATCHES a note that claims the zero balance is hidden", () => {
@@ -241,7 +242,7 @@ describe("E-211 — a non-canonical ciphertext is NOT evidence of a non-zero bal
   });
 
   test("the canonical-zero note still states F-1 plainly", () => {
-    expect(CANONICAL_ZERO_NOTE).toMatch(/PUBLICLY KNOWN TO BE EXACTLY ZERO/);
+    expect(CANONICAL_ZERO_NOTE).toMatch(/publicly known to be exactly zero/i);
     expect(assertsHidden(CANONICAL_ZERO_NOTE)).toBe(false);
   });
 
@@ -504,8 +505,11 @@ describe("the custody demo is a simulation on every surface", () => {
     const page = readFileSync(join(REPO, "web/app/src/views/CustodyView.tsx"), "utf8");
     const sim = page.indexOf("This is a simulation");
     expect(sim).toBeGreaterThan(-1);
-    // Before any capability verdict is rendered.
-    expect(sim).toBeLessThan(page.indexOf("What a custody-shaped key source"));
+    // Before any finding or flow verdict is rendered. ⚠ The anchor was the
+    // capability panel until 2026-10-20, when the page stopped repeating the
+    // matrix's custody row; an anchor that is gone would make this pass.
+    expect(page.indexOf("Two findings")).toBeGreaterThan(-1);
+    expect(sim).toBeLessThan(page.indexOf("Two findings"));
   });
 
   test("no surface calls it custody-compatible or an integration", () => {
@@ -519,10 +523,24 @@ describe("the custody demo is a simulation on every surface", () => {
     expect(hits).toEqual([]);
   });
 
+  test("every surviving flow that decrypts says it needs a standalone ElGamal key", () => {
+    // ⚠ The caveat was chosen by a "⚠" inside the reason's text until 2026-10-20,
+    // and no test saw it: a wording pass that dropped the mark dropped the caveat.
+    const needs = new Set(FLOWS.filter((f) => f.requires.includes("elgamal-decrypt")).map((f) => f.id));
+    const surviving = walkFlows().flows.filter((f) => f.survives && needs.has(f.id));
+    expect(surviving.length).toBeGreaterThan(0);
+    for (const f of surviving) expect(f.caveats.join(" ")).toMatch(/standalone ElGamal key/);
+  });
+
+  test("retiring in tranches says each tranche size is public", () => {
+    const f = walkFlows().flows.find((x) => x.id === "retire-tranches")!;
+    expect(f.caveats.join(" ")).toMatch(/F-24/);
+  });
+
   test("the custody row is marked not built", () => {
     const row = CAPABILITY_MATRIX.find((r) => r.id === "custody-simulated")!;
     expect(row.existsToday.built).toBe(false);
-    expect(row.existsToday.where).toMatch(/SIMULATION/);
+    expect(row.existsToday.where).toMatch(/simulation/i);
   });
 });
 
@@ -559,7 +577,7 @@ describe("ADR-0004: the hosted tier renders the same pages and reaches nothing",
     for (const [route, view] of SHARED) {
       for (const dir of ["web/app/src/routes", "web/app/src/hosted/routes"]) {
         const src = readFileSync(join(REPO, dir, `${route}.tsx`), "utf8");
-        expect(src).toMatch(new RegExp(`import \\{ ${view} \\} from "(\\.\\./)+views/${view}"`));
+        expect(src).toMatch(new RegExp(`import \\{[^}]*\\b${view}\\b[^}]*\\} from "(\\.\\./)+views/${view}"`));
       }
     }
   });

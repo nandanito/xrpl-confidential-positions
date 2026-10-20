@@ -1,42 +1,50 @@
-# NEXT SESSION — phase 2 step 1 is designed and reviewed; the hosted demo waits on four owner rulings
+# NEXT SESSION — the hosted demo is live, its shorter text waits on a redeploy, and phase 3 is next
 
-⚠ **The launch plan is `docs/PLAN-PUBLIC-LAUNCH-2026-09-22.md`** (`CLAIMS.md` E-309). Phases 0 and 1 are done: the repository is public at `https://github.com/nandanito/xrpl-confidential-positions`. **Phase 2, the hosted demo, is designed and not built.** `ADR-0004` is `Proposed` at revision 4, its rotation `REVIEW-058` ran three rounds and is closed, and nothing is built until the owner rules on D-H1 to D-H4.
+⚠ **The launch plan is `docs/PLAN-PUBLIC-LAUNCH-2026-09-22.md`** (`CLAIMS.md` E-309). Phases 0 to 2 are done. The repository is public at `https://github.com/nandanito/xrpl-confidential-positions`, and the demo serves at `https://xrpl-confidential-positions.vercel.app`, deployed on 2026-10-20 from the public commit `34ed67a` (E-336). **Phase 3, the two posts, has not started.**
 
 ## WHERE THIS LEFT OFF
 
-`main` is at `2d41b64`, pushed to the private archive (`origin`, `nandanito/xrpl-confidential-positions-private`). **`decision/phase-2-hosted-demo` holds this phase's commits on top of it, not merged and not pushed.** ⚠ Read `git log --oneline -12 decision/phase-2-hosted-demo` and `git status -sb` before trusting this.
+In the private archive (`origin`, `nandanito/xrpl-confidential-positions-private`), `main` was fast-forwarded to `build/step-9-hosted-demo`, which carries this file, and both were pushed. ⚠ Read `git log --oneline -8` and `git status -sb` before trusting this.
 
-The branch holds:
+The owner approved publishing the deploy record on 2026-10-20 (E-337). The public update that carries E-336 to E-338 and this file follows `34ed67a` on public `main`; check `gh pr list --state all` there rather than trusting this sentence.
 
-- **The design.** `docs/decisions/ADR-0004-hosted-demo-trust-boundary.md`, revision 4, and architecture §6 step 9 (revision 10). `CLAIMS.md` E-327 records the measurements it rests on.
-- **The review.** `REVIEW-058`: packets and transcripts in `docs/reviews/REVIEW-058-packets/`, and the adjudications `REVIEW-058c`, `058d` and `058e`; E-328 to E-330.
-- **Fixes to shipped code that the review found.** ⚠ **The public repository carries every one of these defects**, because they predate publication:
-  - `facility/src/loopback.ts` read a "not found" from any ledger as an empty position. Every pinned answer, positive or `entryNotFound`, must now carry `validated: true` and a numeric `ledger_index` equal to the pinned index, and every entry is type-checked: the Rust reader's checks. A decimal-form index still reads as an integer here and is documented, not closed.
-  - `web/app/src/routes/index.tsx` promised the issuer view showed the holder decrypted, false since E-241.
-  - `web/app/src/routes/wallet.tsx`, `web/api/capability.ts` and the web walkthrough said no wallet could ever close the gap; scoped now to the wallets examined.
-  - `web/api/signer-status.ts` still carried a sentence E-224 retracted in September.
-  - `tools/check-disclosure-phrases.ts` now joins wrapped lines and drops blockquote, comment, bullet and JSX spacing markers before matching: 22 phrases, 14 controls.
+**The demo's text was cut by a third on 2026-10-20 (E-338), and the live site does not show it yet.** It needs the release procedure again from the public commit that carries E-338: build, gate, browser check, preflight, the owner's deploy, then the comparison. ⚠ Look in `…/ripple/wconf-hosted-builds/` for a build named after that commit before starting another, and read `CLAIMS.md` for a row recording the redeploy.
 
-The public repository's `main` is at `d135eed` (PR #14).
+Architecture §6 step 9 is ruled (E-331), built (E-334, E-335) and deployed (E-336):
+
+- **`web/hosted/README.md` is the release procedure**, seven steps: an isolated container build from a public commit, the hosted gate, a headless-browser check, a preflight, the owner's deploy, and a comparison of what is served.
+- **The deployed output** is `…/ripple/wconf-hosted-builds/34ed67a9f2f5`, outside every repository. It was built at ledger 6,259,125. The gate passed 30 of 30 controls and its full sweep. The browser check passed six pages and 39 same-origin requests, and the footer showed `PASS, 18 files`.
+- **`compare-deployed` passed against the live alias** on 2026-10-20. Two controls on broken copies of the output, a zeroed digest and an altered policy header, failed against the live host as they should. ⚠ It detects a change at the moment it runs, nothing later.
+- **What the host adds**: `access-control-allow-origin: *`, HSTS and `cache-control`. The deployment's own URL and the project's team alias redirect to Vercel's login; of the addresses tried, only the alias serves the page.
 
 ## 1. WHAT IS NEXT
 
-**Four rulings are the owner's**, each priced in `ADR-0004` revision 4 with a recommendation:
+**The owner's, still open:**
 
-1. **D-H1, the hosting shape.** H3, prerendered pages, is recommended: a visitor's browser sends nothing but page loads to Vercel. H1 is the option if visitors must look up their own accounts. H3 brings two sub-choices: a rebuild cadence, and an isolated build machine or its trust accepted by name.
-2. **D-H2, the hosted risk acceptance.** Accept by name, with the revised two paragraphs beside every ledger value.
-3. **D-H3, the issuer view.** A, no figure, holding E-241's line. ⚠ This departs from the launch plan's snapshot sentence. C, a proof of correct decryption a browser verifies, is the only way to show a checkable figure and is unpriced.
-4. **D-H4, the deploy.** Prebuilt output from the CLI, with a token scoped to the project, given an expiry, and never present while dependencies install or the build runs.
+1. **The redeploy of E-338's text**, if no row records it yet. The owner acts when the page goes down (E-337); the plan is Vercel Hobby, free, with no billing, so a limit exceeded takes the page down rather than sending a bill.
+2. **Not reported to the session, so not recorded:** that no Git repository is connected to the Vercel project; that the toolbar is off for production and preview; and the CLI version that ran the deploy, which the instructions pinned at `62.4.0`.
+3. **The plan's step 5 check from a machine that has never run the project**, such as a phone: every page renders, and the footer shows `PASS`.
+4. ~~**A public update carrying E-336 and this file**~~ approved on 2026-10-20 (E-337).
+5. **D8's C, the ruleset**: the owner ruled *not yet* on 2026-10-19.
+6. **A review round on step 9's build.** Offered and not answered. `REVIEW-058` reviewed the design; the build is checked by its own tests and controls, each broken before it was believed, and by no outside reader.
 
-**Also the owner's:** merging the branch and pushing it to the archive; **a public update carrying the code fixes**, which publishes and so waits on a yes; and D8's C. The rulesets endpoint answers for the public repository with an empty list, not a 403, measured on 2026-10-19, so the account offers rulesets; C still waits on the owner checking the public page.
+**Then phase 3.** Its gate is open now that the repository is public and the demo is live. ⚠ **Before a word of either post is drafted, re-survey every filing at source** (the gate amended on E-316): the comments by anyone but this project, `gh pr view` on every PR a closing comment names, and the fix grepped in the merged text. Each draft then runs `claims-check` and one adversarial read, and the owner signs off the final text. The plan's phase 3 lists what each post must and must not say; read it whole.
 
-**After the rulings, phase 2 step 3 builds**, and the ADR's gate list is the order: a directory mode for `check-no-secrets` with controls proving ignored build files are read (R1-9); the hosted build with an allowlisted environment, its endpoint and acceptance named, no source maps and one pinned snapshot; a static data adapter replacing the application's runtime API dependency (R2-9); a per-account existence check; the D-H2 wording; a footer with the commit and the gate's verdict; the Content Security Policy in `.vercel/output/config.json`; the bundle's licence notices. Then step 4's hosted gate part, verified by breaking it, and step 5's deploy, with served bytes and headers compared against the gated output.
+**Rebuilding the demo** is by hand and is the README's seven steps again. It needs a commit on public `main`, the OrbStack Docker context, the local secret store for the gate, and the owner's project-scoped token for the deploy only. The URL stays `https://xrpl-confidential-positions.vercel.app`, because the footer names it.
 
 **How a public update is made**, as it was done: change the file in this archive and commit here; copy the changed files to `…/ripple/xrpl-confidential-positions-public`, re-inserting the README's publication note; `git add` them, then `make inventory-third-party` there, which refuses on untracked files since E-332; commit; regenerate `docs/CLAIMS-REVISIONS.md` there as its own commit if `CLAIMS.md` changed; run `check-no-secrets --repo <public> --strict-history` with the local store and `make ci`; push a branch, open a PR, and once `checks` is green **fast-forward** `main` to it. ⚠ **Never squash or rebase a public PR**: the revision log names the commit that last changed `CLAIMS.md`, and a rewritten commit fails `check-claims-revisions` on `main`.
 
 ---
 
-## 2. PHASE 1 AND THE FOUR FILINGS — for the record
+## 2. PHASE 2 — for the record
+
+**Ruled 2026-10-19** (E-331): H3, prerendered pages, with an indefinite snapshot rebuilt by hand on an isolated build machine; the D-H2 wording accepted as written; A, no issuer figure; the prebuilt CLI deploy. `ADR-0004` is `Accepted` at revision 5; its rotation, `REVIEW-058`, ran three rounds.
+
+**Built 2026-10-20** (E-334, E-335). The owner ruled seroval's licence email redacted in the shipped notice, and the gate checks each notice against the package's own file with only addresses removed. The owner kept the CLI deploy over Git integration. **Deployed the same day** (E-336).
+
+---
+
+## 3. PHASE 1 AND THE FOUR FILINGS — for the record
 
 **Phase 1 was published on 2026-10-19.** `docs/decisions/DECISION-REQUEST-phase-1-publication-2026-10-18.md` records the ten steps, D1 to D8 and their rulings, and `REVIEW-056` and `REVIEW-057`; E-317 to E-326 are the register's account. ⚠ **Step 7's gate is the sweep on the exact published commit, and no rehearsal substitutes for it**; a later public update runs it again.
 
@@ -44,7 +52,7 @@ The public repository's `main` is at `d135eed` (PR #14).
 
 ---
 
-## 3. STILL OPEN — the standing backlog
+## 4. STILL OPEN — the standing backlog
 
 - **⚠⚠ `B-30` — the Sherlock XRP Ledger Attackathon, contest 1260.** A second audit covering **Confidential Transfers for MPTs**, 96 valid findings, 2 critical and 6 high. **Not obtainable by the two conventional routes** — no `sherlock-audit` repository, `/contests/1260/report` is 404 — so it is B-13's shape. ⚠ `rippled#6885`, *"[XLS-0096] ElGamal Ciphertext Malleability in ConvertBack"*, is **open**; read 2026-09-22, it cites no Sherlock finding and only speculates about the contest's scope. The primary evidence that Sherlock findings reached Confidential Transfer code is `mpt-crypto#102`, citing **Sherlock #2759 (Medium)** against MergeInbox.
 - **`paper/cmpt-progress-and-changes.tex` is internal and unobtainable.** `mpt-crypto#107` locates it in `confidential-transactions` / `internal-ripplex-research`; #101, #102, #103 and #107 cite it, two by its `\section{Sherlock Audit (April--May 2026) Cross-Reference}`. It is the document that would settle F-13.
@@ -75,7 +83,7 @@ make check-tables check-negative-claims check-personas check-blinding \
      check-claims-revisions check-emphasis
 make check-filing FILE=docs/upstream-filings/TEMPLATE.md   # POSITIVE control
 make check-vocabulary check-no-secrets     # the second needs the local store; refuses without it
-make break-no-secrets-gate                 # 83 probes; writes untracked plants for seconds — no git add -A meanwhile
+make break-no-secrets-gate                 # 93 probes; writes untracked plants for seconds — no git add -A meanwhile
 make break-no-secrets-gate-self-test
 make ci                                    # exactly what GitHub Actions runs
 make break-emphasis-gate                   # refuses on a dirty tree — commit first
@@ -84,13 +92,22 @@ python3 tools/break-secret-file-modes.py   # B-29's falsifier; refuses on a dirt
 cd signer && cargo test                    # sum EVERY "test result:" line
 ```
 
-**Green at `2d41b64` on `main`, 2026-10-19**, every line above plus `make vendor-verify`, run by one script with a log per step and no pipes: 28 steps, all exit 0, tree clean before the first edit. `cargo test` summed 21 result lines to 279 / 0 / 4 on both runs; `make ci` gave 227 pass, 5 skip, 0 fail; amendments read `2026-10-19T09:57:32Z`, with `ConfidentialTransfer` enabled on Devnet and supported but not enabled on Mainnet and Testnet. **On the branch tip after `REVIEW-058`:** `make ci` 236 / 5 / 0 and every document gate passes; `cargo test` was not re-run, since no Rust changed. **Green at `d96899d` on `decision/phase-1-publication`, 2026-10-18 evening**, every line above plus `make vendor-verify`, run by one script with a full log per step and no pipes: 20 steps, all exit 0, tree clean before and after. `cargo test` summed 21 result lines to 279 / 0 / 4 on both runs; `make ci` gave 227 pass, 5 skip, 0 fail; the sweep 97/97 controls and 83 probes; amendments read `2026-10-18T08:43:14.319Z`, the same table. **Earlier the same day, green on `build/phase-1-front-door`**, every line above, after `tools/rebuild-env.sh` rebuilt `/tmp/wconf`. `cargo test` summed 21 result lines to 279 / 0 / 4 on **both** runs; the TypeScript suites gave 232 / 0 twice. ⚠ One earlier TypeScript run timed out a facility test at Bun's 5-second limit while `cargo test` shared the CPU. **The previous reading: green at `a130479`, 2026-09-22**, every line above: nine steps, all exit 0. `check-zeroize-bounds` ran cold. `cargo test` summed 21 result lines to 279 / 0 / 4 on **both** runs. ⚠ **The suite and the Codex leg ran concurrently** and the tests were slower for it; that is contention, not flakiness.
+**The hosted release is not in this list.** Its gates need an output directory; `web/hosted/README.md` gives the commands.
+
+**Full suite green at `7a7c9fc`, 2026-10-19**, every line above plus `make vendor-verify`, run by one script with a log per step and no pipes: 28 steps, all exit 0, tree clean before and after. `cargo test` summed 21 result lines to 279 / 0 / 4 on both runs; `make ci` gave 236 pass, 5 skip, 0 fail; the sweep 97/97 controls and 83 probes. **Since then no file under `signer/` has changed.** On the tip after E-336: `make ci` 271 / 5 / 0, and the register gates pass. Amendments read `2026-10-20T04:17:17.621Z`: `ConfidentialTransfer` enabled on Devnet, supported and not enabled on Mainnet and Testnet. At step 9 (E-334) `check-no-secrets` ran 111 controls and `break-no-secrets-gate` 93 probes. ⚠ **The full 28-step suite has not been re-run since `7a7c9fc`.**
 
 ⚠ **Editing `CLAIMS.md` takes TWO commits.** Commit the register change, then regenerate and commit `docs/CLAIMS-REVISIONS.md` **on its own**.
 
 ---
 
 ## TRAPS
+
+- ⚠⚠ **A Content Security Policy hash is over the script text the browser parsed, not the file's bytes.** The parser turns CRLF and a lone CR into LF and NUL into U+FFFD, and TanStack Start's hydration script carries NUL bytes. `web/hosted/csp.ts` is the one hashing function; do not hash anywhere else (E-334).
+- **Inside the build container, Vite under Bun could not prerender, and `localhost` resolved to `::1`.** The image runs Vite under Node, and the preview server binds `127.0.0.1`.
+- **A literal U+FFFD in source made a `sed` mutation miss silently**, so the copy was not the break it was named for. Write a mutation against an exact string and check that it applied.
+- **Vercel's dashboard does not make an empty project without a repository**; `vercel project create <name>` does. `vercel logout` revokes the token on Vercel's side (`DELETE /v3/user/tokens/current`, read in the 64.7.0 bundle). The CLI reads `VERCEL_TOKEN`, `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID`, and an environment token takes precedence over a saved login.
+- **A deploy command goes to the owner's own terminal, never through `!`**, so the token stays out of the transcript. Prefer `read -s VERCEL_TOKEN` over `--token`, which any local user can read in the process list.
+- **`compare-deployed` prints only a verdict.** The counts behind E-336 came from the verdict file. Before believing a PASS, break it against the live host: zero one digest, alter one header.
 
 - ⚠⚠ **A fake node for `facility/` must answer like rippled 3.4.1**: `validated: true` and a numeric `ledger_index` on every pinned answer, `entryNotFound` included, and a `LedgerEntryType` on every entry. The reader refuses anything else since E-329, and an old-style fake now fails with `REFUSED_LEDGER_TORN`.
 - **The public Devnet JSON-RPC endpoint refuses browser pages**: no CORS header on the preflight or the response. Its WebSocket endpoint answered a page on `https://example.com`. The endpoint is a pool, so successive connections reach servers holding different history (E-327).
@@ -122,6 +139,13 @@ cd signer && cargo test                    # sum EVERY "test result:" line
 ---
 
 ## WHAT THIS SESSION TAUGHT, kept because it is the transferable part
+
+**2026-10-20, phase 2 steps 3 to 5:**
+
+- ⚠⚠ **The gate passed a policy every browser refused.** It hashed inline scripts over the file's bytes, its controls agreed with it, and the hydration of every page was blocked. Only loading the output in a real browser under its own headers showed it. **A gate that reads files checks what the files say; run the artifact where it is consumed before calling the gate's PASS the property.**
+- ⚠ **Phase 1's lesson recurred within the day.** When the owner ruled the email (E-335), architecture §6 step 9 kept *"the gate fails until the owner rules"* until the deploy record found it. This file already said to grep for the state a ruling ends, and that was not self-executing either.
+- **The inventory passed on a file it never saw**, because it read the index before `git add`. It refuses on untracked files now (E-332). A check over "the tree" must say which tree.
+- **Isolation is shown by what fails to leak.** Canary variables, decoy stores and a self-test that fails with each check removed are what the build's isolation claim rests on, not the container's configuration.
 
 **2026-10-19, phase 2 step 1:**
 

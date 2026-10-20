@@ -13,35 +13,30 @@ function Overview() {
   return (
     <>
       <Panel title="What this is">
-        <p className="text-sm leading-relaxed mb-3">
-          A static demonstration of confidential positions on the XRPL Devnet, built from one
-          snapshot of the ledger taken when this page was built. It never signs and never holds a
-          key. No code of this project runs on a server when you load it, and your browser asks
-          nothing of anyone but this site, for its own files.
-        </p>
         <p className="text-sm leading-relaxed">
-          The issuer page shows that the issuer&rsquo;s copy of each balance is on the ledger, and
-          never a decrypted figure. A figure no visitor can check would be a claim with nothing to
-          test it against.
+          A read-only look at confidential MPT positions on the XRPL Devnet. Every value comes from
+          one snapshot of the ledger, taken when this site was built. The site signs nothing and holds
+          no keys. No code of this project runs on a server when you load it, and your browser
+          requests only this site&rsquo;s own files.
         </p>
       </Panel>
 
       <Panel title="Start here">
         <ol className="text-sm space-y-1 list-decimal pl-5 opacity-85">
-          <li><strong>Capability matrix</strong>: what each key source can and cannot do.</li>
-          <li><strong>Observer view</strong>: what anyone can read, including which zero balances are visible.</li>
-          <li><strong>Issuer view</strong>: that the issuer&rsquo;s copy exists for every holder, without the figure.</li>
-          <li><strong>Wallet</strong>: three structural reasons the wallets examined cannot hold a position.</li>
-          <li><strong>Custody</strong>: where confidentiality and policy controls collide.</li>
+          <li><strong>Capability matrix</strong>: what each kind of key can and cannot do.</li>
+          <li><strong>Observer view</strong>: what anyone can read on the ledger, including which balances are visibly zero.</li>
+          <li><strong>Issuer view</strong>: the issuer&rsquo;s copy of each balance, without the figure.</li>
+          <li><strong>Wallet</strong>: why the browser wallets examined cannot hold a confidential position.</li>
+          <li><strong>Custody</strong>: where confidentiality and custody approval policies conflict.</li>
         </ol>
       </Panel>
 
       <Panel title="To transact, run it yourself">
         <p className="text-sm leading-relaxed">
-          Signing happens only in <code>wconf-signer</code>, a separate binary on the holder&rsquo;s own
-          machine, and never in a web page. The repository&rsquo;s README describes how to build it and
-          run the local tier. It does not yet describe how to create a holder profile and funded
-          Devnet accounts, which a transaction needs.
+          Signing happens only in <code>wconf-signer</code>, a separate program on the holder&rsquo;s own
+          machine, never in a web page. The README explains how to build it and run the local version
+          of this site. It does not yet explain how to create a holder profile and funded Devnet
+          accounts, which a transaction needs.
         </p>
         <p className="text-sm mt-2">
           <a className="underline" href="https://github.com/nandanito/xrpl-confidential-positions#run-it">
@@ -59,7 +54,7 @@ function Overview() {
             </li>
           ))}
         </ul>
-        <p className="text-xs opacity-60 mt-3">These are CLAIMS.md rows cited, not restated.</p>
+        <p className="text-xs opacity-60 mt-3">Each label is a row in the repository&rsquo;s CLAIMS.md.</p>
       </Panel>
     </>
   );
