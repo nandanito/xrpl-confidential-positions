@@ -11,7 +11,8 @@
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { readOutput } from "../../tools/check-web-hosted.ts";
+import { LEDGER_PAGES, blockText, elementsInner, readOutput, runChecks, type Finding } from "../../tools/check-web-hosted.ts";
+import { HOSTED_ENDPOINT } from "./snapshot.ts";
 
 const sha256 = (b: Buffer | string) => createHash("sha256").update(b).digest("hex");
 
@@ -30,14 +31,92 @@ export function onPublicMain(commit: string, compare = (sha: string) => {
   return status === "identical" || status === "ahead";
 }
 
-export function preflight(root: string, isOnPublicMain: (commit: string) => boolean = onPublicMain): string[] {
+/**
+ * ⚠ **What a PASS here means, and what it does not** (`REVIEW-059` R1-7, S-5).
+ * It means: the manifest says a commit build, not a trial, of a commit on the
+ * public `main`; the gate's checks pass on these exact bytes, run again here;
+ * every file matches the verdict; and every ledger page names the ledger the
+ * manifest records. It does not mean the files came from that commit: that is
+ * the build's tree check, and the manifest is the build's own word for it.
+ */
+// ⚠ The shape alone passed `2026-99-99T99:99:99.999Z` (`REVIEW-059` R3-6): a
+// timestamp must survive a round trip through `Date` unchanged.
+const isIso = (v: unknown) => typeof v === "string" && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(v) && !Number.isNaN(Date.parse(v)) && new Date(v).toISOString() === v;
+
+/**
+ * The manifest's shape. ⚠ `REVIEW-059` R2-4: a read time of `"2"` passed,
+ * because it was looked for as a substring, and the endpoint and image were
+ * never checked. Every field `web/hosted/build.ts` writes is required, in its
+ * form; this said so while three of them were not checked (R3-6).
+ */
+export function manifestProblems(m: any): string[] {
+  const p: string[] = [];
+  const need = (ok: boolean, what: string) => { if (!ok) p.push(`the manifest's ${what}`); };
+  need(m?.trial === false, `trial field is ${JSON.stringify(m?.trial ?? null)}, not false: this output is not known to be a commit build`);
+  need(typeof m?.commit === "string" && /^[0-9a-f]{40}$/.test(m.commit), `commit ${JSON.stringify(m?.commit ?? null)} is not a full commit id`);
+  need(typeof m?.image === "string" && /^wconf-hosted-build:[0-9a-f]{16}$/.test(m.image), `image ${JSON.stringify(m?.image ?? null)} is not a build image tag`);
+  need(typeof m?.dockerfileSha256 === "string" && /^[0-9a-f]{64}$/.test(m.dockerfileSha256), "dockerfileSha256 is not a SHA-256");
+  need(typeof m?.dockerContext === "string" && m.dockerContext.length > 0, "dockerContext is missing");
+  need(isIso(m?.builtAt), `builtAt ${JSON.stringify(m?.builtAt ?? null)} is not a timestamp`);
+  need(Array.isArray(m?.environment) && m.environment.length > 0 && m.environment.every((e: unknown) => typeof e === "string"), "environment is not a list of variable names");
+  need(typeof m?.canaries === "string" && m.canaries.length > 0, "canaries is missing");
+  need(typeof m?.isolation === "string" && m.isolation.length > 0, "isolation is missing");
+  need(Number.isInteger(m?.snapshot?.ledgerIndex) && m.snapshot.ledgerIndex > 0, `ledger index ${JSON.stringify(m?.snapshot?.ledgerIndex ?? null)} is not a ledger`);
+  need(isIso(m?.snapshot?.readAt), `read time ${JSON.stringify(m?.snapshot?.readAt ?? null)} is not a timestamp`);
+  need(m?.snapshot?.endpoint === HOSTED_ENDPOINT, `endpoint ${JSON.stringify(m?.snapshot?.endpoint ?? null)} is not ${HOSTED_ENDPOINT}`);
+  need(typeof m?.snapshot?.canonicalUrl === "string" && /^https:\/\/[a-z0-9.-]+$/.test(m.snapshot.canonicalUrl), `canonical address ${JSON.stringify(m?.snapshot?.canonicalUrl ?? null)} is not an https origin`);
+  return p;
+}
+
+export function preflight(
+  root: string,
+  isOnPublicMain: (commit: string) => boolean = onPublicMain,
+  checks: (files: Map<string, Buffer>, want: { commit: string }) => Finding[] = runChecks,
+): string[] {
   const problems: string[] = [];
   const manifestPath = join(root, "build-manifest.json");
   if (!existsSync(manifestPath)) return [`no build-manifest.json beside the output; build with web/hosted/build.ts`];
   const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
-  if (manifest.trial) problems.push("the manifest says TRIAL: this output was built from a working tree, not a commit");
-  else if (!isOnPublicMain(manifest.commit)) problems.push(`${manifest.commit} is not on the public repository's main, so the footer's link names a commit readers cannot see`);
+  // ⚠ `if (manifest.trial)` passed a manifest with no `trial` at all.
+  const shape = manifestProblems(manifest);
+  problems.push(...shape);
+  if (!shape.length && !isOnPublicMain(manifest.commit)) problems.push(`${manifest.commit} is not on the public repository's main, so the footer's link names a commit readers cannot see`);
   const files = readOutput(root);
+  // The gate's checks, again, on the bytes about to be uploaded: a file changed
+  // together with its verdict passes the digest comparison below and not this.
+  // The controls and the secret sweep stay the gate's.
+  for (const f of checks(files, { commit: String(manifest.commit) })) problems.push(`the gate's check fails now: ${f.check}: ${f.detail}`);
+  // Every page's footer states the snapshot's provenance in one sentence and
+  // names the address it is published at; each ledger page's source panel names
+  // the endpoint, the ledger and the read time. All must be the manifest's
+  // (`REVIEW-059` R1-7). ⚠ Each is read from ITS element: matched anywhere on
+  // the page, a wrong footer passed beside a correct sentence elsewhere, and a
+  // footer split by an inline element failed (R2-4, R3-5).
+  const snap = manifest.snapshot ?? {};
+  const provenance = `Ledger values were read at validated ledger ${snap.ledgerIndex} on ${snap.readAt}.`;
+  for (const [p, b] of files) {
+    if (!p.endsWith(".html")) continue;
+    const h = b.toString("utf8");
+    const footers = elementsInner(h, "footer", /<footer\b[^>]*>/i);
+    if (footers.length !== 1) { problems.push(`${p} has ${footers.length} footer elements, not one`); continue; }
+    const footer = blockText(footers[0]);
+    if (!footer.includes(provenance)) problems.push(`${p}'s footer does not state the manifest's provenance: ${JSON.stringify(provenance)}`);
+    if (!footer.includes(`This page is published at ${snap.canonicalUrl}.`)) problems.push(`${p}'s footer does not name the manifest's address ${JSON.stringify(snap.canonicalUrl ?? null)}`);
+    if ((LEDGER_PAGES as readonly string[]).some((lp) => p === `static/${lp}/index.html`)) {
+      const sources = elementsInner(h, "div", /<div\b[^>]*\bdata-ledger-source\b[^>]*>/i).map(blockText);
+      if (!sources.length) problems.push(`${p} has no ledger-source panel`);
+      for (const src of sources) {
+        if (!src.includes(`read from ${HOSTED_ENDPOINT}`)) problems.push(`${p}'s source panel does not name ${HOSTED_ENDPOINT}`);
+        if (!src.includes(`validated ledger ${snap.ledgerIndex} at ${snap.readAt}`)) problems.push(`${p}'s source panel does not name the manifest's ledger and read time`);
+      }
+    }
+  }
+  const ledgerIndex = manifest.snapshot?.ledgerIndex;
+  for (const lp of LEDGER_PAGES) {
+    const h = files.get(`static/${lp}/index.html`)?.toString("utf8") ?? "";
+    const named = [...h.matchAll(/data-ledger-index="(\d+)"/g)].map((m) => Number(m[1]));
+    if (!named.length || named.some((n) => n !== ledgerIndex)) problems.push(`/${lp} names ledger ${[...new Set(named)].join(", ") || "none"}, and the manifest records ${JSON.stringify(ledgerIndex ?? null)}`);
+  }
   const v = files.get("static/gate-verdict.json");
   if (!v) return [...problems, "no static/gate-verdict.json: the gate has not passed this output"];
   const verdict = JSON.parse(v.toString("utf8"));

@@ -1,0 +1,3 @@
+leg A attempt 1: start 2026-10-20T10:47:03Z end 2026-10-20T10:47:17Z (void: provider filter after Step 0)
+leg A attempt 2: start 2026-10-20T10:48:07Z, exit=0 2026-10-20T11:02:57Z 
+leg B: start 2026-10-20T10:49:05Z; report complete by 10:54Z; agy did not exit, SIGTERM ignored, SIGKILL at 2026-10-20T11:08:34Z

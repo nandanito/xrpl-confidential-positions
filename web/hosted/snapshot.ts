@@ -24,7 +24,7 @@
 
 import { writeFileSync } from "node:fs";
 import { LoopbackLedger, LedgerRefusal } from "../../facility/src/loopback.ts";
-import { observerView } from "../api/observer.ts";
+import { viewOf } from "../api/observer.ts";
 import { DEMO_ACCOUNTS, DEMO_ISSUANCE, validDemoAccounts } from "../api/demo-accounts.ts";
 import { CAPABILITY_MATRIX, INVARIANTS, MASTER_SEED_DISCLOSURE, DERIVATION_NOT_PUBLISHED, WALLET_CODEC_GAP } from "../api/capability.ts";
 import { walkFlows } from "../api/custody-sim.ts";
@@ -42,18 +42,21 @@ export const HOSTED_ENDPOINT = "https://s.devnet.rippletest.net:51234";
 
 /** One account at the pinned ledger. Exported for tests. */
 export async function readAccount(
-  snap: { accountExists(a: string): Promise<boolean>; mptoken: (a: string, i: string) => Promise<any>; issuance: (i: string) => Promise<any>; index: number },
+  snap: { accountExists(a: string): Promise<boolean>; mptoken: (a: string, i: string) => Promise<any>; index: number },
   account: { address: string; issuanceId: string; label: string; note: string },
-  issuanceExists: boolean,
+  /** The issuance as the snapshot already read it, or null for a missing one. Not read again here. */
+  iss: any | null,
 ): Promise<HostedAccount> {
   const base = { address: account.address, label: account.label, note: account.note };
   if (!(await snap.accountExists(account.address))) {
     return { ...base, state: "account-missing", observer: null, issuerMirror: null };
   }
-  if (!issuanceExists) return { ...base, state: "issuance-missing", observer: null, issuerMirror: null };
+  if (!iss) return { ...base, state: "issuance-missing", observer: null, issuerMirror: null };
+  // ⚠ One read of the position, and the view is built from it and from the
+  // issuance the snapshot already read (`REVIEW-059` R1-8: both were read again).
   const mpt = await snap.mptoken(account.address, account.issuanceId);
   if (!mpt) return { ...base, state: "no-position", observer: null, issuerMirror: null };
-  const observer = await observerView(snap as any, account.address, account.issuanceId);
+  const observer = viewOf(account.address, account.issuanceId, mpt, iss);
   return {
     ...base,
     state: "present",
@@ -85,7 +88,7 @@ export async function takeSnapshot(commit: string, canonicalUrl: string, endpoin
   }
 
   const out: HostedAccount[] = [];
-  for (const a of accounts) out.push(await readAccount(snap, a, issuanceExists));
+  for (const a of accounts) out.push(await readAccount(snap, a, issuanceExists ? iss : null));
 
   return {
     schema: SNAPSHOT_SCHEMA,

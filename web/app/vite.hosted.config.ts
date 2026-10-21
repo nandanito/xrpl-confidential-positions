@@ -5,11 +5,14 @@
  * tier and is untouched. This one builds `src/hosted/`, prerenders every page
  * from the build's one snapshot, and emits static files only.
  *
- * ⚠ **Nothing from the build machine's environment reaches the bundle.**
+ * ⚠ **Vite exposes no build variable to the bundle**, which is narrower than
+ * nothing from the build machine reaching it (`REVIEW-059` R1-11, R2-9).
  * `REVIEW-058` M11: a `VITE_` variable set on the build machine was inlined into
  * the client bundle without appearing in the source. `envPrefix` names a prefix
  * nothing sets, and `web/hosted/build.ts` sets canary variables under both
- * prefixes and fails if either value appears in the output.
+ * prefixes and fails if either value appears verbatim in the output. The commit
+ * and the canonical address reach the pages on purpose, through the snapshot;
+ * code that runs during the build could still write anything into them.
  */
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -19,7 +22,7 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import { HOSTED_PAGES } from "../hosted/pages.ts";
-import { EMAIL_MARKER, shippedNotice } from "../hosted/licence-notices.ts";
+import { LICENCE_FILE_HEADER, shippedNotice } from "../hosted/licence-notices.ts";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 export const SNAPSHOT_PATH = resolve(HERE, "../hosted/.build/snapshot.json");
@@ -70,12 +73,7 @@ function licenceNotices(): Plugin {
           if (m) roots.set(m[1], m[1].slice(m[1].lastIndexOf("node_modules/") + "node_modules/".length));
         }
       }
-      const parts: string[] = [
-        "Third-party software in the W-CONF hosted demo's client bundle, with the licence",
-        "each package ships. Collected at build time from the modules actually bundled.",
-        `Email addresses in these notices are replaced with "${EMAIL_MARKER}".`,
-        "",
-      ];
+      const parts: string[] = [...LICENCE_FILE_HEADER];
       for (const [root, name] of [...roots].sort((a, b) => a[1].localeCompare(b[1]))) {
         const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
         const notice = shippedNotice(root);

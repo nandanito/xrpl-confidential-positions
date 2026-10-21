@@ -175,8 +175,8 @@ just written the trigger (E-212).
    ~~Step 5 waits on the owner's Vercel setup and on one ruling: the email address in
    a bundled package's licence notice, which the secret sweep refuses.~~ The owner ruled
    the email redacted (E-335). **Step 5 deployed 2026-10-20** (E-336): the served bytes
-   and headers matched the gated ones when compared. The check from a machine that has never run the
-   project is not yet reported.
+   and headers matched the gated ones when compared. On a phone, a machine that has never run the
+   project, the site worked and its footer showed `PASS` (E-340).
 5. **Deploy to Vercel and check the live surface** against the ADR's list, from a
    machine that has never run the project.
 
@@ -196,14 +196,17 @@ a word of either post is drafted.** The survey is the one E-316 records: the com
 on each issue this project filed, by anyone but this project; `gh pr view` on every
 PR a closing comment names; the fix grepped in the merged text rather than taken from
 the comment. Each filing is then described by its outcome on the survey date, not by
-its register row. On 2026-10-18 the register carried four filings as open that
+its register row. Grep every language copy of a changed page: on 2026-10-20 a fix
+had reached the English page and not its Japanese translation (E-341). On 2026-10-18 the register carried four filings as open that
 upstream had fixed and closed in September; a post written from it would have called
 four fixed defects open. Phase 1's README states the same outcomes in its *Upstream*
 section and runs the same survey before publication.
 
 1. **The blog post** (`nandan.me/writing`). The honest spine: what XLS-96 hides
    (amounts and balances), what it does not (who, when, how often — P-4, P-11), that
-   the issuer can always decrypt (P-9), that there is no rotation or recovery (P-10),
+   the issuer can always decrypt (P-9), that there is no rotation or recovery (P-10)
+   in XLS-96 or on Mainnet, Testnet or Devnet, while a draft, XLS-99, proposes both
+   (added 2026-10-20, E-341),
    Devnet only with a dated amendment reading (P-3). Then the part that is genuinely
    this project's own: execution over reading, the adversarial rotations and what they
    caught, the gates that catch a false sentence, and the findings filed upstream.

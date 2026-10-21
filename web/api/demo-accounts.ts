@@ -34,9 +34,10 @@ export const DEMO_ACCOUNTS: DemoAccount[] = [
     address: "rHeah37pL6aFPf59nzWGwujPzSFkp4TUL8",
     issuanceId: DEMO_ISSUANCE,
     label: "Holder A — an active position",
-    note:
-      "Its spending balance is not the canonical zero, so its value is hidden; its inbox is " +
-      "publicly known to be exactly zero.",
+    // ⚠ This note described the account's balances, which are a ledger reading
+    // and change whenever anyone sends to it; the page prints the reading
+    // beside it (`REVIEW-059` R1-14). Notes describe the account, never its state.
+    note: "One of the two accounts the observer view was first read against, on 2026-08-28 (CLAIMS.md E-208).",
   },
   {
     address: "rDYMkRMh7o7QfkNaoGvtd7TgFzmt12FEM8",

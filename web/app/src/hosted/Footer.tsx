@@ -41,7 +41,8 @@ export function Footer() {
       </p>
       <p>
         Gate verdict: <span data-gate-verdict="">{verdict}</span>{" "}
-        (<a className="underline" href="/gate-verdict.json">gate-verdict.json</a>)
+        (<a className="underline" href="/gate-verdict.json">gate-verdict.json</a>). This is the gate's record,
+        published with the build; your browser shows it and does not check it against the files it loaded.
       </p>
       <p>
         Third-party licences for the code in these pages:{" "}

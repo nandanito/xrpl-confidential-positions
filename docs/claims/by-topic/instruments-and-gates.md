@@ -15,7 +15,7 @@ invisible here** — a reader in `REVIEW-040` put their confidence at ~60% for *
 about secrets"* and said they would fall back to grep. **They were right to.** For an
 exhaustive sweep, search `CLAIMS.md` directly.
 
-**87 rows.**
+**94 rows.**
 
 | id | section | headline | grade |
 |---|---|---|---|
@@ -103,6 +103,13 @@ exhaustive sweep, search `CLAIMS.md` directly.
 | [E-333](../../../CLAIMS.md#L393) | Established | vite's only root licence file aggregates the licences of everything it bundles and carries 35 personal email addresses, so a verbatim copy cannot… | A, measured |
 | [E-334](../../../CLAIMS.md#L394) | Established | Architecture §6 step 9 is built and gated but not deployed, and the browser check caught a policy the gate had passed. | A, measured |
 | [E-336](../../../CLAIMS.md#L396) | Established | Architecture §6 step 9 is deployed, and when compared on 2026-10-20 what Vercel served was byte for byte what the gate passed. | A, measured |
-| [B-24](../../../CLAIMS.md#L409) | Pending | REVIEW-031's fixes — the seed residue B-23 left, and the gate that could not see it. | BUILT 2026-08-28. The… |
-| [B-26](../../../CLAIMS.md#L411) | Pending | REVIEW-033's fixes — the falsifier that was UB, and the gate's fourth round of false passes. | BUILT 2026-08-28. The… |
-| [F-23](../../../CLAIMS.md#L467) | Findings | A wrong ledger read is a CONFIDENTIALITY break, not a rejected transaction — and the signer cannot control which. | A, executed |
+| [E-339](../../../CLAIMS.md#L399) | Established | The demo's shorter text is live: the owner redeployed from the public commit ccf76e7, and when compared on 2026-10-20 what Vercel served was byte for… | A, measured |
+| [E-342](../../../CLAIMS.md#L402) | Established | The first review of step 9's build, REVIEW-059 round one, upheld 24 findings, and two would have let the release procedure publish what step 9… | A, measured |
+| [E-343](../../../CLAIMS.md#L403) | Established | REVIEW-059 round one's fixes are built, and each new check was broken before it was believed; they are not yet reviewed, rebuilt from a public commit… | A, measured |
+| [E-345](../../../CLAIMS.md#L405) | Established | REVIEW-059 round two found that five of round one's fixes did not discharge their findings, so its stopping condition fired and a third round is the… | A, measured |
+| [E-346](../../../CLAIMS.md#L406) | Established | REVIEW-059 round two's fixes are built: each now runs its finding's own example and the next case in that example's class, and each check was broken… | A, measured |
+| [E-347](../../../CLAIMS.md#L407) | Established | REVIEW-059 round three, run as the owner ruled on 2026-10-21, found three of round two's fixes still partial and two new browser gaps, and the… | A, measured |
+| [E-348](../../../CLAIMS.md#L408) | Established | REVIEW-059 round three's fixes are built, each check broken before it was believed, and the rotation is closed, so no outside reader has seen them. | A, measured |
+| [B-24](../../../CLAIMS.md#L419) | Pending | REVIEW-031's fixes — the seed residue B-23 left, and the gate that could not see it. | BUILT 2026-08-28. The… |
+| [B-26](../../../CLAIMS.md#L421) | Pending | REVIEW-033's fixes — the falsifier that was UB, and the gate's fourth round of false passes. | BUILT 2026-08-28. The… |
+| [F-23](../../../CLAIMS.md#L477) | Findings | A wrong ledger read is a CONFIDENTIALITY break, not a rejected transaction — and the signer cannot control which. | A, executed |

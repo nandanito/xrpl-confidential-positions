@@ -22,7 +22,7 @@ identifier pass leaves out because every package's dependency list looks alike, 
 only the line pass sees a manifest, and only unreflowed.
 
 **What is compared.** On the tracked side, every file `git ls-files` lists with a text
-extension (717 files), except lockfiles, `LICENSE`, `NOTICE`, `LICENSES/`
+extension (753 files), except lockfiles, `LICENSE`, `NOTICE`, `LICENSES/`
 and this directory; lines lose a line-number prefix first. On the upstream side, 110
 corpora are configured in 106 projects:
 **96 were compared and 14 were unavailable**, listed
@@ -36,7 +36,7 @@ Compared at `master`, `9fbf7ef8eb69973f43d44836875e01e6364a3ecb`.
 
 | file | kind | lines |
 |---|---|---|
-| `CLAIMS.md` | prose | 213–216, 474–477 |
+| `CLAIMS.md` | prose | 213–216, 484–487 |
 | `docs/reviews/REVIEW-012-REQUEST-keygen-2026-08-18.md` | prose | 65–68 |
 | `docs/reviews/REVIEW-021-REQUEST-step7-convert-back-2026-08-25.md` | code, prose | 148–176, 184–188 |
 | `docs/reviews/REVIEW-046b-gemini-custody-request-2026-09-13.md` | code, prose | 11–22 |
@@ -116,7 +116,7 @@ Compared at `master, paths matching /confidential/i`.
 
 | file | kind | lines |
 |---|---|---|
-| `UPSTREAM-FEEDBACK.md` | prose | 241–244 |
+| `UPSTREAM-FEEDBACK.md` | prose | 243–246 |
 | `docs/reviews/REVIEW-021-REQUEST-step7-convert-back-2026-08-25.md` | prose | 150–153 |
 | `docs/reviews/REVIEW-046b-gemini-custody-request-2026-09-13.md` | prose | 19–22 |
 | `docs/reviews/REVIEW-058-packets/round-one-prompt-gemini.md` | prose | 3054–3057, 3062–3065, 3069–3076, 3244–3247, 3268–3272, 3306–3309, 3339–3342, 3365–3368, 3406–3409, 3531–3536, 4030–4033 |

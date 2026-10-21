@@ -16,22 +16,40 @@
  * deployment token exists anywhere in it: D-H4's token comes in for the upload
  * only, after this script and the gate have finished.
  *
+ * ⚠ **What it is isolated FROM is files, and the network only in part.**
+ * Measured 2026-10-20 (`REVIEW-059` S-2): an OrbStack container with network
+ * reaches a service bound to the build machine's `127.0.0.1` through
+ * `host.docker.internal`. So the work runs in TWO containers. The first
+ * installs and takes the snapshot, which need the network; the second runs
+ * Vite and the assembler with `--network none`, so the third-party code in the
+ * build proper reaches nothing. ⚠ Code that runs during install or the snapshot
+ * still has the network and can reach the build machine's loopback services.
+ *
  * ⚠ **The environment is an allowlist.** The container receives only the
  * variables named below, plus two CANARIES: random values under the `VITE_` and
  * `WCONF_` prefixes. `REVIEW-058` M11 saw a `VITE_` variable inlined into the
- * bundle; if either canary's value appears anywhere in the output, the build
- * fails.
+ * bundle; if either canary's value appears VERBATIM anywhere in the output, the
+ * build fails. ⚠ That is all it proves: an encoded copy, or a variable sent
+ * over the network during install, is not seen (`REVIEW-059` R1-11).
  *
  * ⚠ **It builds a COMMIT, never a working tree.** What the footer names is what
  * was built. `--worktree` exists for local trials only: it copies the working
  * tree, names `HEAD` in the footer, and marks the manifest `trial`, which
- * `deploy.ts` refuses.
+ * `deploy-preflight.ts` refuses.
+ *
+ * ⚠ **And the tree it builds is checked against the commit, file for file.**
+ * `REVIEW-059` R1-10, measured with a real build: a file left in a reused
+ * `--out` survived the extraction and reached the output of a build whose
+ * footer named a commit that does not contain it. So `--out` must be new or
+ * empty, the workspace is removed even when a build fails, and the exported
+ * tree must list exactly the commit's files before any container runs. ⚠ It
+ * does not see dependency code changing `/src` DURING the build.
  */
 
 import { createHash, randomBytes } from "node:crypto";
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { isAbsolute, join, resolve } from "node:path";
+import { dirname, isAbsolute, join, resolve } from "node:path";
 import { RISK_ACCEPTANCE_PHRASE } from "../../facility/src/loopback.ts";
 
 /**
@@ -56,7 +74,7 @@ function args(argv: string[]) {
 }
 
 /** The source tree, exported into `dest`: a commit's archive, or a trial's working tree. */
-function exportSource(repo: string, dest: string, worktree: boolean, commit?: string): string {
+export function exportSource(repo: string, dest: string, worktree: boolean, commit?: string): string {
   mkdirSync(dest, { recursive: true });
   if (worktree) {
     const files = run(["git", "-C", repo, "ls-files", "-z", "--cached", "--others", "--exclude-standard"]).split("\0").filter(Boolean);
@@ -70,20 +88,66 @@ function exportSource(repo: string, dest: string, worktree: boolean, commit?: st
   return full;
 }
 
-/** Inside the container. `set -eu`, and the store checks come before anything third-party runs. */
+/** Every file and link under `dir`, relative to it, in `git ls-tree` form. */
+export function listTree(dir: string): string[] {
+  const out: string[] = [];
+  const walk = (rel: string) => {
+    for (const name of readdirSync(join(dir, rel))) {
+      const r = rel ? `${rel}/${name}` : name;
+      const st = lstatSync(join(dir, r));
+      if (st.isDirectory() && !st.isSymbolicLink()) walk(r);
+      else out.push(r);
+    }
+  };
+  walk("");
+  return out.sort();
+}
+
+/**
+ * The exported tree, against the commit's own file list. Any extra or missing
+ * path is refused before a container runs (`REVIEW-059` R1-10).
+ */
+export function checkExportedTree(src: string, committed: string[]): string[] {
+  const have = new Set(listTree(src)), want = new Set(committed);
+  const extra = [...have].filter((p) => !want.has(p)), missing = [...want].filter((p) => !have.has(p));
+  return [...extra.map((p) => `${p} is in the build tree and not in the commit`), ...missing.map((p) => `${p} is in the commit and not in the build tree`)];
+}
+
+/**
+ * Where a build may write: a new or empty directory outside the repository it
+ * builds. ⚠ It refused only an existing `.vercel` before, so a failed build's
+ * workspace could be reused, and `out === repoTop` passed the prefix test.
+ */
+export function outProblems(out: string, repoTop: string): string[] {
+  const real = (p: string) => { let q = p; while (!existsSync(q)) q = dirname(q); return join(realpathSync(q), p.slice(q.length)); };
+  const o = real(out), top = realpathSync(repoTop);
+  const problems: string[] = [];
+  if (o === top || o.startsWith(top + "/")) problems.push("--out must be outside the repository, so no build file lands in a tree that can be committed");
+  if (existsSync(out) && readdirSync(out).length) problems.push(`${out} is not empty; use a new directory for each build, because a reused one can carry files into the output`);
+  return problems;
+}
+
+/** Inside the containers. `set -eu`, and the store checks come before anything third-party runs. */
 // ⚠ One command per line: `set -e` does not stop on a failure inside an `&&`
 // list, and the first version ran the next step after Vite had failed.
+const STORE_CHECK = 'for p in /tmp/wconf "$HOME/.wconf"; do if [ -e "$p" ]; then echo "REFUSED: $p exists inside the build container" >&2; exit 3; fi; done';
 const CONTAINER_SCRIPT = [
   "set -eu",
-  'for p in /tmp/wconf "$HOME/.wconf"; do if [ -e "$p" ]; then echo "REFUSED: $p exists inside the build container" >&2; exit 3; fi; done',
+  STORE_CHECK,
   "bun install --frozen-lockfile",
   "mkdir -p web/hosted/.build",
   "bun run web/hosted/snapshot.ts web/hosted/.build/snapshot.json",
+].join("\n");
+/** The second container: no network at all. */
+const OFFLINE_SCRIPT = [
+  "set -eu",
+  STORE_CHECK,
   "cd web/app",
   "bunx vite build --config vite.hosted.config.ts",
   "cd /src",
   "bun run web/hosted/vercel-output.ts web/app/dist/client web/hosted/.build",
 ].join("\n");
+export const OFFLINE_ARGS = ["--network", "none"];
 
 /** Build (or reuse) the image named by the Dockerfile's hash. */
 function image(): string {
@@ -97,13 +161,26 @@ export async function build(argv: string[]) {
   const a = args(argv);
   const out = resolve(a.out);
   if (!isAbsolute(out)) throw new Error("--out must resolve to an absolute path");
-  if (existsSync(join(out, ".vercel"))) throw new Error(`${out}/.vercel exists; use a fresh --out for each build`);
   const repoTop = run(["git", "-C", a.repo, "rev-parse", "--show-toplevel"]).trim();
-  if (out.startsWith(repoTop + "/")) throw new Error("--out must be outside the repository, so no build file lands in a tree that can be committed");
+  const refused = outProblems(out, repoTop);
+  if (refused.length) throw new Error(refused.join("; "));
 
   const work = join(out, "work");
+  try {
+    await buildInto(a, out, work, repoTop);
+  } finally {
+    rmSync(work, { recursive: true, force: true });
+  }
+}
+
+async function buildInto(a: ReturnType<typeof args>, out: string, work: string, repoTop: string) {
   const src = join(work, "src");
   const commit = exportSource(repoTop, src, a.worktree, a.commit);
+  if (!a.worktree) {
+    const committed = run(["git", "-C", repoTop, "ls-tree", "-r", "-z", "--name-only", commit]).split("\0").filter(Boolean);
+    const drift = checkExportedTree(src, committed);
+    if (drift.length) throw new Error(`the build tree is not the commit's: ${drift.slice(0, 5).join("; ")}${drift.length > 5 ? ` (and ${drift.length - 5} more)` : ""}`);
+  }
   const canaries = { VITE_WCONF_CANARY: randomBytes(12).toString("hex"), WCONF_CANARY: randomBytes(12).toString("hex") };
   const env: Record<string, string> = {
     WCONF_ACCEPT_REMOTE_LEDGER_RISK: RISK_ACCEPTANCE_PHRASE,
@@ -112,21 +189,25 @@ export async function build(argv: string[]) {
     ...canaries,
   };
   const IMAGE = image();
-  const docker = [
-    "docker", "--context", DOCKER_CONTEXT, "run", "--rm",
+  const docker = (extra: string[], script: string) => [
+    "docker", "--context", DOCKER_CONTEXT, "run", "--rm", ...extra,
     "-v", `${src}:/src`, "-w", "/src",
     ...Object.entries(env).flatMap(([k, v]) => ["-e", `${k}=${v}`]),
-    IMAGE, "sh", "-c", CONTAINER_SCRIPT,
+    IMAGE, "sh", "-c", script,
   ];
   console.log(`building ${commit}${a.worktree ? " (TRIAL: working tree)" : ""} in ${IMAGE}`);
-  const r = Bun.spawnSync(docker, { stdout: "pipe", stderr: "pipe" });
-  writeFileSync(join(out, "container.log"), r.stdout.toString() + "\n--- stderr ---\n" + r.stderr.toString());
-  if (r.exitCode !== 0) throw new Error(`the container build failed (${r.exitCode}); see ${join(out, "container.log")}`);
+  let log = "";
+  for (const [label, extra, script] of [["install and snapshot, with network", [], CONTAINER_SCRIPT], ["build and assemble, --network none", OFFLINE_ARGS, OFFLINE_SCRIPT]] as const) {
+    const r = Bun.spawnSync(docker([...extra], script), { stdout: "pipe", stderr: "pipe" });
+    log += `=== ${label}\n${r.stdout.toString()}\n--- stderr ---\n${r.stderr.toString()}\n`;
+    writeFileSync(join(out, "container.log"), log);
+    if (r.exitCode !== 0) throw new Error(`the container step "${label}" failed (${r.exitCode}); see ${join(out, "container.log")}`);
+  }
 
   cpSync(join(src, "web/hosted/.build/.vercel"), join(out, ".vercel"), { recursive: true });
   const snapshot = JSON.parse(readFileSync(join(src, "web/hosted/.build/snapshot.json"), "utf8"));
 
-  // The canaries: neither value may appear anywhere in what is uploaded.
+  // The canaries: neither value may appear verbatim anywhere in what is uploaded.
   const leaked = leakedCanaries(join(out, ".vercel"), Object.values(canaries));
   if (leaked.length) throw new Error(`a build variable reached the output (REVIEW-058 M11): ${leaked.join(", ")}`);
 
@@ -139,13 +220,13 @@ export async function build(argv: string[]) {
     builtAt: new Date().toISOString(),
     snapshot: { ledgerIndex: snapshot.source.ledgerIndex, readAt: snapshot.readAt, endpoint: snapshot.source.endpoint, canonicalUrl: snapshot.canonicalUrl },
     environment: Object.keys(env).sort(),
-    canaries: "two random values, under VITE_ and WCONF_; neither appears in the output",
+    canaries: "two random values, under VITE_ and WCONF_; neither appears verbatim in the output",
     isolation:
-      `the container mounted only ${a.worktree ? "a copy of the working tree (TRIAL)" : "a git archive of the commit"}; ` +
-      "it checked /tmp/wconf and ~/.wconf absent before installing; no deployment token was present",
+      `the containers mounted only ${a.worktree ? "a copy of the working tree (TRIAL)" : "a git archive of the commit, checked file for file against the commit before they ran"}; ` +
+      "each checked /tmp/wconf and ~/.wconf absent before running anything else; install and the snapshot had network, " +
+      "and could reach the build machine's loopback; the Vite build and the assembler ran with --network none; no deployment token was present",
   };
   writeFileSync(join(out, "build-manifest.json"), JSON.stringify(manifest, null, 2) + "\n");
-  rmSync(work, { recursive: true, force: true });
   console.log(`built ${join(out, ".vercel/output")} from ${commit} at ledger ${snapshot.source.ledgerIndex}; manifest at ${join(out, "build-manifest.json")}`);
   console.log(`next: bun run tools/check-web-readonly.ts --hosted ${out} --commit ${commit}`);
 }
@@ -161,7 +242,7 @@ export function leakedCanaries(dir: string, values: string[]): string[] {
  * The build's own controls, through the same container script and the same
  * leak check the build runs. Needs Docker; reads no ledger.
  */
-export function selfTest(): string[] {
+export async function selfTest(): Promise<string[]> {
   const failed: string[] = [];
   const tag = image();
   // The image's own home directory, asked rather than assumed: its user is set
@@ -169,9 +250,29 @@ export function selfTest(): string[] {
   const home = run(["docker", "--context", DOCKER_CONTEXT, "run", "--rm", tag, "sh", "-c", 'printf %s "$HOME"']).trim();
   if (!home.startsWith("/")) failed.push(`the image reported no home directory (${JSON.stringify(home)})`);
   for (const store of ["/tmp/wconf", `${home}/.wconf`]) {
-    const r = Bun.spawnSync(["docker", "--context", DOCKER_CONTEXT, "run", "--rm", "--tmpfs", store, tag, "sh", "-c", CONTAINER_SCRIPT], { stdout: "pipe", stderr: "pipe" });
-    const err = r.stderr.toString();
-    if (r.exitCode !== 3 || !err.includes(`REFUSED: ${store} exists`)) failed.push(`a decoy ${store} was not refused before install (exit ${r.exitCode}: ${err.trim().slice(0, 200)})`);
+    for (const [label, extra, script] of [["install", [], CONTAINER_SCRIPT], ["offline build", OFFLINE_ARGS, OFFLINE_SCRIPT]] as const) {
+      const r = Bun.spawnSync(["docker", "--context", DOCKER_CONTEXT, "run", "--rm", ...extra, "--tmpfs", store, tag, "sh", "-c", script], { stdout: "pipe", stderr: "pipe" });
+      const err = r.stderr.toString();
+      if (r.exitCode !== 3 || !err.includes(`REFUSED: ${store} exists`)) failed.push(`a decoy ${store} was not refused before the ${label} step (exit ${r.exitCode}: ${err.trim().slice(0, 200)})`);
+    }
+  }
+  // The offline step's network, through the same arguments the build passes:
+  // a fetch to the ledger and one to a listener on the build machine's
+  // loopback must both fail. ⚠ The loopback half first aimed at a port where
+  // nothing listened, so it was unreachable WITH network too and tested
+  // nothing; found by running this with the offline arguments removed. ⚠ And
+  // the container is spawned ASYNCHRONOUSLY: a synchronous spawn blocks this
+  // process, so its own listener could not answer and every probe timed out.
+  const listener = Bun.serve({ hostname: "127.0.0.1", port: 0, fetch: () => new Response("listening") });
+  try {
+    for (const url of ["https://s.devnet.rippletest.net:51234/", `http://host.docker.internal:${listener.port}/`]) {
+      const proc = Bun.spawn(["docker", "--context", DOCKER_CONTEXT, "run", "--rm", ...OFFLINE_ARGS, tag, "bun", "-e",
+        `try { await fetch(${JSON.stringify(url)}, { signal: AbortSignal.timeout(5000) }); console.log("REACHED") } catch { console.log("UNREACHABLE") }`], { stdout: "pipe", stderr: "pipe" });
+      const [stdout, stderr] = await Promise.all([new Response(proc.stdout).text(), new Response(proc.stderr).text(), proc.exited]);
+      if (!stdout.includes("UNREACHABLE")) failed.push(`the offline step reached ${url} (${stdout.trim()} ${stderr.trim().slice(0, 120)})`);
+    }
+  } finally {
+    listener.stop(true);
   }
   const d = mkdtempSync(join(tmpdir(), "wconf-build-self-test-"));
   try {
@@ -188,7 +289,7 @@ export function selfTest(): string[] {
 
 if (import.meta.main) {
   if (process.argv.includes("--self-test")) {
-    const failed = selfTest();
+    const failed = await selfTest();
     for (const f of failed) console.log(`  CONTROL FAILED: ${f}`);
     console.log(`build self-test: verdict=${failed.length ? "CONTROL-FAILED" : "PASS"} exit=${failed.length ? 2 : 0}`);
     process.exit(failed.length ? 2 : 0);

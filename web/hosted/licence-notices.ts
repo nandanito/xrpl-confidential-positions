@@ -14,6 +14,18 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 export const EMAIL_MARKER = "[email address removed; the package's own licence file carries it]";
+
+/**
+ * The licence file's opening lines, before the first notice. One constant, so
+ * the gate can require the file to open with exactly this and nothing else
+ * (`REVIEW-059` S-4: the region before the first notice was read by no check).
+ */
+export const LICENCE_FILE_HEADER = [
+  "Third-party software in the W-CONF hosted demo's client bundle, with the licence",
+  "each package ships. Collected at build time from the modules actually bundled.",
+  `Email addresses in these notices are replaced with "${EMAIL_MARKER}".`,
+  "",
+];
 const EMAIL = /[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}/g;
 
 export function redactEmails(text: string): string {

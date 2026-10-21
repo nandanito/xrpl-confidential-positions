@@ -499,6 +499,16 @@ export class LoopbackLedger {
   /** Pin one validated index. Everything the facility reads comes from it. */
   async snapshot(): Promise<Snapshot> {
     const info = (await this.call("server_info", {})).info;
+    // ⚠ `open` checked the network once, and this second answer was taken on
+    // trust. A public endpoint is a pool, so it can come from another server;
+    // one that is not Devnet is refused here too (`REVIEW-059` R1-9).
+    if (Number(info.network_id) !== DEVNET_NETWORK_ID) {
+      throw new LedgerRefusal(
+        "REFUSED_NOT_DEVNET",
+        `the server that answered for the snapshot reports network_id ${JSON.stringify(info.network_id ?? null)}, ` +
+          `not ${DEVNET_NETWORK_ID} (Devnet), although the one that answered open() did`,
+      );
+    }
     const seq = Number(info.validated_ledger?.seq ?? 0);
     if (!Number.isInteger(seq) || seq <= 0) {
       throw new LedgerRefusal("REFUSED_NO_VALIDATED_LEDGER", "the node has no validated ledger");

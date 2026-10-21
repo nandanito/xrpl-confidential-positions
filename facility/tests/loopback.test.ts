@@ -141,6 +141,21 @@ describe("LoopbackLedger.open", () => {
 });
 
 describe("Snapshot", () => {
+  test("refuses a pinning answer from a server that is not Devnet (REVIEW-059 R1-9)", async () => {
+    // A public endpoint is a pool: open() and snapshot() can reach different servers.
+    let infos = 0;
+    const { server, endpoint } = fakeNode((method) => {
+      if (method === "server_info") return infos++ === 0 ? FULL_INFO : { info: { ...FULL_INFO.info, network_id: 1 } };
+      return {};
+    });
+    try {
+      const ledger = await LoopbackLedger.open(endpoint);
+      await expect(ledger.snapshot()).rejects.toThrow(/REFUSED_NOT_DEVNET/);
+    } finally {
+      server.stop(true);
+    }
+  });
+
   test("refuses an answer that came from a different ledger than the pinned one", async () => {
     // E-103, observed live: two "validated" reads seconds apart landed in
     // different ledgers. REVIEW-016 found the Rust version asking for one

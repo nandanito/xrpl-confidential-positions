@@ -137,6 +137,13 @@ are not reachable, or accept the build machine's trust by name (`REVIEW-058`
 R2-10). ⚠ Revision 3 let that acceptance waive the token's isolation too (R3-2).
 **Ruled 2026-10-19: isolated.** The owner did not accept the build machine's
 trust, so the build runs where neither private store is reachable.
+⚠ **Reachable meant the stores' files, and the network was not priced.**
+`REVIEW-059` measured that a build container with network reaches a service bound
+to the build machine's `127.0.0.1` through `host.docker.internal` (S-2). Since then
+the Vite build and the assembler run with `--network none`; installing and taking
+the snapshot need the network and keep it, so third-party code that runs during
+those steps can reach the build machine's loopback services. That is named in
+`web/hosted/README.md` and in each build's manifest, not removed.
 
 **What the hosted tier causes to be sent, and to whom.** Each page load goes to
 Vercel, which sees the visitor's IP address and the page requested. Under H3 that

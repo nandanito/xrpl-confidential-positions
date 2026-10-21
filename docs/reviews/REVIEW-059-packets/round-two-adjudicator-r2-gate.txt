@@ -1,0 +1,17 @@
+check-web-hosted over $HOME/Development/ripple/wconf-hosted-builds/review059-r2-c08db2b/.vercel/output, expecting commit c08db2befb175c2efc0060ca8f71b95e61caf3aa
+controls: 44/44 passed, each through the same runChecks() and secretScan() as the real check
+scanned: 18 file(s); secret sweep: check-no-secrets: verdict=PASS exit=0
+
+What this gate does NOT check:
+  1. EGRESS. It reads files; what a visitor's browser sends is not in them. The policy's connect-src 'self' is checked as written, not as a browser enforces it.
+  2. The SERVED bytes and headers. It checks the output before upload; step 7 of web/hosted/README.md compares the deployed site with gate-verdict.json, and that comparison detects a change at the moment it runs, nothing later.
+  3. The BUILD MACHINE. An inventory of the output cannot show that the build never read a private store, or that every file came from the named commit; the isolated build and its tree check are what address that.
+  4. Whether the PROSE is true. Wording is claims-check's and the wording tests' question; this gate checks that the ruled D-H2 sentences are present, not that every other sentence is right.
+  5. Anything a script asks a visitor for after hydration, by a form control or a dialog such as prompt(). The check reads the prerendered HTML; React's DOM code names input elements internally, so the bundle cannot be read for them.
+  6. A decryption routine under a name it does not list. It forbids WebAssembly, the named mpt-crypto and ElGamal identifiers and any cryptography package in the licence list, which is a named set.
+  7. A package inlined without its module path. The licence list is collected from the module graph the build reported, and the gate requires that list to equal the admitted set.
+  8. A ledger value on a page outside /observer and /issuer is found only if it is a ciphertext, a demo account address or a marked value; a figure written as prose is not.
+  9. NO ISSUER FIGURE (D-H3) is held by the build, not by this gate: the build container holds no key, so no figure can be computed, and one could enter the pages only as text in a public commit.
+
+wrote static/gate-verdict.json: 18 files, output digest 577fc9d53dc9e137cf18643fd0b1abac499a0c400fcb6e36b1eec9b2ba5788dd
+check-web-hosted: verdict=PASS exit=0

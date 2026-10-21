@@ -66,10 +66,11 @@ export const MASTER_SEED_DISCLOSURE =
 /**
  * ⚠ **A NAMED GAP, and it is deliberately NOT one of the reasons the wallet row
  * says no.** `CLAIMS.md` E-206: whether a given wallet build's bundled codec can
- * serialise the XLS-0096 types is **not determinable from any published
- * source** — the page-side SDKs (`@crossmarkio/sdk@0.4.0`, `@gemwallet/api@3.8.0`,
+ * serialise the XLS-0096 types was **not determined** by the checks of 2026-08-28
+ * — the page-side SDKs (`@crossmarkio/sdk@0.4.0`, `@gemwallet/api@3.8.0`,
  * `xumm@1.8.0`) carry no codec dependency at all, so serialisation happens
- * inside a closed extension bundle whose version nobody publishes.
+ * inside the extension, or for Xaman in its backend, and none of the three
+ * page-side packages names the codec version (checked 2026-08-28, E-206).
  *
  * ⚠ **It is excluded from the reasoning on purpose.** It is a version fact an
  * upstream release can close at any time; the three reasons the row DOES give
@@ -80,9 +81,10 @@ export const MASTER_SEED_DISCLOSURE =
  */
 export const WALLET_CODEC_GAP =
   "Not determined: whether a given wallet build can serialise XLS-0096 transactions. The " +
-  "page-side SDKs carry no codec, so serialisation happens inside the extension, whose version no " +
-  "vendor publishes. This is not why a wallet cannot hold a confidential position: the reasons " +
-  "above are structural, and this one could change with any release.";
+  "page-side SDKs examined on 2026-08-28 carry no codec, so serialisation happens inside the " +
+  "extension, or for Xaman in its backend, and none of them names the codec version (CLAIMS.md " +
+  "E-206). This is not why a wallet cannot hold a confidential position: the reasons above are " +
+  "structural, and this one could change with any release.";
 
 export const DERIVATION_NOT_PUBLISHED =
   "The derivation is specified only in this repository and is not a published " +
@@ -191,13 +193,13 @@ export const CAPABILITY_MATRIX: KeySourceRow[] = [
     decryptOwnBalance: {
       verdict: "conditional",
       detail:
-        "Only with a standalone ElGamal key, held by something other than the custody platform. A custodied account cannot derive its own key, because that needs the seed, and a custody platform never releases the seed.",
+        "Only with a standalone ElGamal key, held by something other than the custody platform, or if the platform itself ran the derivation inside its own boundary, which would need the derivation published as a standard (issue #10). Outside the platform the account cannot derive its key, because that needs the seed, and a custody platform never releases the seed.",
       citation: "REVIEW-012; CLAIMS.md E-117",
     },
     proveAndSign: {
       verdict: "conditional",
       detail:
-        "The external signer can sign. It cannot apply a policy to the amount, because the transaction carries a proof, not a value: a rule like 'two approvers above $1M' has nothing to read.",
+        "The external signer can sign. Holding only public data, it cannot apply a policy to the amount, because the transaction carries a proof, not a value: a rule like 'two approvers above $1M' has nothing to read.",
       citation: "docs/research/CUSTODY-2026-08-28.md; CLAIMS.md P-4",
     },
     publicTransactions: {

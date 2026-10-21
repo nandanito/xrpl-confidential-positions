@@ -71,7 +71,7 @@ Connect a wallet, prove account control, render that account's **observer view**
 - **Crossmark** publishes `sign`, `submit`, `signAndSubmit`, their bulk forms and their `…AndWait` forms, over arbitrary transaction objects.
 - **Xaman** accepts `txjson` **and** `txblob`, a pre-serialised HEX blob.
 
-**So all three accept an arbitrary `TransactionType` at the API surface.** ⚠ **And the codec version is not knowable from any published source**: `npm view`, 2026-08-28, shows `@crossmarkio/sdk@0.4.0` depending on `events` and `@crossmarkio/typings` only, with `@gemwallet/api@3.8.0` and `xumm@1.8.0` likewise thin bridges — **none carries `ripple-binary-codec` or `xrpl.js` at all.** Serialisation happens inside the closed extension bundle or in Xaman's backend. Xaman's docs further say it *"can add missing fields (signer account, fee, sequence)"*, which implies parsing even on the blob path.
+**So all three accept an arbitrary `TransactionType` at the API surface.** ⚠ **And none of the three page-side packages names the codec version** (scoped 2026-10-20 from *"not knowable from any published source"*, which the search below does not support; `REVIEW-059` R2-10): `npm view`, 2026-08-28, shows `@crossmarkio/sdk@0.4.0` depending on `events` and `@crossmarkio/typings` only, with `@gemwallet/api@3.8.0` and `xumm@1.8.0` likewise thin bridges — **none carries `ripple-binary-codec` or `xrpl.js` at all.** Serialisation happens inside the closed extension bundle or in Xaman's backend. Xaman's docs further say it *"can add missing fields (signer account, fee, sequence)"*, which implies parsing even on the blob path.
 
 ⚠⚠ **The point is not that reason 4 is false — it is that it was the wrong argument to lead with.** It is a **version fact that an upstream release can close at any time**; reasons 1–3 are **structural** and ~~cannot be closed by any wallet update~~ cannot be closed by a codec release. ⚠ The struck words overclaimed and were corrected on 2026-10-19 (`CLAIMS.md` E-328): a wallet that held the viewing key and produced the proofs itself would close all three, as the wallet page already said. **A demonstration resting on reason 4 would be falsified by a release note.** It is therefore carried as a **named gap** — in the capability matrix, in the wallet page's own copy, and here — and the decision rests on reasons 1–3 (`CLAIMS.md` **E-206**).
 
@@ -261,8 +261,10 @@ that actually signs, so the surviving flows can be walked end to end.
 **Why deferred:**
 
 1. ⚠ **The two findings are structural and a stub cannot strengthen them.** A
-   custodied account cannot derive its own viewing key because derivation needs
-   the seed; a policy engine cannot read an amount that is a proof. **Neither is
+   custodied account cannot derive its own viewing key outside the custody
+   platform, because derivation needs the seed; a policy engine holding only
+   public data cannot read an amount that is a proof (both scoped 2026-10-20,
+   `REVIEW-059` R1-12). **Neither is
    an integration detail a stub would expose** — see
    `docs/research/CUSTODY-2026-08-28.md`.
 2. ⚠⚠ **A stub that signs is a signing path, and this tier has none.** It would

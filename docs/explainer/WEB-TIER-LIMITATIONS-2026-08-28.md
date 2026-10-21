@@ -48,7 +48,7 @@ A **research artifact on the XRPL Devnet** (standard Devnet, network_id 2 — �
 
 | gap | where |
 |---|---|
-| Whether any wallet build's bundled codec can serialise XLS-0096 types — **not determinable from published sources**, and deliberately **not** part of why a wallet cannot hold a position | **E-206** |
+| Whether any wallet build's bundled codec can serialise XLS-0096 types — **not determined**: none of the three page-side packages checked on 2026-08-28 names the codec version. Deliberately **not** part of why a wallet cannot hold a position | **E-206** |
 | The keygen derivation is not a published standard, so a holder with their seed and not this repository cannot reconstruct their key | issue **#10**, open |
 | Who holds a standalone viewing key — the question a custody model forces, unreviewed | **E-117** |
 | No Metaco Harmonize primary sources exist in this repository; every Harmonize specific is a dated gap | `docs/research/CUSTODY-2026-08-28.md` |

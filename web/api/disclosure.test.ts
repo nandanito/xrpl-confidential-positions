@@ -19,6 +19,7 @@ import { CAPABILITY_MATRIX, INVARIANTS, MASTER_SEED_DISCLOSURE, DERIVATION_NOT_P
 import { CANONICAL_ZERO_NOTE, NOT_CANONICAL_NOTE, WHAT_IS_PUBLIC, WHAT_IS_HIDDEN } from "./observer.ts";
 import { MIRROR_FIELD_LEDGER_NAME, ISSUER_KEY_POLICY, FORBIDDEN_SECRET_ENV, issuerView } from "./issuer.ts";
 import { FLOWS, walkFlows } from "./custody-sim.ts";
+import { DEMO_ACCOUNTS } from "./demo-accounts.ts";
 import { SECRET_NEEDLES, stripComments, stripStringLiterals } from "../../tools/check-web-readonly.ts";
 
 const REPO = new URL("../..", import.meta.url).pathname.replace(/\/$/, "");
@@ -591,3 +592,49 @@ describe("ADR-0004: the hosted tier renders the same pages and reaches nothing",
     }
   });
 });
+
+describe("a demo account's note describes the account, never its balances", () => {
+  // ⚠ Holder A's note said its spending balance was hidden and its inbox was
+  // exactly zero. That is a ledger reading written as fixed text: true at one
+  // ledger, and false after any send to the inbox or a Devnet reset, while the
+  // page printed it above the live reading (`REVIEW-059` R1-14).
+  test("no note names a balance state", () => {
+    for (const a of DEMO_ACCOUNTS) expect(a.note).not.toMatch(/\b(zero|non-zero|hidden|balance|inbox|spending|empty|holds?)\b/i);
+  });
+});
+
+describe("the custody findings keep their exceptions on every surface", () => {
+  // ⚠ The custody page said a custodied account "cannot derive its own ElGamal
+  // key", and an approval workflow "sees a proof, not a value", without the
+  // exceptions its own research names (`REVIEW-059` R1-12). E-344 said each of
+  // the four completions had a test that fails without it; this one had none,
+  // and restoring the old text passed every test (R2-12).
+  const view = readFileSync(join(import.meta.dir, "../app/src/views/CustodyView.tsx"), "utf8").replace(/\s+/g, " ");
+  const custody = CAPABILITY_MATRIX.find((r) => r.id === "custody-simulated")!;
+  test("the page names the inside-the-platform exception and the public-data scope", () => {
+    expect(view).toMatch(/outside the platform/);
+    expect(view).toMatch(/inside its own boundary/);
+    expect(view).toMatch(/issue #10/);
+    expect(view).toMatch(/holds only public data/);
+    expect(view).toMatch(/neither built nor costed/);
+  });
+  test("the capability matrix's custody row says the same", () => {
+    expect(custody.decryptOwnBalance.detail).toMatch(/inside its own boundary/);
+    expect(custody.decryptOwnBalance.detail).toMatch(/issue #10/);
+    expect(custody.proveAndSign.detail).toMatch(/only public data/i);
+  });
+  test("the custody simulation's reasons say the same", () => {
+    const reasons = JSON.stringify(walkFlows());
+    expect(reasons).toMatch(/outside the platform/);
+    // ⚠ Removing the inside-the-platform exception from the simulation left
+    // every test passing until this line (`REVIEW-059` R3-11).
+    expect(reasons).toMatch(/inside its own boundary/);
+    expect(reasons).toMatch(/only public data/);
+  });
+  test("the page names each of the three ways out, not only the last (REVIEW-059 R3-11)", () => {
+    expect(view).toMatch(/engine the ElGamal secret, and it becomes another party that reads every balance/);
+    expect(view).toMatch(/holder&rsquo;s statement of the amount, and the policy rests on the holder&rsquo;s honesty/);
+    expect(view).toMatch(/prove the bound in zero knowledge, which this project has neither built nor costed/);
+  });
+});
+

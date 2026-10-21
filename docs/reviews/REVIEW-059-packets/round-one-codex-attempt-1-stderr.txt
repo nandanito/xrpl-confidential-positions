@@ -1,0 +1,236 @@
+Reading additional input from stdin...
+OpenAI Codex v0.163.0
+--------
+workdir: $USER_TMP/T/r059a.gT93Ny/repo
+model: gpt-6.1-sol
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR] (network access enabled)
+reasoning effort: high
+reasoning summaries: none
+session id: 01a158ec-0032-7d92-b96e-f4cc98ea7750
+--------
+user
+# REVIEW-059 round one, leg A — the hosted demo as BUILT and DEPLOYED
+
+You are an adversarial reviewer. The subject is the build of a read-only public
+demonstration of a confidential-token research project: a static site,
+prerendered from one snapshot of a test ledger, gated, and deployed to Vercel at
+`https://xrpl-confidential-positions.vercel.app`. Its design was reviewed for
+three rounds before any code (`REVIEW-058`). **The code that implements it has
+been checked only by its own tests and controls, each broken before it was
+believed, and by no outside reader. You are the first.** Your job is to find what
+in the build is false, what it would let through, what would fail, and what its
+records claim that the code does not deliver. Agreement is not useful. A finding
+that something survives is useful only if you tried to break it and say how.
+
+## STEP 0 — do this before anything else, and report the results first
+
+1. Run `curl -s -o /dev/null -w '%{http_code}\n' https://github.com`,
+   `curl -s -o /dev/null -w '%{http_code}\n' https://xrpl-confidential-positions.vercel.app/`
+   and `curl -s -o /dev/null -w '%{http_code}\n' https://s.devnet.rippletest.net:51234/`.
+   Print all three codes. If network fails, print `NO NETWORK` and continue
+   without it.
+2. Run `pwd` and `git log --oneline -1`. The working copy is a fresh clone of the
+   PUBLIC repository at commit `ccf76e73bf6629b29dece98cc15a050e3f60cad4`, the
+   commit the live site was built from. Work only inside this clone.
+3. `review-input/deployed/` inside this clone is a byte copy of the output root
+   that was deployed: `build-manifest.json`, `container.log` and `.vercel/output/`.
+   It is untracked. It is public: it is what the site serves, plus the build's
+   manifest and log.
+4. **Do not read** any directory outside this clone, and in particular any path
+   under `~/.claude`, `~/.codex`, `~/.wconf`, `/tmp/wconf`, `~/Library`, any
+   `scratchpad` directory, and anything under `/Users/*/Development`. `~/.wconf`
+   and `/tmp/wconf` hold real (Devnet, no-value) secrets. **Never print, cat or
+   copy them.** You do not need them. Do not run `cargo`, `make check-zeroize-bounds`,
+   `tools/rebuild-env.sh`, `make check-web-hosted`, or `tools/check-no-secrets.ts`
+   without `--no-local-store`.
+5. You may write scratch files under `$TMPDIR`, copy `review-input/deployed/` as
+   often as you like, and run `bun install --frozen-lockfile` in this clone. Do not
+   commit, push, or create, rename or edit anything on GitHub, Vercel or anywhere
+   else. Read-only network calls only: `GET` and `HEAD` to the live site, and
+   read-only JSON-RPC to Devnet (`https://s.devnet.rippletest.net:51234`). Never
+   send anything to Mainnet or Testnet. Never submit a transaction.
+6. ⚠ **Your transcript is committed to a repository.** Never print a secret, a
+   seed, or any value from a file you were told not to read.
+7. Docker is not available to you. If a finding depends on running the build
+   container, state the exact probe and the result that would confirm or refute
+   it; the adjudicator will run it.
+8. At the end, list every file you opened.
+
+## What you are reviewing
+
+Read each of these **whole**, not as a diff:
+
+- `web/hosted/` — every file: `README.md` (the release procedure), `build.ts`,
+  `Dockerfile`, `snapshot.ts`, `snapshot-types.ts`, `vercel-output.ts`, `csp.ts`,
+  `browser-check.ts`, `deploy-preflight.ts`, `compare-deployed.ts`,
+  `licence-notices.ts`, `pages.ts`, and the four test files.
+- `tools/check-web-hosted.ts` — the gate, run as `check-web-readonly --hosted`.
+  Also `tools/check-web-readonly.ts` for how `--hosted` dispatches, and the
+  `--dir` mode of `tools/check-no-secrets.ts`.
+- `web/app/vite.hosted.config.ts` and `web/app/src/hosted/` — the second build
+  target and its pages. The four shared page bodies are in `web/app/src/views/`.
+- `facility/src/loopback.ts` — the ledger reader the snapshot uses. Its pinned
+  existence check was added for step 9.
+- The decision and the step: `docs/decisions/ADR-0004-hosted-demo-trust-boundary.md`
+  (`Accepted`, revision 5), and `docs/architecture/ARCHITECTURE-2026-08-18.md`
+  §6 step 9, especially *"What it may never touch"* and *"Falsified if"*.
+- `CLAIMS.md` rows `P-1` to `P-12`, `E-327` to `E-338`. Find them with
+  `grep -n '^| E-334' CLAIMS.md` and so on. Two later rows exist only in the
+  project's private archive and are summarised here: **E-339**, the redeploy from
+  this commit, whose comparison passed at 05:28:35Z with verdict digest
+  `1332ea0a95772b12…`; and **E-340**, the owner's report that no Git repository is
+  connected to the Vercel project, the toolbar is off, the CLI was 62.4.0, and
+  the footer showed `PASS` on a phone.
+
+## Measurements the adjudicator took on 2026-10-20, which you cannot
+
+1. `compare-deployed` against the live alias: PASS at 10:39:42Z.
+2. The gate on a COPY of `review-input/deployed/` (it writes its verdict into
+   the directory it checks), with the local secret store: 30/30 controls, full
+   sweep PASS, output digest `1332ea0a95772b12…`. The new verdict differs from
+   the deployed one only in `checkedAt`.
+3. `browser-check` on that copy with Chrome: PASS, 6 pages, 39 requests, all
+   same-origin, footer `PASS, 18 files`.
+4. The build image run with no mount sees no host path: `/Users`, `/mnt/mac`,
+   `/Volumes`, `/private`, `/host` and `/run/host` are absent; the user is `node`.
+
+## Five seams. Report on every one, with an explicit "no findings" where you found none
+
+For each finding: `R1-n | HIGH/MEDIUM/LOW | claim | evidence: the command you ran
+and its output, or file:line | the smallest fix`. Grade HIGH only for something
+that would publish a false statement of fact to visitors, expose a secret or
+private datum, give the hosted page a signing or decryption path or server code,
+or let the release procedure put an output in front of visitors that violates
+§6 step 9's falsifier with no later check able to catch it.
+
+1. **The gate's false passes, EXECUTED.** `runChecks()` in
+   `tools/check-web-hosted.ts` needs no secret store, so import it and run it over
+   broken copies of `review-input/deployed/.vercel/output`. Construct outputs
+   that violate an item of §6 step 9's *"may never touch"* list or its *"Falsified
+   if"* clause, or `ADR-0004`'s list of what the gate must check, and that the
+   gate passes. Then attack the controls: does each control break the property
+   it is named for, or something adjacent? What property has no control?
+2. **The release-time checks.** `deploy-preflight.ts`, `browser-check.ts` and
+   `compare-deployed.ts`. What does each PASS establish, and what would a reader
+   of it believe? Construct cases where each passes while the property it stands
+   for is false. Run `compare-deployed` against the live alias (`bun run
+   web/hosted/compare-deployed.ts review-input/deployed https://xrpl-confidential-positions.vercel.app`),
+   and read the live headers with `curl -sI`. What does the host add or change,
+   and does anything in the records say otherwise?
+3. **The snapshot.** `snapshot.ts` over `facility/src/loopback.ts`, against a
+   pooled public endpoint. Can a lagging, lying or mixed pool produce a snapshot
+   whose values are not all from the one pinned validated ledger, or render a
+   failed read as an empty account or position, without the build failing?
+   Run the snapshot tests, and run the reader against Devnet read-only if you can.
+4. **Build isolation and provenance.** `build.ts`, the `Dockerfile`,
+   `vite.hosted.config.ts`, `build-manifest.json` and `container.log`. The records
+   say the build runs in a container that cannot reach the private stores, from
+   a `git archive` of a public commit, with two canaries proving no build variable
+   reaches the output. What can third-party code that runs during the build
+   actually reach or do? What does each check prove, and what is claimed beyond
+   it? What would let an output be deployed that was not built from the commit
+   its footer names?
+5. **What the pages say.** The six prerendered pages under
+   `review-input/deployed/.vercel/output/static/`, their footer, and the
+   `doesNotCheck` text in the served `gate-verdict.json`. Read them against
+   `CLAIMS.md` P-1 to P-12, `ADR-0004`'s D-H2 wording, and the code that produced
+   each sentence. Find any sentence a visitor reads that claims more than is
+   delivered, states a negative without its search (P-12), or is false at this
+   commit.
+
+## Then answer two questions
+
+- **The single sentence in the records or on the pages most likely to be false.**
+  Quote it, with its file.
+- **The stopping condition, set before this round ran, word for word:** *"Round
+  one reviews the build. If it upholds any finding that changes code, a gate or a
+  record, round two runs on the fixes alone, and it is the last unless it finds a
+  fix that did not discharge its finding; a third round is then the owner's
+  decision."* Does anything you found argue that this condition is wrong for this
+  subject? Answer yes or no, and why.
+
+## Last
+
+End with the list of every file you opened, and a final line reading exactly
+`END OF LEG A REPORT`.
+hook: SessionStart
+hook: SessionStart Completed
+hook: UserPromptSubmit
+hook: UserPromptSubmit Completed
+codex
+I’ll run Step 0 first and report its results before inspecting the build. I’ll keep reads inside this clone and test broken copies of the deployed output without accessing local secret stores.
+hook: PreToolUse
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "curl -s -o /dev/null -w '%{http_code}\\n' https://github.com
+curl -s -o /dev/null -w '%{http_code}\\n' https://xrpl-confidential-positions.vercel.app/
+curl -s -o /dev/null -w '%{http_code}\\n' https://s.devnet.rippletest.net:51234/
+pwd
+git log --oneline -1" in $USER_TMP/T/r059a.gT93Ny/repo
+ succeeded in 1022ms:
+200
+200
+400
+$USER_TMP/T/r059a.gT93Ny/repo
+ccf76e7 Revision log regenerated after the CLAIMS.md update
+
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+Step 0: GitHub returned `200`, the live demo returned `200`, and the Devnet endpoint returned `400` to GET. Network is available.
+
+`pwd` reports `$USER_TMP/T/r059a.gT93Ny/repo`. HEAD is `ccf76e7 Revision log regenerated after the CLAIMS.md update`.
+hook: PreToolUse
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "rg --files -g AGENTS.md -g '"'!node_modules'"' -g '"'!review-input'"' .
+rg --files web/hosted web/app/src/hosted web/app/src/views review-input/deployed
+ git status --short
+command -v bun" in $USER_TMP/T/r059a.gT93Ny/repo
+ succeeded in 187ms:
+review-input/deployed/build-manifest.json
+web/app/src/views/CustodyView.tsx
+web/app/src/views/WalletView.tsx
+web/app/src/views/ObserverReading.tsx
+web/app/src/views/CapabilitiesView.tsx
+web/hosted/build.ts
+web/hosted/browser-check.ts
+web/hosted/deploy.test.ts
+web/hosted/snapshot-types.ts
+web/hosted/wording.test.ts
+web/hosted/deploy-preflight.ts
+web/hosted/csp.ts
+web/hosted/snapshot.test.ts
+web/hosted/README.md
+web/hosted/compare-deployed.ts
+web/hosted/pages.ts
+web/hosted/vercel-output.ts
+web/hosted/Dockerfile
+web/hosted/csp.test.ts
+web/hosted/licence-notices.ts
+web/hosted/snapshot.ts
+web/app/src/hosted/routes/custody.tsx
+web/app/src/hosted/routes/observer.tsx
+web/app/src/hosted/routes/issuer.tsx
+web/app/src/hosted/routes/capabilities.tsx
+web/app/src/hosted/routes/wallet.tsx
+web/app/src/hosted/routes/__root.tsx
+web/app/src/hosted/routes/index.tsx
+web/app/src/hosted/LedgerReading.tsx
+web/app/src/hosted/wording.ts
+web/app/src/hosted/routeTree.gen.ts
+web/app/src/hosted/virtual.d.ts
+web/app/src/hosted/router.tsx
+web/app/src/hosted/Footer.tsx
+web/app/src/hosted/data.ts
+?? review-input/
+/opt/homebrew/bin/bun
+
+hook: PostToolUse
+hook: PostToolUse Completed
+ERROR: This content was flagged for possible cybersecurity risk. If this seems wrong, try rephrasing your request. If you’re doing authorized security work that requires more cyber permissive safeguards, apply for Daybreak access via https://platform.openai.com/settings/organization/status-and-access before retrying.
+ERROR: This content was flagged for possible cybersecurity risk. If this seems wrong, try rephrasing your request. If you’re doing authorized security work that requires more cyber permissive safeguards, apply for Daybreak access via https://platform.openai.com/settings/organization/status-and-access before retrying.
+tokens used
+11,202

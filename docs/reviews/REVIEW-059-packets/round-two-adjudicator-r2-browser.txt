@@ -1,0 +1,3 @@
+browser-check: 6 pages, 41 requests observed, all to the page's own origin unless listed below
+  the overview's footer shows: PASS, 18 files, output digest 577fc9d53dc9e137…, checked 2026-10-20T11:45:49.501Z
+browser-check: verdict=PASS exit=0

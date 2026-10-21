@@ -174,18 +174,22 @@ seed; a wallet exists **in order not to release seed material**.
 
 ⚠ **Do not claim a wallet's codec cannot serialise these transactions.** It was
 checked at source and **withdrawn as a premise** (E-206): all three wallets
-accept arbitrary transaction types, and the codec version is not knowable from
-any published source. **A demonstration resting on it would be falsified by a
+accept arbitrary transaction types, and none of the three page-side packages
+checked on 2026-08-28 names the codec version. **A demonstration resting on it would be falsified by a
 release note.** The page says so.
 
 ### Screen 6 — **Custody**. Where it lands commercially.
 
-Two findings: a custodied account **cannot derive its own viewing key**, and a
-policy engine **cannot enforce an amount limit on an amount that is a proof**.
+Two findings: a custodied account **cannot derive its own viewing key outside the
+platform**, unless the platform runs the derivation inside its own boundary, which
+needs the derivation published (issue #10, `REVIEW-059` R1-12); and a policy
+engine **holding only public data cannot enforce an amount limit** on an amount
+that is a proof. Giving it the ElGamal secret, or trusting the holder's statement
+of the amount, each has its cost (`docs/research/CUSTODY-2026-08-28.md`).
 
-⚠ **The generalisation is the useful sentence:** every policy over an
-**identity**, a **time** or a **count** survives; every policy over a **value**
-does not.
+⚠ **The generalisation is the useful sentence:** for an engine that holds only
+public data, every policy over an **identity**, a **time** or a **count**
+survives; every policy over a **value** does not.
 
 Then the flow table — which flows survive, which break, computed rather than
 written. And **F-24**: retiring a position in tranches publishes **every tranche
@@ -208,7 +212,7 @@ Say these when they come up rather than being caught by them.
 | **A live issuer view** — what the page shows is a **snapshot**, not a live read, and it shows no figure (E-241) | Deliberate. A live read means a request that reaches a decryption, which is an oracle (**E-212**). Re-run the tool to refresh; the page prints when it was taken |
 | **Any adversarial review of this tier** | ⚠ ~~**Zero rounds have run.**~~ **FOUR ROUNDS HAVE RUN — `REVIEW-036` to `REVIEW-039`, eleven legs, 2026-09-02 to 09-05.** The central claim was **ruled unsound and rewritten**; `ADR-0003` is now `Accepted` at revision 3 (E-230, E-241) |
 | **A published keygen derivation** | Issue **#10**, open, and no code closes it. The capability page states the gap |
-| **Wallet codec support** | Not determinable from published sources (**E-206**) and deliberately **not** part of the argument |
+| **Wallet codec support** | Not determined: none of the three page-side packages checked on 2026-08-28 names the codec version (**E-206**). Deliberately **not** part of the argument |
 
 ---
 

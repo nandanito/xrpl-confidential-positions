@@ -1,36 +1,32 @@
-# NEXT SESSION — the hosted demo is live, its shorter text waits on a redeploy, and phase 3 is next
+# NEXT SESSION — step 9's review is closed after three rounds; the live demo predates every fix; phase 3's survey is done
 
-⚠ **The launch plan is `docs/PLAN-PUBLIC-LAUNCH-2026-09-22.md`** (`CLAIMS.md` E-309). Phases 0 to 2 are done. The repository is public at `https://github.com/nandanito/xrpl-confidential-positions`, and the demo serves at `https://xrpl-confidential-positions.vercel.app`, deployed on 2026-10-20 from the public commit `34ed67a` (E-336). **Phase 3, the two posts, has not started.**
+⚠ **The launch plan is `docs/PLAN-PUBLIC-LAUNCH-2026-09-22.md`** (`CLAIMS.md` E-309). Phases 0 to 2 are done. The repository is public at `https://github.com/nandanito/xrpl-confidential-positions`, and the demo serves at `https://xrpl-confidential-positions.vercel.app`, deployed on 2026-10-20 from the public commit `34ed67a` (E-336) and redeployed from `ccf76e7` (E-339). **Phase 3 has begun with its gate, the filing re-survey (E-341). No post is drafted.**
 
 ## WHERE THIS LEFT OFF
 
-In the private archive (`origin`, `nandanito/xrpl-confidential-positions-private`), `main` was fast-forwarded to `build/step-9-hosted-demo`, which carries this file, and both were pushed. ⚠ Read `git log --oneline -8` and `git status -sb` before trusting this.
+The work is on `review/step-9-build` in the private archive, and `main` was fast-forwarded to it and pushed. ⚠ Read `git log --oneline -12` and `git status -sb` before trusting this.
 
-The owner approved publishing the deploy record on 2026-10-20 (E-337). The public update that carries E-336 to E-338 and this file follows `34ed67a` on public `main`; check `gh pr list --state all` there rather than trusting this sentence.
+The public repository's `main` is still at `ccf76e7`, carrying register rows up to E-338. **E-339 to E-348 and every fix below are in the archive only.**
 
-**The demo's text was cut by a third on 2026-10-20 (E-338), and the live site does not show it yet.** It needs the release procedure again from the public commit that carries E-338: build, gate, browser check, preflight, the owner's deploy, then the comparison. ⚠ Look in `…/ripple/wconf-hosted-builds/` for a build named after that commit before starting another, and read `CLAIMS.md` for a row recording the redeploy.
+**2026-10-20, this session:**
 
-Architecture §6 step 9 is ruled (E-331), built (E-334, E-335) and deployed (E-336):
-
-- **`web/hosted/README.md` is the release procedure**, seven steps: an isolated container build from a public commit, the hosted gate, a headless-browser check, a preflight, the owner's deploy, and a comparison of what is served.
-- **The deployed output** is `…/ripple/wconf-hosted-builds/34ed67a9f2f5`, outside every repository. It was built at ledger 6,259,125. The gate passed 30 of 30 controls and its full sweep. The browser check passed six pages and 39 same-origin requests, and the footer showed `PASS, 18 files`.
-- **`compare-deployed` passed against the live alias** on 2026-10-20. Two controls on broken copies of the output, a zeroed digest and an altered policy header, failed against the live host as they should. ⚠ It detects a change at the moment it runs, nothing later.
-- **What the host adds**: `access-control-allow-origin: *`, HSTS and `cache-control`. The deployment's own URL and the project's team alias redirect to Vercel's login; of the addresses tried, only the alias serves the page.
+- **The filing re-survey, phase 3's gate** (E-341, `docs/evidence/upstream-survey-2026-10-20/README.md`). Nothing changed on any of the eleven filings since 2026-10-18. Two things E-316 had missed: **#3879's fix reached the English docs page only** (the Japanese translation still says the encrypted zero is indistinguishable, served live at xrpl.org/ja), and **a draft standard, XLS-99, proposes holder key rotation and key-loss recovery**; its amendment is `Supported::No` in rippled `develop` and unknown to Mainnet, Testnet and Devnet. The README and the plan now name it.
+- **`REVIEW-059`, the first outside review of step 9's build, two rounds.** Round one (E-342, `REVIEW-059c`): 24 findings upheld, two of them letting the release procedure publish what step 9 forbids with no check noticing, both measured. Fixes E-343, completed E-344. Round two (E-345, `REVIEW-059d`): **five fixes had not discharged their findings**, found only by the leg that ran each finding's own example; fixes E-346. Round three (E-347, `REVIEW-059e`), run on 2026-10-21 as the owner ruled: one repository leg on round two's fixes; three were still partial and two new browser gaps were measured; fixes E-348. **The rotation is closed**, as set before round three, so E-348's fixes are checked by their own tests and controls only.
+- **Rebuilds of the fixes run through the whole procedure.** `wconf-hosted-builds/review059-r2-c08db2b` and `review059-r3-3934ae1` were built in two containers, the second with `--network none`; the gate, browser check and preflight run on them, and the preflight refuses them only for not being on public `main`. ⚠ They are review artifacts, not releases: rebuild from the public commit that carries E-348.
 
 ## 1. WHAT IS NEXT
 
-**The owner's, still open:**
+**The owner's, open:**
 
-1. **The redeploy of E-338's text**, if no row records it yet. The owner acts when the page goes down (E-337); the plan is Vercel Hobby, free, with no billing, so a limit exceeded takes the page down rather than sending a bill.
-2. **Not reported to the session, so not recorded:** that no Git repository is connected to the Vercel project; that the toolbar is off for production and preview; and the CLI version that ran the deploy, which the instructions pinned at `62.4.0`.
-3. **The plan's step 5 check from a machine that has never run the project**, such as a phone: every page renders, and the footer shows `PASS`.
-4. ~~**A public update carrying E-336 and this file**~~ approved on 2026-10-20 (E-337).
-5. **D8's C, the ruleset**: the owner ruled *not yet* on 2026-10-19.
-6. **A review round on step 9's build.** Offered and not answered. `REVIEW-058` reviewed the design; the build is checked by its own tests and controls, each broken before it was believed, and by no outside reader.
+1. ~~**A third review round on step 9**~~ **run and closed** (E-347, E-348).
+2. **The live site is stale.** It serves the output from before the review: the custody page still says a custodied account *"cannot derive its own ElGamal key"* without its exception, and the footer does not yet say the browser checks nothing. A public update carrying E-339 to E-348, a rebuild from that public commit through `web/hosted/README.md`'s steps, and the owner's redeploy change that. ⚠ Every release step changed in this review: the gate runs 66 controls, the browser check inspects more, the preflight validates the whole manifest, and the build refuses an `OUT` that is not new or empty.
+3. **The Japanese docs page** (E-341): whether to tell upstream, by a comment on the closed #3879 or a new dev-portal issue, through `/upstream-issue` and `/issue-review`. The owner's.
+4. **Vercel housekeeping:** deleting a stray empty project, and letting the deploy token expire (E-340).
+5. **D8's C, the ruleset**: *not yet*, ruled 2026-10-19.
 
-**Then phase 3.** Its gate is open now that the repository is public and the demo is live. ⚠ **Before a word of either post is drafted, re-survey every filing at source** (the gate amended on E-316): the comments by anyone but this project, `gh pr view` on every PR a closing comment names, and the fix grepped in the merged text. Each draft then runs `claims-check` and one adversarial read, and the owner signs off the final text. The plan's phase 3 lists what each post must and must not say; read it whole.
+**Then phase 3, the posts.** The survey is done as of 2026-10-20; if drafting starts days later, run it again, because E-316 and E-341 each found something. ⚠ **The posts must say *"no rotation or recovery in XLS-96, or on Mainnet, Testnet or Devnet"* and name XLS-99 as a draft** (the plan says so since E-341). Each draft runs `claims-check` and one adversarial read, and the owner signs off the final text. Read the plan's phase 3 whole. **Suggested, not ruled:** re-run `compare-deployed` on the day each post goes out.
 
-**Rebuilding the demo** is by hand and is the README's seven steps again. It needs a commit on public `main`, the OrbStack Docker context, the local secret store for the gate, and the owner's project-scoped token for the deploy only. The URL stays `https://xrpl-confidential-positions.vercel.app`, because the footer names it.
+**Rebuilding the demo** is by hand and is the README's seven steps again. ⚠ Since E-343 the build refuses an `OUT` that is not new or empty, and refuses a tree that is not the commit's. It needs a commit on public `main`, the OrbStack Docker context, the local secret store for the gate, and the owner's project-scoped token for the deploy only. The URL stays `https://xrpl-confidential-positions.vercel.app`, because the footer names it.
 
 **How a public update is made**, as it was done: change the file in this archive and commit here; copy the changed files to `…/ripple/xrpl-confidential-positions-public`, re-inserting the README's publication note; `git add` them, then `make inventory-third-party` there, which refuses on untracked files since E-332; commit; regenerate `docs/CLAIMS-REVISIONS.md` there as its own commit if `CLAIMS.md` changed; run `check-no-secrets --repo <public> --strict-history` with the local store and `make ci`; push a branch, open a PR, and once `checks` is green **fast-forward** `main` to it. ⚠ **Never squash or rebase a public PR**: the revision log names the commit that last changed `CLAIMS.md`, and a rewritten commit fails `check-claims-revisions` on `main`.
 
@@ -54,6 +50,7 @@ Architecture §6 step 9 is ruled (E-331), built (E-334, E-335) and deployed (E-3
 
 ## 4. STILL OPEN — the standing backlog
 
+- **Issue #14, an epic for live transfers on the hosted demo**, filed on the archive only on 2026-10-20 and labelled `decision`. It prices three shapes: the visitor's browser signs, a server signs with the demo accounts' keys, or a local setup guide instead. The first two reopen ADR-0001 and ADR-0004. The owner may pursue it later; for the posts the snapshot demo stands, and nothing is built before a new ADR is ruled and reviewed.
 - **⚠⚠ `B-30` — the Sherlock XRP Ledger Attackathon, contest 1260.** A second audit covering **Confidential Transfers for MPTs**, 96 valid findings, 2 critical and 6 high. **Not obtainable by the two conventional routes** — no `sherlock-audit` repository, `/contests/1260/report` is 404 — so it is B-13's shape. ⚠ `rippled#6885`, *"[XLS-0096] ElGamal Ciphertext Malleability in ConvertBack"*, is **open**; read 2026-09-22, it cites no Sherlock finding and only speculates about the contest's scope. The primary evidence that Sherlock findings reached Confidential Transfer code is `mpt-crypto#102`, citing **Sherlock #2759 (Medium)** against MergeInbox.
 - **`paper/cmpt-progress-and-changes.tex` is internal and unobtainable.** `mpt-crypto#107` locates it in `confidential-transactions` / `internal-ripplex-research`; #101, #102, #103 and #107 cite it, two by its `\section{Sherlock Audit (April--May 2026) Cross-Reference}`. It is the document that would settle F-13.
 - **`U-56`, withheld:** `mpt-crypto` `1.0.5` has **no `install()` rule in any CMake file** while `conanfile.py`'s `package()` is a bare `cmake.install()`. Unresolved — resolving it needs a build.
@@ -66,6 +63,8 @@ Architecture §6 step 9 is ruled (E-331), built (E-334, E-335) and deployed (E-3
 - **`acc` in `reduce_wide_mod`** — a named residual, priced, deliberately open. **No loopback run, ever** — E-151's named risk acceptance.
 - **`U-58` and `U-59`, withheld, captured 2026-10-19:** the public Devnet JSON-RPC endpoint refuses browser pages while its WebSocket endpoint answers them, and `@xrplf/mpt-crypto@0.1.0` exposes provers and no verifiers though its WASM build has seven. Not graded, not searched.
 - **The facility reader's decimal-form difference from the Rust reader** (E-330), documented and not closed. Closing it means reading the raw response text.
+- **`REVIEW-059`'s named residuals**: the ledger hash is not pinned (R1-9); code that runs during `bun install` or the snapshot has the network and, on OrbStack, the build machine's loopback through `host.docker.internal` (S-2, measured); dependency code can write the tree after the tree check (R1-10's second half). Leg A of round two gave an exact container probe for the last, in `REVIEW-059-packets/round-two-codex-output.md`; not run.
+- **XLS-99, the draft key-rotation standard** (E-341). Not read beyond its header and abstract. If it is enabled anywhere, P-10's wording and every page saying there is no rotation or recovery need re-reading.
 
 ---
 
@@ -94,7 +93,7 @@ cd signer && cargo test                    # sum EVERY "test result:" line
 
 **The hosted release is not in this list.** Its gates need an output directory; `web/hosted/README.md` gives the commands.
 
-**Full suite green at `7a7c9fc`, 2026-10-19**, every line above plus `make vendor-verify`, run by one script with a log per step and no pipes: 28 steps, all exit 0, tree clean before and after. `cargo test` summed 21 result lines to 279 / 0 / 4 on both runs; `make ci` gave 236 pass, 5 skip, 0 fail; the sweep 97/97 controls and 83 probes. **Since then no file under `signer/` has changed.** On the tip after E-336: `make ci` 271 / 5 / 0, and the register gates pass. Amendments read `2026-10-20T04:17:17.621Z`: `ConfidentialTransfer` enabled on Devnet, supported and not enabled on Mainnet and Testnet. At step 9 (E-334) `check-no-secrets` ran 111 controls and `break-no-secrets-gate` 93 probes. ⚠ **The full 28-step suite has not been re-run since `7a7c9fc`.**
+**Full suite green at `7a7c9fc`, 2026-10-19**, every line above plus `make vendor-verify`, run by one script with a log per step and no pipes: 28 steps, all exit 0, tree clean before and after. `cargo test` summed 21 result lines to 279 / 0 / 4 on both runs; `make ci` gave 236 pass, 5 skip, 0 fail; the sweep 97/97 controls and 83 probes. **Since then no file under `signer/` has changed.** On the tip after E-340: `make ci` 273 / 5 / 0, and the register gates pass. Amendments read `2026-10-20T04:17:17.621Z`: `ConfidentialTransfer` enabled on Devnet, supported and not enabled on Mainnet and Testnet. At step 9 (E-334) `check-no-secrets` ran 111 controls and `break-no-secrets-gate` 93 probes. ⚠ **The full 28-step suite has not been re-run since `7a7c9fc`.** On the tip after E-348: `make ci` 305 / 5 / 0, the register gates and `check-no-secrets` pass. Amendments read `2026-10-20T10:23:11.544Z`, unchanged. The hosted gate runs 66 controls, and the browser check counts 47 requests, because the overview's second load is now inspected.
 
 ⚠ **Editing `CLAIMS.md` takes TWO commits.** Commit the register change, then regenerate and commit `docs/CLAIMS-REVISIONS.md` **on its own**.
 
@@ -102,11 +101,20 @@ cd signer && cargo test                    # sum EVERY "test result:" line
 
 ## TRAPS
 
+- ⚠⚠ **OpenAI's filter stops a Codex leg whose prompt reads as an attack.** `REVIEW-059` round one's first leg A ran Step 0 and ended on *"This content was flagged for possible cybersecurity risk"*. Word leg prompts as a defensive code review of the project's own tooling: find defects, mutation tests on local copies, private configuration. Check stderr for a line starting `ERROR:`; a leg reading a file that quotes the phrase matches too.
+- **`agy` can finish its report and not exit.** It ignored `SIGTERM`; `SIGKILL` lost nothing. Read the output's last line, not the exit.
+- **zsh does not split `-c a=b -c c=d` held in a variable**, so `git $C commit` failed and nothing was committed. Write the options inline.
+- **A removal whose target is a command substitution is blocked by a safety check** and needs the user. Build temporary repositories without deleting: `git --work-tree=<dir> add -A` commits a tree from another directory.
+- **A control that probes a listener must use one that is listening and must not block it.** The build's loopback control first aimed at a port nothing served, then spawned the container synchronously so its own listener could not answer; both passed with the network on.
+- **The rendered footer splits text with `<!-- -->`.** Match a sentence on `pageText()` from `tools/check-web-hosted.ts`, never on raw HTML.
+- **Round two's leg A ran in a repository of two commits** built from `git archive` of the before and after trees, so `git diff HEAD~1` was the subject and no other history was present. Keep the adjudicator's self notes out of that tree.
+
 - ⚠⚠ **A Content Security Policy hash is over the script text the browser parsed, not the file's bytes.** The parser turns CRLF and a lone CR into LF and NUL into U+FFFD, and TanStack Start's hydration script carries NUL bytes. `web/hosted/csp.ts` is the one hashing function; do not hash anywhere else (E-334).
 - **Inside the build container, Vite under Bun could not prerender, and `localhost` resolved to `::1`.** The image runs Vite under Node, and the preview server binds `127.0.0.1`.
 - **A literal U+FFFD in source made a `sed` mutation miss silently**, so the copy was not the break it was named for. Write a mutation against an exact string and check that it applied.
 - **Vercel's dashboard does not make an empty project without a repository**; `vercel project create <name>` does. `vercel logout` revokes the token on Vercel's side (`DELETE /v3/user/tokens/current`, read in the 64.7.0 bundle). The CLI reads `VERCEL_TOKEN`, `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID`, and an environment token takes precedence over a saved login.
 - **A deploy command goes to the owner's own terminal, never through `!`**, so the token stays out of the transcript. Prefer `read -s VERCEL_TOKEN` over `--token`, which any local user can read in the process list.
+- **The built pages hold NUL bytes, so `grep` treats them as binary and prints no match.** Use `grep -a`, or a check reads zero for text that is there (E-339).
 - **`compare-deployed` prints only a verdict.** The counts behind E-336 came from the verdict file. Before believing a PASS, break it against the live host: zero one digest, alter one header.
 
 - ⚠⚠ **A fake node for `facility/` must answer like rippled 3.4.1**: `validated: true` and a numeric `ledger_index` on every pinned answer, `entryNotFound` included, and a `LedgerEntryType` on every entry. The reader refuses anything else since E-329, and an old-style fake now fails with `REFUSED_LEDGER_TORN`.
@@ -139,6 +147,13 @@ cd signer && cargo test                    # sum EVERY "test result:" line
 ---
 
 ## WHAT THIS SESSION TAUGHT, kept because it is the transferable part
+
+**2026-10-20, the filing survey and `REVIEW-059`:**
+
+- ⚠⚠ **A ruling's one-line summary of a finding is the adjudicator's own fix report written in advance.** Round one's fixes were ticked against the summaries and four discharged half a finding (E-344); round two then found five more not discharged, each only by running the finding's own example (E-345). Tick the leg's words, and run its example.
+- ⚠⚠ **Only the leg that could execute found what survived, for the third rotation running.** Round two's no-tools leg, given every finding and every changed file, ruled all of them discharged; the repository leg found twelve. A no-tools leg is for suspicion; it is not a verdict on a fix.
+- **A survey's grep is as wide as the copies it reads.** E-316 grepped the English docs page; the Japanese translation, made from the text before the fix, still carried both sentences. And the line in XLS-0096 that points to XLS-99 had been read by E-316, quoted in a review packet and listed in a review transcript, and nobody captured it.
+- **A disclaimer offered in place of a requested check can itself overclaim.** Round one answered *"add a regression for the issuer figure"* with a sentence saying a figure *"could enter only as text in a public commit"*, which the build's own residual contradicted.
 
 **2026-10-20, phase 2 steps 3 to 5:**
 

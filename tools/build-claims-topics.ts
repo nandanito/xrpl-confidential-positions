@@ -154,6 +154,30 @@ const OVERRIDES: Record<string, string[]> = {
   // E-337 records an owner's answer about the hosted demo's availability; its
   // headline names neither a ruling nor the web tier by keyword.
   "E-337": ["decisions-and-scope", "web-tier"],
+  // E-340 records the owner's report of the deploy setup; its headline names
+  // the host's settings, not the web tier by keyword.
+  "E-340": ["decisions-and-scope", "web-tier"],
+  // E-341 records two things the register missed at source; its headline names
+  // the filings and a standard, not the drift by keyword.
+  "E-341": ["claims-and-drift"],
+  // E-342 is a review round on the hosted build and its gate; its headline
+  // names the review and the release procedure, not the web tier by keyword.
+  "E-342": ["web-tier", "instruments-and-gates"],
+  // E-343 records the fixes to the hosted build's checks; its headline names
+  // the review, not the web tier or a gate by keyword.
+  "E-343": ["web-tier", "instruments-and-gates"],
+  // E-344 records fixes that discharged half a finding; its headline names
+  // the review's words, not the drift or the review round by keyword.
+  "E-344": ["claims-and-drift", "web-tier"],
+  // E-345 is round two of the hosted build's review; its headline names the
+  // review, not the web tier or its gates by keyword.
+  "E-345": ["web-tier", "instruments-and-gates"],
+  // E-346 records round two's fixes to the hosted build's checks.
+  "E-346": ["web-tier", "instruments-and-gates"],
+  // E-347 is round three of the hosted build's review.
+  "E-347": ["instruments-and-gates"],
+  // E-348 records round three's fixes to the hosted build's checks.
+  "E-348": ["web-tier", "instruments-and-gates"],
   // ⚠ E-256's headline is about a stale clause in another row and names no
   // instrument by keyword; the custody subject it settles is in the body.
   "E-256": ["claims-and-drift", "decisions-and-scope"],

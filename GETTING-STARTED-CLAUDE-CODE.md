@@ -12,7 +12,7 @@ Written 2026-08-13, after TASK ZERO rev 2 and the review rotation.
 
 | you want | read |
 |---|---|
-| what is open, and each step's gate | [`docs/architecture/ARCHITECTURE-2026-08-18.md`](docs/architecture/ARCHITECTURE-2026-08-18.md) §5 and §6 — **revision 11, the authority** |
+| what is open, and each step's gate | [`docs/architecture/ARCHITECTURE-2026-08-18.md`](docs/architecture/ARCHITECTURE-2026-08-18.md) §5 and §6 — **revision 12, the authority** |
 | what the project is and what runs | [`README.md`](README.md) |
 | how to work in this repository | [`CLAUDE.md`](CLAUDE.md) |
 | what may be claimed | [`CLAIMS.md`](CLAIMS.md) |

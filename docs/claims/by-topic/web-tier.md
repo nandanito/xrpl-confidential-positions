@@ -15,7 +15,7 @@ invisible here** — a reader in `REVIEW-040` put their confidence at ~60% for *
 about secrets"* and said they would fall back to grep. **They were right to.** For an
 exhaustive sweep, search `CLAIMS.md` directly.
 
-**11 rows.**
+**19 rows.**
 
 | id | section | headline | grade |
 |---|---|---|---|
@@ -30,3 +30,11 @@ exhaustive sweep, search `CLAIMS.md` directly.
 | [E-322](../../../CLAIMS.md#L382) | Established | The README failed the owner's /claims-check on 2026-10-18 on claims that had gone stale, and the same stale claims stood on other surfaces, including… | A, read at source |
 | [E-334](../../../CLAIMS.md#L394) | Established | Architecture §6 step 9 is built and gated but not deployed, and the browser check caught a policy the gate had passed. | A, measured |
 | [E-337](../../../CLAIMS.md#L397) | Established | The owner named who acts when the demo goes down: the owner. | A, recorded |
+| [E-340](../../../CLAIMS.md#L400) | Established | The owner reported the rest of the deploy setup: no Git repository is connected to the Vercel project, the toolbar is off, and the deploys ran on the… | A, recorded |
+| [E-342](../../../CLAIMS.md#L402) | Established | The first review of step 9's build, REVIEW-059 round one, upheld 24 findings, and two would have let the release procedure publish what step 9… | A, measured |
+| [E-343](../../../CLAIMS.md#L403) | Established | REVIEW-059 round one's fixes are built, and each new check was broken before it was believed; they are not yet reviewed, rebuilt from a public commit… | A, measured |
+| [E-344](../../../CLAIMS.md#L404) | Established | Checked against each finding's own words rather than the adjudication's summary of it, four of E-343's fixes discharged half a finding, and the… | A, measured |
+| [E-345](../../../CLAIMS.md#L405) | Established | REVIEW-059 round two found that five of round one's fixes did not discharge their findings, so its stopping condition fired and a third round is the… | A, measured |
+| [E-346](../../../CLAIMS.md#L406) | Established | REVIEW-059 round two's fixes are built: each now runs its finding's own example and the next case in that example's class, and each check was broken… | A, measured |
+| [E-347](../../../CLAIMS.md#L407) | Established | REVIEW-059 round three, run as the owner ruled on 2026-10-21, found three of round two's fixes still partial and two new browser gaps, and the… | A, measured |
+| [E-348](../../../CLAIMS.md#L408) | Established | REVIEW-059 round three's fixes are built, each check broken before it was believed, and the rotation is closed, so no outside reader has seen them. | A, measured |

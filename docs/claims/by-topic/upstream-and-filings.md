@@ -15,7 +15,7 @@ invisible here** — a reader in `REVIEW-040` put their confidence at ~60% for *
 about secrets"* and said they would fall back to grep. **They were right to.** For an
 exhaustive sweep, search `CLAIMS.md` directly.
 
-**65 rows.**
+**66 rows.**
 
 | id | section | headline | grade |
 |---|---|---|---|
@@ -68,19 +68,20 @@ exhaustive sweep, search `CLAIMS.md` directly.
 | [E-314](../../../CLAIMS.md#L374) | Established | F-9 is filed as mpt-crypto#148, the first filing to run rule 1's review before it was sent. | A, run and read |
 | [E-315](../../../CLAIMS.md#L375) | Established | F-17, F-12 and F-13 are filed, as mpt-crypto#153, #154 and #155, and the four findings ruled to file are all sent, which is phase 0's exit. | A, run and read |
 | [E-316](../../../CLAIMS.md#L376) | Established | Four of the 2026-08-26 filings were resolved upstream in September, in the merged XLS-0096 and the docs page, and the register did not know until a… | A, read at source |
-| [B-28](../../../CLAIMS.md#L413) | Pending | Whether this repository becomes public, for what purpose, and in which form. | A ruling by the… |
-| [B-31](../../../CLAIMS.md#L416) | Pending | Anything about what the Zellic scan of mpt-crypto 3baaaac found | NOT OBTAINABLE, and… |
-| [B-14](../../../CLAIMS.md#L423) | Pending | Where the transaction's own ECDSA signing nonce k comes from — a fifth randomness site, and no packet has covered it. RULED 2026-08-20 → E-109. Two… | RESOLVED → REVIEW-018-… |
-| [B-13](../../../CLAIMS.md#L425) | Pending | Anything about what the Trail of Bits May 2026 revision audit says | NOT OBTAINABLE, and… |
-| [B-5](../../../CLAIMS.md#L430) | Pending | "rippled 3.3.0 released ~2026-08-07, voting under way" | Secondary coverage… |
-| [B-10](../../../CLAIMS.md#L434) | Pending | Scheduled cover traffic conceals drawdown frequency | Not blocked — E-22… |
-| [B-11](../../../CLAIMS.md#L435) | Pending | XLS-96 and XLS-66 provide no encrypted loan accounting as at rippled 3.3.0 | Rewritten 2026-08-17… |
-| [F-8](../../../CLAIMS.md#L456) | Findings | mpt-crypto documents an escape hatch that does not exist. | A |
-| [F-9](../../../CLAIMS.md#L457) | Findings | mpt-crypto's committed conan.lock cannot be resolved from public remotes does not resolve from conancenter, or from the remote rippled's setup adds… | A |
-| [F-18](../../../CLAIMS.md#L461) | Findings | The published Rust FFI crate silently links an mpt-crypto four tag-generations behind rippled's, and it is not on the mainline branch. | B — read, no Rust… |
-| [F-19](../../../CLAIMS.md#L470) | Findings | mpt-crypto's exported PoK API makes account binding optional, and the public header does not say so. | A (E-162) |
-| [F-12](../../../CLAIMS.md#L473) | Findings | mpt-crypto's shipped WASM build script fails at emsdk 6.0.6 and succeeds at its CI-pinned 6.0.2. | A |
-| [F-13](../../../CLAIMS.md#L474) | Findings | cmpt-compact-sigma.pdf §2.1's "transmitted once on-chain" is not true of rippled 3.3.0. | A |
-| [F-15](../../../CLAIMS.md#L475) | Findings | The published JS wrapper makes the tight-window decryption optimisation unreachable keeps the tight-window decryption optimisation out of its hex… | A on the API shape;… |
-| [F-14](../../../CLAIMS.md#L476) | Findings | tecINSUFFICIENT_FUNDS misattributes the cause when a holder's balance is partly confidential — on vault AND lending transactors. | A, executed (E-162) |
-| [F-29](../../../CLAIMS.md#L477) | Findings | XLS-0096 §7.4 states the MPToken deletion blocker unconditionally; rippled enforces it through two paths that disagree. | A, not executed |
+| [E-341](../../../CLAIMS.md#L401) | Established | The filings were re-surveyed at source on 2026-10-20 before either post is drafted, and two things E-316 did not record were found: the Japanese copy… | A, read at source |
+| [B-28](../../../CLAIMS.md#L423) | Pending | Whether this repository becomes public, for what purpose, and in which form. | A ruling by the… |
+| [B-31](../../../CLAIMS.md#L426) | Pending | Anything about what the Zellic scan of mpt-crypto 3baaaac found | NOT OBTAINABLE, and… |
+| [B-14](../../../CLAIMS.md#L433) | Pending | Where the transaction's own ECDSA signing nonce k comes from — a fifth randomness site, and no packet has covered it. RULED 2026-08-20 → E-109. Two… | RESOLVED → REVIEW-018-… |
+| [B-13](../../../CLAIMS.md#L435) | Pending | Anything about what the Trail of Bits May 2026 revision audit says | NOT OBTAINABLE, and… |
+| [B-5](../../../CLAIMS.md#L440) | Pending | "rippled 3.3.0 released ~2026-08-07, voting under way" | Secondary coverage… |
+| [B-10](../../../CLAIMS.md#L444) | Pending | Scheduled cover traffic conceals drawdown frequency | Not blocked — E-22… |
+| [B-11](../../../CLAIMS.md#L445) | Pending | XLS-96 and XLS-66 provide no encrypted loan accounting as at rippled 3.3.0 | Rewritten 2026-08-17… |
+| [F-8](../../../CLAIMS.md#L466) | Findings | mpt-crypto documents an escape hatch that does not exist. | A |
+| [F-9](../../../CLAIMS.md#L467) | Findings | mpt-crypto's committed conan.lock cannot be resolved from public remotes does not resolve from conancenter, or from the remote rippled's setup adds… | A |
+| [F-18](../../../CLAIMS.md#L471) | Findings | The published Rust FFI crate silently links an mpt-crypto four tag-generations behind rippled's, and it is not on the mainline branch. | B — read, no Rust… |
+| [F-19](../../../CLAIMS.md#L480) | Findings | mpt-crypto's exported PoK API makes account binding optional, and the public header does not say so. | A (E-162) |
+| [F-12](../../../CLAIMS.md#L483) | Findings | mpt-crypto's shipped WASM build script fails at emsdk 6.0.6 and succeeds at its CI-pinned 6.0.2. | A |
+| [F-13](../../../CLAIMS.md#L484) | Findings | cmpt-compact-sigma.pdf §2.1's "transmitted once on-chain" is not true of rippled 3.3.0. | A |
+| [F-15](../../../CLAIMS.md#L485) | Findings | The published JS wrapper makes the tight-window decryption optimisation unreachable keeps the tight-window decryption optimisation out of its hex… | A on the API shape;… |
+| [F-14](../../../CLAIMS.md#L486) | Findings | tecINSUFFICIENT_FUNDS misattributes the cause when a holder's balance is partly confidential — on vault AND lending transactors. | A, executed (E-162) |
+| [F-29](../../../CLAIMS.md#L487) | Findings | XLS-0096 §7.4 states the MPToken deletion blocker unconditionally; rippled enforces it through two paths that disagree. | A, not executed |

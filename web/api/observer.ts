@@ -121,7 +121,16 @@ function classify(ciphertext: string | undefined, encZero: string | null): Ciphe
 export async function observerView(snap: Snapshot, account: string, issuanceId: string): Promise<ObserverView> {
   const mpt = await snap.mptoken(account, issuanceId);
   const iss = await snap.issuance(issuanceId);
+  return viewOf(account, issuanceId, mpt, iss);
+}
 
+/**
+ * The view, from answers already read. ⚠ The hosted snapshot read a position,
+ * then called `observerView`, which read it AGAIN; a second answer that said
+ * "not found" rendered as zeros under the state `present` (`REVIEW-059` R1-8).
+ * A caller that has read the position passes it here instead of reading twice.
+ */
+export function viewOf(account: string, issuanceId: string, mpt: any, iss: any): ObserverView {
   const key = mpt?.holderEncryptionKey;
   const encZero = key ? canonicalEncZero(key, account, issuanceId) : null;
 

@@ -35,4 +35,4 @@ exhaustive sweep, search `CLAIMS.md` directly.
 | [E-279](../../../CLAIMS.md#L339) | Established | Two valid git settings crashed the revision tool, and the fix went to the producer rather than the four call sites. | A, measured |
 | [E-280](../../../CLAIMS.md#L340) | Established | GIT_DIR BEATS cwd, so the revision tool's synthetic probe wrote its configuration into a FOREIGN repository — measured, not theorised. | A, measured |
 | [E-282](../../../CLAIMS.md#L342) | Established | The DENYLIST written to fix GIT_DIR missed GIT_CONFIG one round later, so it is an ALLOWLIST now. | A, measured |
-| [B-19](../../../CLAIMS.md#L418) | Pending | ed25519-dalek is configured default-features = false, features = ["std"], so zeroize is OFF. THAT PREMISE IS FALSE — E-171, 2026-08-27. ["std"]… | CLOSED → docs/decision… |
+| [B-19](../../../CLAIMS.md#L428) | Pending | ed25519-dalek is configured default-features = false, features = ["std"], so zeroize is OFF. THAT PREMISE IS FALSE — E-171, 2026-08-27. ["std"]… | CLOSED → docs/decision… |

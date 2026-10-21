@@ -31,8 +31,10 @@ export function CustodyView({ sim }: { sim: { flows: any[] } }) {
             <h3 className="font-semibold mb-1">1. The derived key does not work with custodial key management</h3>
             <p className="opacity-85 leading-relaxed">
               The ElGamal secret is derived from the master seed, and a custody platform never releases
-              the seed. So a custodied account cannot derive its own ElGamal key or read its own
-              confidential balance.
+              the seed. So the account cannot derive its own ElGamal key or read its own confidential
+              balance outside the platform. A platform that ran the derivation inside its own boundary
+              would change that; it would need the derivation published as a standard, and it is not
+              (issue #10).
             </p>
             <p className="opacity-85 leading-relaxed mt-2">
               A standalone ElGamal key gets around this, but then something outside the custody
@@ -43,9 +45,14 @@ export function CustodyView({ sim }: { sim: { flows: any[] } }) {
           <div>
             <h3 className="font-semibold mb-1">2. Approval policies cannot read a confidential amount</h3>
             <p className="opacity-85 leading-relaxed">
-              An approval workflow sees a proof, not a value, so a rule like <em>&ldquo;two approvers
-              above $1M&rdquo;</em> has nothing to check. This is structural, not an integration
-              detail: confidentiality and amount-based approval policies pull against each other.
+              An approval workflow that holds only public data sees a proof, not a value, so a rule
+              like <em>&ldquo;two approvers above $1M&rdquo;</em> has nothing to check. This is
+              structural, not an integration detail: confidentiality and amount-based approval
+              policies pull against each other. The ways out each cost something: give the policy
+              engine the ElGamal secret, and it becomes another party that reads every balance;
+              accept the holder&rsquo;s statement of the amount, and the policy rests on the
+              holder&rsquo;s honesty; or prove the bound in zero knowledge, which this project
+              has neither built nor costed.
             </p>
           </div>
         </div>

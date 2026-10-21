@@ -66,7 +66,7 @@ This section is about the **protocol**. Where it describes this project's own de
 
 **Who can spend.** Only the holder of `sk_A`: a `ConfidentialMPTSend` proof cannot be made without it (E-33). Where `sk_A` is derived from the holder's XRPL master seed, whoever holds that seed holds it too. The demonstration does not show holder-only custody, because its facility driver plays every party and holds every seed. And a hostile process running as the same user can read `sk_A` out of memory.
 
-**Lost keys.** If a holder loses `sk_A`, the balance cannot be spent, and XLS-96 has no rotation or recovery (P-10); the only remedy is issuer clawback, which destroys the balance. A key derived from the master seed under this project's own construction can be re-derived from that seed, but the derivation is not a published standard (issue #10).
+**Lost keys.** If a holder loses `sk_A`, the balance cannot be spent, and XLS-96 has no rotation or recovery (P-10); the only remedy is issuer clawback, which destroys the balance. A draft standard, XLS-99, proposes holder key rotation and key-loss recovery; on 2026-10-20 its amendment was in rippled `develop` as not supported, and Mainnet, Testnet and Devnet did not know it (E-341). A key derived from the master seed under this project's own construction can be re-derived from that seed, but the derivation is not a published standard (issue #10).
 
 **A zero balance can be visible.** Encrypted zero is written to a balance field in three cases: the spending balance on first initialisation, the inbox when `MergeInbox` empties it, and the whole position on clawback. Each is recognisable on sight, so enrolment is publicly visible (F-1). A balance spent down to zero holds a randomised encryption of zero and is not recognisable (E-211).
 
@@ -144,7 +144,7 @@ make web-api            # the read-only viewer: http://127.0.0.1:3011
 make web-app            #                       http://127.0.0.1:3000
 ```
 
-The signer links a patched fork of `mpt-crypto`, and the patch is committed. `make vendor-verify` checks the build tree's pin and which tracked files differ; it does not see untracked files or changes inside the files it allows, and `/tmp/wconf` is writable by any process running as you. Running the signer and the facility needs a holder profile and funded Devnet accounts, which this repository does not tell you how to create; the demo script lists what has to exist first. Walkthroughs: [the facility](docs/explainer/FACILITY-WALKTHROUGH-2026-08-20.md), [the web tier](docs/explainer/WEB-TIER-WALKTHROUGH-2026-08-28.md).
+The signer links a patched fork of `mpt-crypto`, and the patch is committed. `make vendor-verify` checks the build tree's pin and which tracked files differ; it does not see untracked files or changes inside the files it allows, and `/tmp/wconf` is writable by any process running as you. Running the signer and the facility needs a holder profile and funded Devnet accounts, and this README does not walk through creating them: [`signer/README.md`](signer/README.md) documents the profile's fields and an onboarding command that prints its lines, and the demo script lists what has to exist first. Walkthroughs: [the facility](docs/explainer/FACILITY-WALKTHROUGH-2026-08-20.md), [the web tier](docs/explainer/WEB-TIER-WALKTHROUGH-2026-08-28.md).
 
 Measured on 2026-10-18: the signer's suite passes 279 tests with none failing; 4 more are ignored by default, three of which read live Devnet. The facility ran 28 validated transactions on Devnet on 2026-08-25, recorded in [`facility/README.md`](facility/README.md).
 
@@ -166,7 +166,7 @@ So Devnet is the only network where this can run. Amendment state changes; run `
 
 Seven findings about XLS-96, its reference implementation and its ecosystem: proof sizes and composition, why a large balance can decrypt faster than a small one, and where a confidential balance fails to compose with the ledger's vault and lending primitives. Three correct a reading this project first got wrong. None is a security claim about this project. **→ [`PROTOCOL-FINDINGS`](docs/explainer/PROTOCOL-FINDINGS-2026-09-02.md)**
 
-Observations for the XLS-96 authors collect in [`UPSTREAM-FEEDBACK.md`](UPSTREAM-FEEDBACK.md). Eleven have been filed upstream since 2026-08-26; the four since 2026-09-28 were reviewed before filing, under [`docs/UPSTREAM-FILING-PROTOCOL.md`](docs/UPSTREAM-FILING-PROTOCOL.md). Their outcomes were re-surveyed on 2026-10-18 ([survey](docs/evidence/upstream-survey-2026-10-18/README.md)). Found a defect *here*? Open an issue on this repository.
+Observations for the XLS-96 authors collect in [`UPSTREAM-FEEDBACK.md`](UPSTREAM-FEEDBACK.md). Eleven have been filed upstream since 2026-08-26; the four since 2026-09-28 were reviewed before filing, under [`docs/UPSTREAM-FILING-PROTOCOL.md`](docs/UPSTREAM-FILING-PROTOCOL.md). Their outcomes were re-surveyed on 2026-10-20 ([survey](docs/evidence/upstream-survey-2026-10-20/README.md)); one fix reached the English docs page and not its Japanese translation. Found a defect *here*? Open an issue on this repository.
 
 ---
 

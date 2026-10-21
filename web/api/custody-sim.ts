@@ -58,7 +58,8 @@ export const CUSTODY_SHAPE: Record<Requirement, { available: boolean; because: s
     available: false,
     because:
       "Structural: the transaction carries a proof, not a value, so a rule like 'two approvers above " +
-      "$1M' has no amount to read. It is hidden from the policy engine too.",
+      "$1M' has no amount to read. It is hidden from this simulation's policy engine too, which holds " +
+      "only public data.",
   },
   "policy-over-identity": {
     available: true,
@@ -69,8 +70,9 @@ export const CUSTODY_SHAPE: Record<Requirement, { available: boolean; because: s
   "seed-material": {
     available: false,
     because:
-      "Structural: a custody platform never releases seed material, so a custodied account cannot " +
-      "derive its own ElGamal key.",
+      "Structural in this simulation: a custody platform never releases seed material, so the account " +
+      "cannot derive its own ElGamal key outside the platform. A platform that ran the derivation " +
+      "inside its own boundary would change this, and that needs the derivation published (issue #10).",
   },
 };
 
