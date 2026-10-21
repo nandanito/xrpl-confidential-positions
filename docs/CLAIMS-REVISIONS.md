@@ -9,7 +9,7 @@ the file first contains its id — not to one that merely edits or mentions it.
 
 ⚠ **Simplified, and that word is load-bearing.** `git log -- <path>` prunes a merge
 that is TREESAME to its first parent, so this is NOT every commit whose tree touched
-the file: `--full-history` reports **5** against the 5 listed below. The
+the file: `--full-history` reports **6** against the 6 listed below. The
 pruned ones are merges that introduced nothing the branch had not already introduced,
 which is what makes this the readable history. ⚠ **The append-only check does NOT run
 on this walk** — it runs over every reachable commit against every parent, precisely
@@ -20,10 +20,10 @@ because pruning could hide a row dropped at a merge.
 table for the entries that have one. The rest are deliberately not reconstructed:
 a narrative written now would be one session's reading of other sessions' work.
 
-- **Commits in the simplified walk:** 5, spanning 2026-10-19 to 2026-10-20 (`--full-history`: 5)
-- **Of those, commits that introduced at least one row:** 4
-- **Rows in the register at `4ba4e02`:** 416
-- **History covered up to:** `4ba4e02ae3eceb7f2e21f4a96e36df619f5516d7`
+- **Commits in the simplified walk:** 6, spanning 2026-10-19 to 2026-10-21 (`--full-history`: 6)
+- **Of those, commits that introduced at least one row:** 5
+- **Rows in the register at `4340721`:** 426
+- **History covered up to:** `4340721460f8ebc3879f6553bad9b085f073bfad`
 
 ⚠ Every number above is derived from the git query its own label names — the first
 three from the list below, the `--full-history` figure from a separate query that
@@ -45,6 +45,7 @@ corrected by E-271.
 
 | Date | Commit | Rows first appearing | Subject |
 |---|---|---|---|
+| 2026-10-21 | `4340721` | E-339 – E-348 | The hosted demo's build reviewed three times, and the filings re-surveyed |
 | 2026-10-20 | `4ba4e02` | E-336 – E-338 | The hosted demo deployed, and its text cut by a third |
 | 2026-10-20 | `ae6c003` | E-334, E-335 | The hosted demo's build, gate and browser check |
 | 2026-10-20 | `83e1805` | E-327 – E-333 | Hosted demo decided; a ledger-reader gap and four false sentences fixed |
