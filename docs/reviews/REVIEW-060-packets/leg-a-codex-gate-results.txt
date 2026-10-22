@@ -1,0 +1,29 @@
+BASE aabb31e6f23972626baa7aca52e14b2eefd8b0df []
+wrong-blob [{"check":"commit-and-verdict","detail":"static/how-it-works/index.html links the repository at 000000000000, not the build's commit"}]
+short-sha [{"check":"urls","detail":"static/how-it-works/index.html names https://github.com/nandanito/xrpl-confidential-positions/blob/0000000/CLAIMS.md"},{"check":"urls","detail":"static/how-it-works/index.html names https://github.com/nandanito/xrpl-confidential-positions/blob/0000000/CLAIMS.md in an attribute"}]
+entity-sha [{"check":"urls","detail":"static/how-it-works/index.html names https://github.com/nandanito/xrpl-confidential-positions/blob/"}]
+entity-slash [{"check":"urls","detail":"static/how-it-works/index.html names https://github.com/nandanito/xrpl-confidential-positions/blob"}]
+entity-scheme-and-sha []
+entity-scheme-and-slash []
+percent-host-and-entity-scheme-slash []
+percent-sha [{"check":"urls","detail":"static/how-it-works/index.html names https://github.com/nandanito/xrpl-confidential-positions/blob/"},{"check":"urls","detail":"static/how-it-works/index.html names https://github.com/nandanito/xrpl-confidential-positions/blob/%30000000000000000000000000000000000000000/CLAIMS.md in an attribute"}]
+tree [{"check":"urls","detail":"static/how-it-works/index.html names https://github.com/nandanito/xrpl-confidential-positions/tree/0000000000000000000000000000000000000000/docs"},{"check":"urls","detail":"static/how-it-works/index.html names https://github.com/nandanito/xrpl-confidential-positions/tree/0000000000000000000000000000000000000000/docs in an attribute"}]
+raw [{"check":"urls","detail":"static/how-it-works/index.html names https://github.com/nandanito/xrpl-confidential-positions/raw/0000000000000000000000000000000000000000/CLAIMS.md"},{"check":"urls","detail":"static/how-it-works/index.html names https://github.com/nandanito/xrpl-confidential-positions/raw/0000000000000000000000000000000000000000/CLAIMS.md in an attribute"}]
+rawhost [{"check":"urls","detail":"static/how-it-works/index.html names https://raw.githubusercontent.com/nandanito/xrpl-confidential-positions/0000000000000000000000000000000000000000/CLAIMS.md"},{"check":"urls","detail":"static/how-it-works/index.html names https://raw.githubusercontent.com/nandanito/xrpl-confidential-positions/0000000000000000000000000000000000000000/CLAIMS.md in an attribute"}]
+upperhost [{"check":"urls","detail":"static/how-it-works/index.html names https://GITHUB.COM/nandanito/xrpl-confidential-positions/blob/0000000000000000000000000000000000000000/CLAIMS.md"},{"check":"commit-and-verdict","detail":"static/how-it-works/index.html links the repository at 000000000000, not the build's commit"}]
+scheme-relative [{"check":"urls","detail":"static/how-it-works/index.html names the scheme-relative //github.com/nandanito/xrpl-confidential-positions/blob/0000000000000000000000000000000000000000/CLAIMS.md"},{"check":"commit-and-verdict","detail":"static/how-it-works/index.html links the repository at 000000000000, not the build's commit"}]
+www-host [{"check":"urls","detail":"static/how-it-works/index.html names https://www.github.com/nandanito/xrpl-confidential-positions/blob/0000000000000000000000000000000000000000/CLAIMS.md"},{"check":"urls","detail":"static/how-it-works/index.html names https://www.github.com/nandanito/xrpl-confidential-positions/blob/0000000000000000000000000000000000000000/CLAIMS.md in an attribute"},{"check":"commit-and-verdict","detail":"static/how-it-works/index.html links the repository at 000000000000, not the build's commit"}]
+bundle-literal []
+bundle-assembled []
+ADMISSION CLAIMS.md true
+ADMISSION CLAIMS.md/../README.md false
+ADMISSION CLAIMS.md?raw=1 false
+ADMISSION CLAIMS.md#foo false
+ADMISSION CLAIMS.md.exe false
+ADMISSION docs/explainer/FACILITY-WALKTHROUGH-2026-08-20.md true
+ADMISSION docs/else.md false
+CONTROL a cited file at another commit [{"check":"commit-and-verdict","detail":"static/how-it-works/index.html links the repository at 000000000000, not the build's commit"}]
+CONTROL a repository file the list does not name [{"check":"urls","detail":"static/how-it-works/index.html names https://github.com/nandanito/xrpl-confidential-positions/blob/aabb31e6f23972626baa7aca52e14b2eefd8b0df/docs/NEXT-SESSION-PROMPT.md"},{"check":"urls","detail":"static/how-it-works/index.html names https://github.com/nandanito/xrpl-confidential-positions/blob/aabb31e6f23972626baa7aca52e14b2eefd8b0df/docs/NEXT-SESSION-PROMPT.md in an attribute"}]
+CONTROL-NO-LOOP a cited file at another commit []
+CONTROL-NO-LOOP a repository file the list does not name [{"check":"urls","detail":"static/how-it-works/index.html names https://github.com/nandanito/xrpl-confidential-positions/blob/aabb31e6f23972626baa7aca52e14b2eefd8b0df/docs/NEXT-SESSION-PROMPT.md"},{"check":"urls","detail":"static/how-it-works/index.html names https://github.com/nandanito/xrpl-confidential-positions/blob/aabb31e6f23972626baa7aca52e14b2eefd8b0df/docs/NEXT-SESSION-PROMPT.md in an attribute"}]
+CONTROL-NO-PATH-RESTRICTION []

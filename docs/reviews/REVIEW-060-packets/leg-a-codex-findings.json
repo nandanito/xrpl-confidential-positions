@@ -1,0 +1,124 @@
+{
+  "findings": [
+    {
+      "title": "[P1] Limit the zero-knowledge explanation to transactions that prove",
+      "body": "HIGH — “So each confidential transaction carries zero-knowledge proofs, which every validator checks without learning the amount.” TASK ZERO §3 explicitly makes MergeInbox proof-free and later Converts proof-free; Convert and ConvertBack also publish their amounts. This additionally contradicts the README’s Proofs table and this page’s public-boundary panels. Replace the universal statement with a Send-specific explanation, distinguishing proof-free operations and public conversion amounts.",
+      "confidence_score": 1.0,
+      "priority": 1,
+      "code_location": {
+        "absolute_file_path": "$USER_TMP/T/r060a.qD7Xey/repo/web/app/src/hosted/routes/how-it-works.tsx",
+        "line_range": {
+          "start": 41,
+          "end": 43
+        }
+      }
+    },
+    {
+      "title": "[P1] Keep the new disclaimer compatible with the wording test",
+      "body": "MEDIUM — “It is not audited, not production-ready and not safe to put value behind.” is correctly negative under P-5, but its source line containing `production-ready` lacks the exemption required by `web/api/disclosure.test.ts:128–132`. Running `bun test web/api web/hosted` produces 191 passes and this one failure at line 135. Keep the disclaimer and either add its P-5 citation on the scanned line or update the detector to recognise the negation; do not remove the warning to make the test pass.",
+      "confidence_score": 1.0,
+      "priority": 1,
+      "code_location": {
+        "absolute_file_path": "$USER_TMP/T/r060a.qD7Xey/repo/web/app/src/hosted/routes/how-it-works.tsx",
+        "line_range": {
+          "start": 215,
+          "end": 216
+        }
+      }
+    },
+    {
+      "title": "[P2] Preserve the seed-rederivation exception in the key-loss limit",
+      "body": "MEDIUM — “If a holder loses it, the balance cannot be spent, and the only remedy is an issuer clawback, which destroys the balance.” drops the exception demonstrated by E-119 and retained in the README and capability matrix: a holder retaining the master seed can reconstruct a derived ElGamal key. P-10 prohibits protocol recovery, not this application-level reconstruction; [CLAUDE.md:127](CLAUDE.md#L127) explicitly requires keeping those layers separate. Say “irretrievably loses it, including any seed from which it can be re-derived” and retain the seed-rederivation qualification.",
+      "confidence_score": 0.99,
+      "priority": 2,
+      "code_location": {
+        "absolute_file_path": "$USER_TMP/T/r060a.qD7Xey/repo/web/app/src/hosted/routes/how-it-works.tsx",
+        "line_range": {
+          "start": 202,
+          "end": 204
+        }
+      }
+    },
+    {
+      "title": "[P2] Disclose that this project enables the clawback power",
+      "body": "MEDIUM — “If the token allows clawback, the issuer can destroy a holder’s whole confidential balance.” states E-21’s protocol condition but omits that this project sets the flag. E-223 records both live issuances with `Flags=224`, and `facility/run-facility.ts` sets `tfMPTCanClawback`; the README explicitly says the issuer can therefore burn a balance in every demonstration here. Preserve that application of the condition instead of leaving readers to guess whether the example or displayed token permits it. Add “This project’s demonstrations enable it” and cite E-223. The project-specific disclosure is recorded in [CLAIMS.md:283](CLAIMS.md#L283).",
+      "confidence_score": 0.97,
+      "priority": 2,
+      "code_location": {
+        "absolute_file_path": "$USER_TMP/T/r060a.qD7Xey/repo/web/app/src/hosted/routes/how-it-works.tsx",
+        "line_range": {
+          "start": 208,
+          "end": 209
+        }
+      }
+    },
+    {
+      "title": "[P2] Enforce citation pinning beyond raw HTML strings",
+      "body": "MEDIUM — The new invariant, “A link into the repository at any commit but the build's would cite text the gate never saw.”, is not enforced for all admitted citations. On copies of the supplied build, `runChecks()` returns no findings for a wrong-commit blob URL placed literally or assembled in the loaded JavaScript bundle. It also accepts an HTML href using `https&#58;` and `blob&#47;` before a different 40-hex commit: check 5 decodes and admits it, while this raw-HTML regex misses it. Apply the expected-commit constraint to canonicalised citation URLs in HTML and bundled code, with controls for both bypasses.",
+      "confidence_score": 1.0,
+      "priority": 2,
+      "code_location": {
+        "absolute_file_path": "$USER_TMP/T/r060a.qD7Xey/repo/tools/check-web-hosted.ts",
+        "line_range": {
+          "start": 383,
+          "end": 386
+        }
+      }
+    },
+    {
+      "title": "[P2] Carry the facility run’s remote-source qualification",
+      "body": "MEDIUM — “This project built that facility on XLS-96 and ran it on Devnet, in 28 validated transactions:” omits the condition E-146 and B-18 preserve. The walkthrough explicitly says this qualification must travel with the run claim: it used a remote ledger source under E-151’s risk acceptance, not B-15’s loopback conditions, and establishes acceptance and balance agreement rather than the loopback obligation. Add that short qualification and E-151/B-18 to the panel’s sources; see [FACILITY-WALKTHROUGH:11–15](docs/explainer/FACILITY-WALKTHROUGH-2026-08-20.md#L11-L15).",
+      "confidence_score": 0.99,
+      "priority": 2,
+      "code_location": {
+        "absolute_file_path": "$USER_TMP/T/r060a.qD7Xey/repo/web/app/src/hosted/routes/how-it-works.tsx",
+        "line_range": {
+          "start": 145,
+          "end": 145
+        }
+      }
+    },
+    {
+      "title": "[P2] Explain that converted funds also require an inbox merge",
+      "body": "MEDIUM — “Moves tokens from the holder’s public balance into confidential form.” leaves out the condition needed to follow this Convert → Send lifecycle. F-27 establishes that Convert credits the inbox, not spending; a fresh holder cannot Send any converted funds until MergeInbox runs. The page mentions merging only for the recipient of a Send, repeating the precise missing distinction that previously broke the facility’s balance model. Add that Convert lands in the inbox and must be merged before spending, and cite F-27.",
+      "confidence_score": 0.94,
+      "priority": 2,
+      "code_location": {
+        "absolute_file_path": "$USER_TMP/T/r060a.qD7Xey/repo/web/app/src/hosted/routes/how-it-works.tsx",
+        "line_range": {
+          "start": 55,
+          "end": 57
+        }
+      }
+    },
+    {
+      "title": "[P3] Name the scope of the 28-transaction count",
+      "body": "LOW — “This project built that facility on XLS-96 and ran it on Devnet, in 28 validated transactions:” uses the correct facility count but leaves its boundary implicit while the next step includes issuance creation. B-18 distinguishes 28 facility movements from 31 ledger-applied submissions, including two issuance-setup transactions and the unflagged control arm. Say “28 validated facility movements” to retain the register’s scope; use 31 if counting every applied submission by the driver.",
+      "confidence_score": 0.9,
+      "priority": 3,
+      "code_location": {
+        "absolute_file_path": "$USER_TMP/T/r060a.qD7Xey/repo/web/app/src/hosted/routes/how-it-works.tsx",
+        "line_range": {
+          "start": 145,
+          "end": 149
+        }
+      }
+    },
+    {
+      "title": "[P3] Cite sources that establish the panel’s mechanism claims",
+      "body": "LOW — “Sources: E-1; tools/check-amendments.ts, run 2026-10-21” does not support most of the first panel: E-1 records authorship and specification status, and the amendment checker records network activation, not ElGamal balances, registration or proof obligations. Cite the README’s Terms/protocol sections and TASK ZERO §3 for those mechanisms, and the recorded dated reading rather than just the checker’s filename. The later source lists also omit R-7 for the arithmetic, E-118/E-119 for seed derivation/reconstruction, and `web/api/demo-accounts.ts` with E-101/E-118/E-176/E-208 for the account histories.",
+      "confidence_score": 0.99,
+      "priority": 3,
+      "code_location": {
+        "absolute_file_path": "$USER_TMP/T/r060a.qD7Xey/repo/web/app/src/hosted/routes/how-it-works.tsx",
+        "line_range": {
+          "start": 50,
+          "end": 50
+        }
+      }
+    }
+  ],
+  "overall_correctness": "patch is incorrect",
+  "overall_explanation": "The explainer makes a false universal proof claim and omits important recovery, transaction-flow and facility-run qualifications. The new citation gate accepts wrong-commit links in encoded HTML and JavaScript, and the targeted tests fail on the new disclaimer.",
+  "overall_confidence_score": 0.98
+}

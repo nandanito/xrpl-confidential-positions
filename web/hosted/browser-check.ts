@@ -26,6 +26,9 @@
  *     another element is not detected;
  *   - a page whose script never ran, read from the footer's verdict slot,
  *     which only the page's own script changes;
+ *   - a rendered link into the repository at any commit but the one
+ *     `build-manifest.json` names, including one a script assembled after
+ *     load, which no reading of the files finds (`REVIEW-060` A-5);
  *   - a client-side navigation that loads a new document or does not render.
  *
  * ⚠ **This observes ONE browser on ONE run.** It is evidence about what the
@@ -38,7 +41,7 @@ import { cpSync, existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, sta
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { HOSTED_PAGES } from "./pages.ts";
-import { ADMITTED_URLS, LEDGER_PAGES } from "../../tools/check-web-hosted.ts";
+import { ADMITTED_URLS, LEDGER_PAGES, repoLinkCommit } from "../../tools/check-web-hosted.ts";
 import { DH2_WORDING } from "../app/src/hosted/wording.ts";
 
 const CHROME = process.env.WCONF_CHROME ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
@@ -118,6 +121,10 @@ export async function browserCheck(root: string): Promise<{ problems: string[]; 
   const problems: string[] = [];
   let requests = 0;
   let footer: string | null = null;
+  // The commit every repository link must name. A missing manifest is a refusal, not a skipped check.
+  const manifest = join(root, "build-manifest.json");
+  const commit: string | null = existsSync(manifest) ? JSON.parse(readFileSync(manifest, "utf8")).commit ?? null : null;
+  if (!commit || !/^[0-9a-f]{40}$/.test(commit)) problems.push("no build commit in build-manifest.json, so repository links cannot be checked");
   try {
     let port = "";
     for (let i = 0; i < 100 && !port; i++) {
@@ -238,6 +245,10 @@ export async function browserCheck(root: string): Promise<{ problems: string[]; 
       for (const f of found ?? []) {
         if (f.href === null) problems.push(`${label}: an attribute URL does not parse: ${JSON.stringify(f.c)}`);
         else if (!ADMITTED_URLS.some(([re]) => re.test(f.href.replace(/\/$/, "")))) problems.push(`${label}: an attribute names another origin: ${f.href}`);
+        else {
+          const ref = repoLinkCommit(f.href);
+          if (ref !== null && ref !== commit) problems.push(`${label}: a link into the repository names ${ref.slice(0, 12)}, not the build's commit: ${f.href}`);
+        }
       }
     };
 
@@ -297,7 +308,12 @@ export async function browserCheck(root: string): Promise<{ problems: string[]; 
  */
 export async function selfTest(root: string): Promise<string[]> {
   const failed: string[] = [];
-  const copy = () => { const d = mkdtempSync(join(tmpdir(), "wconf-browser-self-test-")); cpSync(join(root, ".vercel"), join(d, ".vercel"), { recursive: true }); return d; };
+  const copy = () => {
+    const d = mkdtempSync(join(tmpdir(), "wconf-browser-self-test-"));
+    cpSync(join(root, ".vercel"), join(d, ".vercel"), { recursive: true });
+    cpSync(join(root, "build-manifest.json"), join(d, "build-manifest.json"));
+    return d;
+  };
   const dirs: string[] = [];
   const elsewhere = Bun.serve({ hostname: "127.0.0.1", port: 0, fetch: () => new Response("x") });
   try {
@@ -367,6 +383,12 @@ export async function selfTest(root: string): Promise<string[]> {
     const li = join(link, ".vercel/output/static/index.html");
     writeFileSync(li, readFileSync(li, "utf8").replace("</body>", '<a href="&sol;&sol;tracker.example.net/x">x</a></body>'));
     if (!(await browserCheck(link)).problems.some((p) => p.startsWith("/: an attribute names another origin:") && p.includes("//tracker.example.net/x"))) failed.push("an encoded off-site link was not reported");
+
+    // ⚠ A link a script assembles after load: no file holds the URL, so only the rendered page can show it.
+    const built = copy(); dirs.push(built);
+    const v5 = asset(built, /^Verdict-.*\.js$/);
+    writeFileSync(v5, readFileSync(v5, "utf8") + "\nsetTimeout(()=>{const a=document.querySelector('a[href*=\"/blob/\"]');if(a)a.setAttribute('href',['https://github.com','nandanito','xrpl-confidential-positions','blob','0'.repeat(40),'CLAIMS.md'].join('/'))},300);\n");
+    if (!(await browserCheck(built)).problems.some((p) => p.startsWith("/how-it-works: a link into the repository names 000000000000"))) failed.push("a repository link assembled at run time at another commit was not reported");
 
     const second = copy(); dirs.push(second);
     const v3 = asset(second, /^Verdict-.*\.js$/);

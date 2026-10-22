@@ -106,8 +106,9 @@ those are genuinely hidden. **That is the real product.**
 **1. The public perimeter constrains the hidden interior — by arithmetic, not by
 decryption.**
 
-If a holder converts in 500, receives nothing, and converts back 400, then 100
-left by transfer. Anyone can do that subtraction. No key required. The public
+If a holder converts in 500, receives nothing, and converts back 400, ~~then 100
+left by transfer~~ the other 100 is either still held or has left by confidential
+transfer (corrected 2026-10-21, `CLAIMS.md` R-7). Anyone can do that subtraction. No key required. The public
 edges and totals **bound** the hidden values, and in a small enough system they
 pin them exactly.
 

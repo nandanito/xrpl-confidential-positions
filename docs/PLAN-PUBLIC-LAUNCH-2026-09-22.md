@@ -191,6 +191,11 @@ D-H3, E-331), carries its disclosures on the page, and cannot sign.
 something a reader can check. Each draft runs `claims-check` and one adversarial read
 before it is published, and the owner signs off the final text.
 
+**Ruled 2026-10-21: on the day each post is published, run `compare-deployed`
+against the live URL** (`web/hosted/README.md` step 7), after breaking it on a copy
+of the output as E-349 did, with a zeroed digest and an altered header. A post
+links a demo checked that day, and waits if the comparison fails.
+
 ⚠ **Gate amended 2026-10-18, on E-316: every filing is re-surveyed at source before
 a word of either post is drafted.** The survey is the one E-316 records: the comments
 on each issue this project filed, by anyone but this project; `gh pr view` on every

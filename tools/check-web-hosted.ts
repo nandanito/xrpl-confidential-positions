@@ -156,9 +156,28 @@ export const ADMITTED_URLS: [RegExp, string][] = [
   [/^https:\/\/tailwindcss\.com$/, "Tailwind's licence banner in the stylesheet"],
   [/^http:\/\/localhost$/, "TanStack Router's fallback origin when window.origin is null"],
   [/^https:\/\/github\.com\/nandanito\/xrpl-confidential-positions(\/commit\/[0-9a-f]{40}|#run-it)?$/, "links to the public repository"],
+  // Check 9 holds the commit in either link to the build's own.
+  [/^https:\/\/github\.com\/nandanito\/xrpl-confidential-positions\/blob\/[0-9a-f]{40}\/(CLAIMS\.md|docs\/explainer\/FACILITY-WALKTHROUGH-2026-08-20\.md)$/, "the two repository files the explainer cites, at the build's commit"],
   [/^https:\/\/s\.devnet\.rippletest\.net:51234$/, "the ledger endpoint, NAMED on the page as the source of its values"],
   [/^https:\/\/[a-z0-9-]+\.vercel\.app$/, "the canonical address the footer names"],
 ];
+
+/**
+ * The ref a link into the public repository names (a commit, abbreviated or
+ * whole, lower-cased), or null if it is not such a link. Parsed, not matched
+ * on the raw string: an entity-encoded scheme, a percent-encoded host or an
+ * encoded slash is still that link to a browser (`REVIEW-060` A-5). A ref that
+ * is not hex is left to check 5, which admits only a 40-hex commit.
+ */
+export function repoLinkCommit(href: string): string | null {
+  let u: URL;
+  try { u = new URL(href); } catch { return null; }
+  if (u.hostname.toLowerCase().replace(/^www\./, "") !== "github.com") return null;
+  let path = u.pathname;
+  try { path = decodeURIComponent(path); } catch { /* keep the encoded form */ }
+  const m = path.match(/^\/nandanito\/xrpl-confidential-positions\/(?:commit|blob|tree|raw|blame)\/([0-9a-f]{7,40})(?![0-9a-z])/i);
+  return m ? m[1].toLowerCase() : null;
+}
 
 const FORMS = /<(input|textarea|select|form)\b|contenteditable/i;
 /** A stand-in for the page's own origin, to resolve relative attribute URLs against. */
@@ -381,6 +400,19 @@ export function runChecks(files: Map<string, Buffer>, want: Expect): Finding[] {
     if (!h.includes(`<code>${want.commit.slice(0, 12)}</code>`)) add("commit-and-verdict", `${p} does not show commit ${want.commit.slice(0, 12)} as its link text`);
     if (!h.includes("data-gate-verdict")) add("commit-and-verdict", `${p} has no gate-verdict slot`);
   }
+  // A link into the repository at any commit but the build's would cite text
+  // the gate never saw. Every file is read, a page after decoding its
+  // entities, because a literal in a script and an encoded attribute each
+  // passed the first version (`REVIEW-060` A-5). A link assembled by a script
+  // at run time is the browser check's to find.
+  for (const p of paths) {
+    if (p === "static/third-party-licenses.txt") continue;
+    const t = p.endsWith(".html") ? decodeEntities(text(files.get(p)!)) : text(files.get(p)!);
+    for (const m of t.matchAll(/\bhttps?:\/\/[^\s"'<>`\\]+/gi)) {
+      const ref = repoLinkCommit(m[0]);
+      if (ref !== null && ref !== want.commit) add("commit-and-verdict", `${p} links the repository at ${ref.slice(0, 12)}, not the build's commit`);
+    }
+  }
 
   // 10. Licence notices for what is bundled, and nothing that should never be.
   const lic = files.get("static/third-party-licenses.txt");
@@ -505,6 +537,11 @@ export const CONTROLS: [string, string, Mutate, string?][] = [
   ["the network check changed", "ledger-wording", (d) => edit(d, "static/issuer/index.html", (s) => s.replace(`data-network-id="${DEVNET_NETWORK_ID}"`, 'data-network-id="0"'))],
   ["an account panel dropped", "accounts", (d) => edit(d, "static/observer/index.html", (s) => s.replace("Observer view: ", "Observed: "))],
   ["another commit on one page", "commit-and-verdict", (d) => edit(d, "static/wallet/index.html", (s) => s.replace(/\/commit\/[0-9a-f]{40}/g, "/commit/" + "0".repeat(40)))],
+  ["a cited file at another commit", "commit-and-verdict", (d) => edit(d, "static/how-it-works/index.html", (s) => s.replace(/\/blob\/[0-9a-f]{40}\//, "/blob/" + "0".repeat(40) + "/")), "not the build's commit"],
+  // ⚠ `REVIEW-060` A-5's two spellings that passed the first version.
+  ["a cited file at another commit, entity-encoded", "commit-and-verdict", (d) => edit(d, "static/how-it-works/index.html", (s) => s.replace(/https:\/\/github\.com\/nandanito\/xrpl-confidential-positions\/blob\/[0-9a-f]{40}\//, `https&#58;//github.com/nandanito/xrpl-confidential-positions&#47;blob&#47;${"0".repeat(40)}/`)), "not the build's commit"],
+  ["a repository link at another commit in a script", "commit-and-verdict", (d) => edit(d, firstJs(d), (s) => s + `;const u="https://github.com/nandanito/xrpl-confidential-positions/blob/${"0".repeat(40)}/CLAIMS.md";`), "not the build's commit"],
+  ["a repository file the list does not name", "urls", (d) => edit(d, "static/how-it-works/index.html", (s) => s.replace(/\/blob\/([0-9a-f]{40})\/CLAIMS\.md/, "/blob/$1/docs/NEXT-SESSION-PROMPT.md"))],
   // The package's AUTHENTIC notice, at the version this checkout holds, so the
   // only reason left to refuse it is that it is not admitted.
   ["a cryptography package bundled, with its real notice", "licences", (d) => {
@@ -607,6 +644,7 @@ export function whatThisDoesNotCheck(): string[] {
     "7. A package inlined without its module path. The licence list is collected from the module graph the build reported, and the gate requires that list to equal the admitted set.",
     "8. A ledger value on a page outside /observer and /issuer is found only if it is a ciphertext, a 64-hex value, a classic or X-address, an issuance ID or a marked value, read in the source, decoded, and with tags removed; a figure written as prose is not.",
     "9. NO ISSUER FIGURE (D-H3): the build container holds no key, so no figure can be computed. This gate refuses a number in the same clause after 'decrypt' or 'plaintext', or followed by a parenthetical naming either, on any page. That is a pattern, not an understanding of the sentence: a figure phrased another way is prose, and code that runs during the build could write one (item 3).",
+    "10. A link into the repository that a script assembles at run time. This gate reads files and finds a literal in any of them; the browser check reads the links each page renders. A URL a script uses without rendering it as a link is seen by neither.",
   ];
 }
 

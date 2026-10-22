@@ -178,6 +178,13 @@ const OVERRIDES: Record<string, string[]> = {
   "E-347": ["instruments-and-gates"],
   // E-348 records round three's fixes to the hosted build's checks.
   "E-348": ["web-tier", "instruments-and-gates"],
+  // E-349 records the reviewed build's deploy; its headline names the demo
+  // and the host, not the web tier by keyword, and its body strikes two
+  // stale lines.
+  "E-349": ["web-tier", "claims-and-drift"],
+  // E-350's headline names the explainer and the overview, not the web tier,
+  // a review or a gate by the words the patterns know.
+  "E-350": ["web-tier", "review-rounds", "confidentiality-limits", "instruments-and-gates"],
   // ⚠ E-256's headline is about a stale clause in another row and names no
   // instrument by keyword; the custody subject it settles is in the body.
   "E-256": ["claims-and-drift", "decisions-and-scope"],
@@ -198,6 +205,7 @@ const OVERRIDES: Record<string, string[]> = {
   "P-7": ["claims-and-drift"],
   "R-1": ["confidentiality-limits"],
   "R-5": ["confidentiality-limits"],
+  "R-7": ["confidentiality-limits"],
 
   // ⚠ E-268's headline opens with a STRIKETHROUGH, so `headline()` finds no bold
   // lead and falls back to the opening 200 characters — which carry the

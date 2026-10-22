@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CapabilitiesRouteImport } from './routes/capabilities'
 import { Route as CustodyRouteImport } from './routes/custody'
+import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as IssuerRouteImport } from './routes/issuer'
 import { Route as ObserverRouteImport } from './routes/observer'
 import { Route as WalletRouteImport } from './routes/wallet'
@@ -29,6 +30,11 @@ const CapabilitiesRoute = CapabilitiesRouteImport.update({
 const CustodyRoute = CustodyRouteImport.update({
   id: '/custody',
   path: '/custody',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HowItWorksRoute = HowItWorksRouteImport.update({
+  id: '/how-it-works',
+  path: '/how-it-works',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IssuerRoute = IssuerRouteImport.update({
@@ -51,6 +57,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/capabilities': typeof CapabilitiesRoute
   '/custody': typeof CustodyRoute
+  '/how-it-works': typeof HowItWorksRoute
   '/issuer': typeof IssuerRoute
   '/observer': typeof ObserverRoute
   '/wallet': typeof WalletRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/capabilities': typeof CapabilitiesRoute
   '/custody': typeof CustodyRoute
+  '/how-it-works': typeof HowItWorksRoute
   '/issuer': typeof IssuerRoute
   '/observer': typeof ObserverRoute
   '/wallet': typeof WalletRoute
@@ -68,6 +76,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/capabilities': typeof CapabilitiesRoute
   '/custody': typeof CustodyRoute
+  '/how-it-works': typeof HowItWorksRoute
   '/issuer': typeof IssuerRoute
   '/observer': typeof ObserverRoute
   '/wallet': typeof WalletRoute
@@ -75,14 +84,28 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/capabilities' | '/custody' | '/issuer' | '/observer' | '/wallet'
+    | '/'
+    | '/capabilities'
+    | '/custody'
+    | '/how-it-works'
+    | '/issuer'
+    | '/observer'
+    | '/wallet'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/capabilities' | '/custody' | '/issuer' | '/observer' | '/wallet'
+  to:
+    | '/'
+    | '/capabilities'
+    | '/custody'
+    | '/how-it-works'
+    | '/issuer'
+    | '/observer'
+    | '/wallet'
   id:
     | '__root__'
     | '/'
     | '/capabilities'
     | '/custody'
+    | '/how-it-works'
     | '/issuer'
     | '/observer'
     | '/wallet'
@@ -92,6 +115,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CapabilitiesRoute: typeof CapabilitiesRoute
   CustodyRoute: typeof CustodyRoute
+  HowItWorksRoute: typeof HowItWorksRoute
   IssuerRoute: typeof IssuerRoute
   ObserverRoute: typeof ObserverRoute
   WalletRoute: typeof WalletRoute
@@ -118,6 +142,13 @@ declare module '@tanstack/react-router' {
       path: '/custody'
       fullPath: '/custody'
       preLoaderRoute: typeof CustodyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/how-it-works': {
+      id: '/how-it-works'
+      path: '/how-it-works'
+      fullPath: '/how-it-works'
+      preLoaderRoute: typeof HowItWorksRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/issuer': {
@@ -148,6 +179,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CapabilitiesRoute: CapabilitiesRoute,
   CustodyRoute: CustodyRoute,
+  HowItWorksRoute: HowItWorksRoute,
   IssuerRoute: IssuerRoute,
   ObserverRoute: ObserverRoute,
   WalletRoute: WalletRoute,

@@ -1,0 +1,56 @@
+import { cpSync, mkdirSync, readFileSync, writeFileSync, readdirSync } from 'node:fs';
+import { readOutput, runChecks, CONTROLS, ADMITTED_URLS } from '../tools/check-web-hosted.ts';
+const root = 'review-work/build';
+mkdirSync(root + '/.vercel', {recursive:true});
+cpSync('review-input/rebuilt', root+'/.vercel/output', {recursive:true});
+const base=readOutput(root);
+const commit=JSON.parse(base.get('static/gate-verdict.json')!.toString()).commit;
+const want={commit};
+const sha='0'.repeat(40);
+const repo='https://github.com/nandanito/xrpl-confidential-positions';
+const path='static/how-it-works/index.html';
+const js=[...base.keys()].find(p=>p.includes('/how-it-works-')&&p.endsWith('.js'))!;
+console.log('BASE',commit,JSON.stringify(runChecks(base,want)));
+function probe(name:string,url:string,asset=false){
+ const files=new Map(base); const p=asset?js:path;
+ const injection=asset?`;const wrongLink=${url};document.querySelector('a').href=wrongLink;`:`<a href="${url}">citation</a>`;
+ const orig=files.get(p)!.toString();
+ files.set(p,Buffer.from(asset?orig+injection:orig.replace('</body>',injection+'</body>')));
+ console.log(name,JSON.stringify(runChecks(files,want)));
+}
+probe('wrong-blob',`${repo}/blob/${sha}/CLAIMS.md`);
+probe('short-sha',`${repo}/blob/${sha.slice(0,7)}/CLAIMS.md`);
+probe('entity-sha',`${repo}/blob/&#48;${sha.slice(1)}/CLAIMS.md`);
+probe('entity-slash',`${repo}/blob&#47;${sha}/CLAIMS.md`);
+probe('entity-scheme-and-sha',`${repo.replace('https:', 'https&#58;')}/blob/&#48;${sha.slice(1)}/CLAIMS.md`);
+probe('entity-scheme-and-slash',`${repo.replace('https:', 'https&#58;')}/blob&#47;${sha}/CLAIMS.md`);
+probe('percent-host-and-entity-scheme-slash',`https&#58;//%67ithub.com/nandanito/xrpl-confidential-positions/blob&#47;${sha}/CLAIMS.md`);
+probe('percent-sha',`${repo}/blob/%30${sha.slice(1)}/CLAIMS.md`);
+probe('tree',`${repo}/tree/${sha}/docs`);
+probe('raw',`${repo}/raw/${sha}/CLAIMS.md`);
+probe('rawhost',`https://raw.githubusercontent.com/nandanito/xrpl-confidential-positions/${sha}/CLAIMS.md`);
+probe('upperhost',`https://GITHUB.COM/nandanito/xrpl-confidential-positions/blob/${sha}/CLAIMS.md`);
+probe('scheme-relative',`//github.com/nandanito/xrpl-confidential-positions/blob/${sha}/CLAIMS.md`);
+probe('www-host',`https://www.github.com/nandanito/xrpl-confidential-positions/blob/${sha}/CLAIMS.md`);
+probe('bundle-literal',JSON.stringify(`${repo}/blob/${sha}/CLAIMS.md`),true);
+probe('bundle-assembled',`${JSON.stringify(repo)}+"/blob/"+${JSON.stringify(sha)}+"/CLAIMS.md"`,true);
+for (const tail of ['CLAIMS.md','CLAIMS.md/../README.md','CLAIMS.md?raw=1','CLAIMS.md#foo','CLAIMS.md.exe','docs/explainer/FACILITY-WALKTHROUGH-2026-08-20.md','docs/else.md']) console.log('ADMISSION',tail,ADMITTED_URLS.some(([re])=>re.test(`${repo}/blob/${commit}/${tail}`)));
+for (const c of CONTROLS.filter(([n])=>['a cited file at another commit','a repository file the list does not name'].includes(n))){
+ const d='review-work/control-'+(c[1]);mkdirSync(d+'/.vercel',{recursive:true});cpSync('review-input/rebuilt',d+'/.vercel/output',{recursive:true});c[2](d); console.log('CONTROL',c[0],JSON.stringify(runChecks(readOutput(d),want)));
+}
+// Copy the gate next to its imports; remove only the new check-9 loop and load that copy.
+const gate=readFileSync('tools/check-web-hosted.ts','utf8');
+const mutant=gate.replace(/    \/\/ A link into the repository at any commit[^\n]*\n    for \(const m of h\.matchAll\([\s\S]*?\n    }\n/, '');
+if(mutant===gate)throw Error('No loop removed');
+// Relocate imports + REPO so the mutant file remains entirely in review-work.
+writeFileSync('review-work/gate-no-loop.ts',mutant.replaceAll('"./web-readonly-needles.ts"','"../tools/web-readonly-needles.ts"').replaceAll('"../web/','"../web/').replace('const REPO = join(import.meta.dir, "..");','const REPO = join(import.meta.dir, "..");'));
+const noLoop=await import('./gate-no-loop.ts');
+for(const c of CONTROLS.filter(([n])=>['a cited file at another commit','a repository file the list does not name'].includes(n))){
+ const f=readOutput('review-work/control-'+c[1]);console.log('CONTROL-NO-LOOP',c[0],JSON.stringify(noLoop.runChecks(f,want)));
+}
+
+const wide = gate.replace('(CLAIMS\\.md|docs\\/explainer\\/FACILITY-WALKTHROUGH-2026-08-20\\.md)', '[^ ]+');
+if(wide===gate)throw Error('No path restriction removed');
+writeFileSync('review-work/gate-wide-path.ts',wide.replaceAll('"./web-readonly-needles.ts"','"../tools/web-readonly-needles.ts"'));
+const broad=await import('./gate-wide-path.ts');
+console.log('CONTROL-NO-PATH-RESTRICTION',JSON.stringify(broad.runChecks(readOutput('review-work/control-urls'),want)));

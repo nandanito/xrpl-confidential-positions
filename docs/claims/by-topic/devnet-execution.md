@@ -61,14 +61,14 @@ exhaustive sweep, search `CLAIMS.md` directly.
 | [E-310](../../../CLAIMS.md#L370) | Established | REVIEW-048 reviewed E-296 to E-307 with three differed legs and upheld seventeen findings, rejected two and withdrew one — and the twelve rows'… | A, recorded |
 | [E-319](../../../CLAIMS.md#L379) | Established | The four Devnet transactions the README offers a stranger can no longer be fetched from the public Devnet endpoint, and Devnet was not reset. | A, executed |
 | [E-328](../../../CLAIMS.md#L388) | Established | REVIEW-058 round one reviewed ADR-0004 with three differed legs and found its central sentence false, a gap in the facility's ledger reader, and two… | A, measured |
-| [B-30](../../../CLAIMS.md#L425) | Pending | Anything about what the Sherlock XRP Ledger Attackathon found | NOT OBTAINABLE, and… |
-| [B-15](../../../CLAIMS.md#L431) | Pending | AMENDED AGAIN 2026-08-25 → E-151: the named risk acceptance is EXTENDED to the facility's Devnet demo, because Option A turned out not to be payable… | RESOLVED → REVIEW-019-… |
-| [B-16](../../../CLAIMS.md#L432) | Pending | The ed25519 signing nonce — B-14's other half, and the LIVE path. RULED 2026-08-27 → E-158. BUILT AND EXECUTED the same day → E-163. RULED AND NOT… | CLOSED as a build →… |
-| [B-2](../../../CLAIMS.md#L437) | Pending | "ConfidentialTransfer is not enabled on Mainnet" | RESOLVED 2026-08-16 →… |
-| [B-3](../../../CLAIMS.md#L438) | Pending | "The Confidential Devnet has ConfidentialTransfer, PermissionedDomains and SingleAssetVault enabled" | RESOLVED 2026-08-16 →… |
-| [F-2](../../../CLAIMS.md#L460) | Findings | Spec §13.2.2's "separate view keys" have no ledger field. Protocol layer: issuer keys are permanent. Operational layer: an issuer choosing Mechanism… | A / B |
-| [F-25](../../../CLAIMS.md#L473) | Findings | tapFailHard cannot be bound into a transaction. It is a submission-time choice, and only the submitter can make it. | A (E-162) |
-| [F-28](../../../CLAIMS.md#L476) | Findings | tapFailHard stops a tec reaching the LEDGER. It does not stop the ciphertext reaching the NODE you submitted to — and under a remote ledger source… | A on the reading, NOT… |
-| [F-23](../../../CLAIMS.md#L477) | Findings | A wrong ledger read is a CONFIDENTIALITY break, not a rejected transaction — and the signer cannot control which. | A, executed |
-| [F-22](../../../CLAIMS.md#L478) | Findings | This project's own signer built a four-participant proof and serialised three ciphertexts, and no test or Devnet run could see it. | A (E-162) |
-| [F-21](../../../CLAIMS.md#L479) | Findings | Devnet rejects a transaction that carries an explicit NetworkID, and nothing a signer author reads says which networks those are the codec's… | A, executed (E-162) |
+| [B-30](../../../CLAIMS.md#L427) | Pending | Anything about what the Sherlock XRP Ledger Attackathon found | NOT OBTAINABLE, and… |
+| [B-15](../../../CLAIMS.md#L433) | Pending | AMENDED AGAIN 2026-08-25 → E-151: the named risk acceptance is EXTENDED to the facility's Devnet demo, because Option A turned out not to be payable… | RESOLVED → REVIEW-019-… |
+| [B-16](../../../CLAIMS.md#L434) | Pending | The ed25519 signing nonce — B-14's other half, and the LIVE path. RULED 2026-08-27 → E-158. BUILT AND EXECUTED the same day → E-163. RULED AND NOT… | CLOSED as a build →… |
+| [B-2](../../../CLAIMS.md#L439) | Pending | "ConfidentialTransfer is not enabled on Mainnet" | RESOLVED 2026-08-16 →… |
+| [B-3](../../../CLAIMS.md#L440) | Pending | "The Confidential Devnet has ConfidentialTransfer, PermissionedDomains and SingleAssetVault enabled" | RESOLVED 2026-08-16 →… |
+| [F-2](../../../CLAIMS.md#L462) | Findings | Spec §13.2.2's "separate view keys" have no ledger field. Protocol layer: issuer keys are permanent. Operational layer: an issuer choosing Mechanism… | A / B |
+| [F-25](../../../CLAIMS.md#L475) | Findings | tapFailHard cannot be bound into a transaction. It is a submission-time choice, and only the submitter can make it. | A (E-162) |
+| [F-28](../../../CLAIMS.md#L478) | Findings | tapFailHard stops a tec reaching the LEDGER. It does not stop the ciphertext reaching the NODE you submitted to — and under a remote ledger source… | A on the reading, NOT… |
+| [F-23](../../../CLAIMS.md#L479) | Findings | A wrong ledger read is a CONFIDENTIALITY break, not a rejected transaction — and the signer cannot control which. | A, executed |
+| [F-22](../../../CLAIMS.md#L480) | Findings | This project's own signer built a four-participant proof and serialised three ciphertexts, and no test or Devnet run could see it. | A (E-162) |
+| [F-21](../../../CLAIMS.md#L481) | Findings | Devnet rejects a transaction that carries an explicit NetworkID, and nothing a signer author reads says which networks those are the codec's… | A, executed (E-162) |

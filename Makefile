@@ -1,4 +1,4 @@
-.PHONY: ci check-vocabulary install-push-guard check-push-guard inventory-third-party check-no-secrets check-no-secrets-shapes break-no-secrets-gate break-no-secrets-gate-self-test check-emphasis break-emphasis-gate break-emphasis-gate-self-test sync-personas check-amendments check-tables rebuild-env vendor-verify vendor-build signer signer-test check-test-support check-zeroize-bounds signer-test-devnet ledger-read signer-run signer-release xrpl-vectors step3 step3-clean facility-test typecheck check-loopback check-blinding check-personas check-web-readonly check-filing node-start node-wait node-status facility web-api web-app check-negative-claims check-claims-index check-claims-topics check-disclosure-phrases check-claims-revisions break-zeroize-lock hosted-build check-web-hosted hosted-browser-check
+.PHONY: ci check-vocabulary install-push-guard check-push-guard inventory-third-party check-inventory-fresh check-no-secrets check-no-secrets-shapes break-no-secrets-gate break-no-secrets-gate-self-test check-emphasis break-emphasis-gate break-emphasis-gate-self-test sync-personas check-amendments check-tables rebuild-env vendor-verify vendor-build signer signer-test check-test-support check-zeroize-bounds signer-test-devnet ledger-read signer-run signer-release xrpl-vectors step3 step3-clean facility-test typecheck check-loopback check-blinding check-personas check-web-readonly check-filing node-start node-wait node-status facility web-api web-app check-negative-claims check-claims-index check-claims-topics check-disclosure-phrases check-claims-revisions break-zeroize-lock hosted-build check-web-hosted hosted-browser-check
 
 # Part C delta: .claude/agents/ is generated from docs/personas/.
 # Regenerate whenever a persona changes or the two will drift.
@@ -381,6 +381,15 @@ check-push-guard:
 # finds. Needs network for the GitHub corpora; not in make ci.
 inventory-third-party:
 	@bun run tools/inventory-third-party.ts --check
+
+# Fails if the committed inventory is not what this tree produces. Only a public
+# update regenerated it, so the archive's copy drifted unnoticed for one review
+# (E-349). Run it in the archive after a register change and before a public
+# update. It compares with HEAD, so a staged copy does not pass, and on a FAIL
+# it leaves the regenerated file in the tree to commit.
+check-inventory-fresh: inventory-third-party
+	@git diff --quiet HEAD -- docs/third-party/INVENTORY.md || { git diff --stat HEAD -- docs/third-party/INVENTORY.md; echo "check-inventory-fresh: FAIL — the committed inventory is stale; review and commit the regenerated file"; exit 1; }
+	@echo "check-inventory-fresh: PASS — the committed inventory is what this tree produces"
 
 # --- phase 1, the secret sweep --------------------------------------------------
 # ⚠⚠ **THE GATE ON PUBLICATION** (`docs/PLAN-PUBLIC-LAUNCH-2026-09-22.md` phase 1):

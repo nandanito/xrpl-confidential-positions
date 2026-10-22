@@ -1,0 +1,6 @@
+leg A: start 2026-10-21T14:54:27Z
+leg B: start 2026-10-21T14:55:01Z
+leg B exit=0
+leg B: end 2026-10-21T14:56:18Z
+exit=0
+leg A: end 2026-10-21T15:06:36Z

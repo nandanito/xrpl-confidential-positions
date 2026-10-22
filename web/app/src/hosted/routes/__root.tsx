@@ -23,10 +23,11 @@ export const Route = createRootRoute({
 
 const NAV = [
   { to: "/", label: "Overview" },
-  { to: "/capabilities", label: "Capability matrix" },
-  { to: "/observer", label: "Observer view" },
-  { to: "/issuer", label: "Issuer view" },
-  { to: "/wallet", label: "Wallet" },
+  { to: "/how-it-works", label: "How it works" },
+  { to: "/observer", label: "What anyone sees" },
+  { to: "/issuer", label: "What the issuer sees" },
+  { to: "/capabilities", label: "Who can do what" },
+  { to: "/wallet", label: "Wallets" },
   { to: "/custody", label: "Custody" },
 ] as const;
 
@@ -36,14 +37,14 @@ function Root() {
       <head><HeadContent /></head>
       <body>
         <div className="bg-[var(--color-warn)] text-white text-sm px-4 py-2 font-medium">
-          Devnet snapshot · signs nothing, holds no keys · not secure, not audited, not production-ready (P-5)
+          Devnet snapshot · signs nothing, holds no keys · this project is not secure, not audited, not production-ready (P-5)
         </div>
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
           <header className="mb-8">
             <h1 className="text-2xl font-semibold tracking-tight">W-CONF</h1>
             <p className="text-sm opacity-70 mt-1">
-              What confidential MPT on the XRP Ledger hides, and what it does not. A research
-              project, shown on one snapshot of the Devnet.
+              What confidential Multi-Purpose Tokens (MPTs) on the XRP Ledger hide, and what they do
+              not. A research project, shown on one snapshot of the Devnet.
             </p>
             <nav className="flex flex-wrap gap-4 mt-4 text-sm">
               {NAV.map((n) => (
