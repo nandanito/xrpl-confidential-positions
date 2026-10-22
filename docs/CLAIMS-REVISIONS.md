@@ -9,7 +9,7 @@ the file first contains its id — not to one that merely edits or mentions it.
 
 ⚠ **Simplified, and that word is load-bearing.** `git log -- <path>` prunes a merge
 that is TREESAME to its first parent, so this is NOT every commit whose tree touched
-the file: `--full-history` reports **7** against the 7 listed below. The
+the file: `--full-history` reports **8** against the 8 listed below. The
 pruned ones are merges that introduced nothing the branch had not already introduced,
 which is what makes this the readable history. ⚠ **The append-only check does NOT run
 on this walk** — it runs over every reachable commit against every parent, precisely
@@ -20,10 +20,10 @@ because pruning could hide a row dropped at a merge.
 table for the entries that have one. The rest are deliberately not reconstructed:
 a narrative written now would be one session's reading of other sessions' work.
 
-- **Commits in the simplified walk:** 7, spanning 2026-10-19 to 2026-10-22 (`--full-history`: 7)
-- **Of those, commits that introduced at least one row:** 6
-- **Rows in the register at `b7cae7a`:** 429
-- **History covered up to:** `b7cae7aa725070416acbea04a4d6ea1755eca427`
+- **Commits in the simplified walk:** 8, spanning 2026-10-19 to 2026-10-22 (`--full-history`: 8)
+- **Of those, commits that introduced at least one row:** 7
+- **Rows in the register at `d13dc2b`:** 431
+- **History covered up to:** `d13dc2b61718ce8005965338c2729370bec7a86b`
 
 ⚠ Every number above is derived from the git query its own label names — the first
 three from the list below, the `--full-history` figure from a separate query that
@@ -45,6 +45,7 @@ corrected by E-271.
 
 | Date | Commit | Rows first appearing | Subject |
 |---|---|---|---|
+| 2026-10-22 | `d13dc2b` | E-351, R-8 | Diagrams on every page of the hosted demo, read twice |
 | 2026-10-22 | `b7cae7a` | E-349, E-350, R-7 | The hosted demo's explainer, read twice, and the deploy that preceded it |
 | 2026-10-21 | `4340721` | E-339 – E-348 | The hosted demo's build reviewed three times, and the filings re-surveyed |
 | 2026-10-20 | `4ba4e02` | E-336 – E-338 | The hosted demo deployed, and its text cut by a third |
