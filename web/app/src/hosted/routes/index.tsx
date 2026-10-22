@@ -1,6 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { Panel } from "../../components/Verdict";
 import { SNAPSHOT } from "../data";
+import { PerimeterDiagram, ThisSiteDiagram } from "../Diagrams";
 
 const REPO = "https://github.com/nandanito/xrpl-confidential-positions";
 
@@ -34,17 +35,7 @@ function Overview() {
           issuer. This site shows what that hides and what it does not, from one snapshot of the Devnet
           test network.
         </p>
-        <dl className="text-sm mt-4 grid grid-cols-[7rem_1fr] gap-x-3 gap-y-2">
-          <dt className="font-semibold">Hidden</dt>
-          <dd>
-            Each holder&rsquo;s balance, and the amount of each confidential send. A new balance, a merged
-            inbox and a clawed-back position are recognisable as zero.
-          </dd>
-          <dt className="font-semibold">Public</dt>
-          <dd>Who sends to whom, when and how often, and every amount moved into or out of confidential form.</dd>
-          <dt className="font-semibold">The issuer</dt>
-          <dd>Can always read every balance. No setting turns this off.</dd>
-        </dl>
+        <PerimeterDiagram />
         <p className="text-sm mt-4">
           <Link to="/how-it-works" className="underline underline-offset-4 font-medium">New to this? Read how it works</Link>
         </p>
@@ -66,6 +57,7 @@ function Overview() {
           signs nothing and holds no keys. No code of this project runs on a server when you load it,
           and your browser requests only this site&rsquo;s own files.
         </p>
+        <ThisSiteDiagram />
         <p className="text-sm leading-relaxed mt-2">
           To transact, run it yourself. Signing happens only in <code>wconf-signer</code>, a separate
           program on the holder&rsquo;s own machine, never in a web page. The{" "}

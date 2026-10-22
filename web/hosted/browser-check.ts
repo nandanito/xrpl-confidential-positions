@@ -334,12 +334,34 @@ export async function selfTest(root: string): Promise<string[]> {
     // error, an exception after the client navigation, and the D-H2 wording
     // present in the HTML but hidden by the stylesheet.
     const asset = (d: string, re: RegExp) => join(d, ".vercel/output/static/assets", readdirSync(join(d, ".vercel/output/static/assets")).find((n) => re.test(n))!);
+    // The module script every page RUNS, read from the pages rather than named.
+    // ⚠ This chose `Verdict-*.js` until 2026-10-22, when a shared diagrams
+    // module took that chunk's place and the self-test crashed on the name. Its
+    // first replacement took any common reference, and a `modulepreload` link is
+    // fetched but not run, so a control appended there would never execute
+    // (`REVIEW-061` A-9). Only `<script type="module" src>` counts, and it must
+    // be one script, the same on every page.
+    const shared = (d: string) => {
+      const entries = HOSTED_PAGES.map((p) => {
+        const h = readFileSync(join(d, ".vercel/output/static", p ? `${p}/index.html` : "index.html"), "utf8");
+        const srcs = [...h.matchAll(/<script\b[^>]*>/g)].map((m) => m[0])
+          .filter((t) => /\btype=["']?module\b/.test(t))
+          .map((t) => t.match(/\bsrc=["']?\/assets\/([^"' >]+\.js)/)?.[1])
+          .filter((x): x is string => !!x);
+        return [...new Set(srcs)];
+      });
+      const first = entries[0];
+      if (first.length !== 1 || entries.some((e) => e.length !== 1 || e[0] !== first[0])) {
+        throw new Error(`the pages do not all run one and the same module script (${JSON.stringify(entries)}), so the self-test has nothing it can rely on to execute`);
+      }
+      return join(d, ".vercel/output/static/assets", first[0]);
+    };
     const logs = copy(); dirs.push(logs);
-    const v1 = asset(logs, /^Verdict-.*\.js$/);
+    const v1 = shared(logs);
     writeFileSync(v1, readFileSync(v1, "utf8") + '\nconsole.error("BROWSER_CHECK_CONTROL");\n');
     if (!(await browserCheck(logs)).problems.some((p) => p.includes("console.error BROWSER_CHECK_CONTROL"))) failed.push("a page's own console.error was not reported");
     const nav = copy(); dirs.push(nav);
-    const v2 = asset(nav, /^Verdict-.*\.js$/);
+    const v2 = shared(nav);
     writeFileSync(v2, readFileSync(v2, "utf8") + "\ndocument.addEventListener('click',e=>{if(e.target.closest('a[href=\"/observer\"]'))setTimeout(()=>{throw Error('BROWSER_CHECK_NAV')},0)});\n");
     if (!(await browserCheck(nav)).problems.some((p) => p.startsWith("client navigation to /observer: exception") && p.includes("BROWSER_CHECK_NAV"))) failed.push("an exception after the client navigation was not reported");
     const hidden = copy(); dirs.push(hidden);
@@ -376,7 +398,7 @@ export async function selfTest(root: string): Promise<string[]> {
     const rc = await browserCheck(contents);
     if (rc.problems.some((p) => p.includes("D-H2"))) failed.push(`visible wording under display:contents was reported: ${rc.problems.find((p) => p.includes("D-H2"))}`);
     const gap = copy(); dirs.push(gap);
-    const v4 = asset(gap, /^Verdict-.*\.js$/);
+    const v4 = shared(gap);
     writeFileSync(v4, readFileSync(v4, "utf8") + "\nif(location.pathname==='/'){const n=Number(sessionStorage.getItem('bc-gap')||0);sessionStorage.setItem('bc-gap',String(n+1));if(n===1){const o=window.__violations.splice;window.__violations.splice=function(...a){if(location.pathname==='/')console.error('BROWSER_CHECK_INSPECT_GAP');return o.apply(this,a)}}}\n");
     if (!(await browserCheck(gap)).problems.some((p) => p.includes("BROWSER_CHECK_INSPECT_GAP"))) failed.push("an error emitted during an inspection was not reported");
     const link = copy(); dirs.push(link);
@@ -386,12 +408,12 @@ export async function selfTest(root: string): Promise<string[]> {
 
     // ⚠ A link a script assembles after load: no file holds the URL, so only the rendered page can show it.
     const built = copy(); dirs.push(built);
-    const v5 = asset(built, /^Verdict-.*\.js$/);
+    const v5 = shared(built);
     writeFileSync(v5, readFileSync(v5, "utf8") + "\nsetTimeout(()=>{const a=document.querySelector('a[href*=\"/blob/\"]');if(a)a.setAttribute('href',['https://github.com','nandanito','xrpl-confidential-positions','blob','0'.repeat(40),'CLAIMS.md'].join('/'))},300);\n");
     if (!(await browserCheck(built)).problems.some((p) => p.startsWith("/how-it-works: a link into the repository names 000000000000"))) failed.push("a repository link assembled at run time at another commit was not reported");
 
     const second = copy(); dirs.push(second);
-    const v3 = asset(second, /^Verdict-.*\.js$/);
+    const v3 = shared(second);
     writeFileSync(v3, readFileSync(v3, "utf8") + "\nif(location.pathname==='/'){const n=Number(sessionStorage.getItem('bc-home')||0);sessionStorage.setItem('bc-home',String(n+1));if(n===1)console.error('BROWSER_CHECK_SECOND_HOME')}\n");
     if (!(await browserCheck(second)).problems.some((p) => p.startsWith("/ loaded again") && p.includes("BROWSER_CHECK_SECOND_HOME"))) failed.push("an error on the second load of the overview was not reported");
 

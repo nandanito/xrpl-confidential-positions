@@ -3,6 +3,7 @@ import { Panel } from "../../components/Verdict";
 import { ObserverLists, ObserverReading } from "../../views/ObserverReading";
 import { SNAPSHOT } from "../data";
 import { AbsentReading, AccountHeading, LedgerReading } from "../LedgerReading";
+import { PositionAnatomyDiagram } from "../Diagrams";
 
 export const Route = createFileRoute("/observer")({ component: Observer });
 
@@ -19,6 +20,9 @@ function Observer() {
   return (
     <>
       <LedgerReading />
+      <Panel title="One position, field by field">
+        <PositionAnatomyDiagram focus="observer" />
+      </Panel>
       {lists && <ObserverLists view={lists} />}
       {SNAPSHOT.accounts.map((a) => (
         <Panel key={a.address} title={`Observer view: ${a.label}`}>

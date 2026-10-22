@@ -1,12 +1,12 @@
-# NEXT SESSION — the explainer is built and reviewed; the owner's redeploy, then phase 3's posts
+# NEXT SESSION — the explainer and its diagrams are built and reviewed; the owner's redeploy, then phase 3's posts
 
-⚠ **The launch plan is `docs/PLAN-PUBLIC-LAUNCH-2026-09-22.md`** (`CLAIMS.md` E-309). Phases 0 to 2 are done. The repository is public at `https://github.com/nandanito/xrpl-confidential-positions`, and the demo serves at `https://xrpl-confidential-positions.vercel.app`, deployed on 2026-10-20 from the public commit `34ed67a` (E-336), redeployed from `ccf76e7` (E-339), and redeployed on 2026-10-21 from `62fcac3`, the build `REVIEW-059` reviewed (E-349). **An explainer page, `/how-it-works`, and a rewritten overview are built and read twice (E-350, `REVIEW-060`), and not yet deployed.** **Phase 3 has begun with its gate, the filing re-survey (E-341). No post is drafted.**
+⚠ **The launch plan is `docs/PLAN-PUBLIC-LAUNCH-2026-09-22.md`** (`CLAIMS.md` E-309). Phases 0 to 2 are done. The repository is public at `https://github.com/nandanito/xrpl-confidential-positions`, and the demo serves at `https://xrpl-confidential-positions.vercel.app`, deployed on 2026-10-20 from the public commit `34ed67a` (E-336), redeployed from `ccf76e7` (E-339), and redeployed on 2026-10-21 from `62fcac3`, the build `REVIEW-059` reviewed (E-349). **An explainer page, `/how-it-works`, a rewritten overview and diagrams on all seven pages are built and read twice (E-350, `REVIEW-060`; E-351, `REVIEW-061`), and not yet deployed.** **Phase 3 has begun with its gate, the filing re-survey (E-341). No post is drafted.**
 
 ## WHERE THIS LEFT OFF
 
 The work is on `build/step-9-explainer` in the private archive, branched from `review/step-9-build`. ⚠ Read `git log --oneline -12` and `git status -sb` before trusting this.
 
-The public repository's `main` was at `62fcac3` (PR #18), carrying register rows up to E-348. **The public update made from this commit carries E-349, E-350 and R-7**; read the public `main`'s log for its commit.
+The public repository's `main` is at `4e79f13` (PR #19), carrying E-349, E-350 and R-7. **The public update made from this commit carries E-351 and R-8**; read the public `main`'s log for its commit. `wconf-hosted-builds/4e79f13280f6` was built, gated and preflighted on 2026-10-22 and is superseded: deploy the newer one.
 
 **2026-10-21 and the night into 2026-10-22, the explainer:**
 
@@ -14,6 +14,8 @@ The public repository's `main` was at `62fcac3` (PR #18), carrying register rows
 - **Built and read twice** (E-350, `REVIEW-060c`). Leg A, Codex with the repository, upheld nine findings against the register; leg B, a newcomer with only the rendered text, fourteen, two in part, and six were rejected. Fixed at `c4bc2fe`: `make ci` passed, the gate 70 of 70 controls, the browser check 7 pages and 53 requests, its self-test passed, and each new control failed with its check removed.
 - **The gate now admits two repository files as links**, `CLAIMS.md` and the facility walkthrough, at the build's commit only, and refuses a repository link at any other commit in any file; the browser check refuses one in the rendered page, which finds a link a script assembles.
 - **R-7**: `WHAT-CONFIDENTIAL-MEANS` said a holder who converts 500 and converts back 400 shows that 100 *"left by transfer"*; it may still be held. The README's rewrite had corrected the same sentence with no row.
+- **Diagrams on all seven pages** (E-351, `REVIEW-061c`), at the owner's request of 2026-10-22: the architecture, the flows, and what is hidden and what is public, drawn in markup because the policy refuses inline styles. Leg A upheld ten findings, two HIGH; leg B, a Sonnet subagent reading screenshots because the Gemini CLI takes no images, upheld sixteen and eight were rejected. Fixed at `883ee63`: the gate 70 of 70, the browser check and its self-test passed, and two self-test probes behaved.
+- **R-8**: the capability matrix's wallet row and the wallet page said every confidential transaction needs both keys; a MergeInbox, and a Convert that registers no key, need only the account key.
 - **The plan's two changes**, ruled the same day: `make check-inventory-fresh` in the public update procedure, and `compare-deployed` on each post's day. The Japanese docs page is deferred.
 
 **2026-10-21, earlier the same day:**
@@ -33,7 +35,7 @@ The public repository's `main` was at `62fcac3` (PR #18), carrying register rows
 
 **The owner's, open:**
 
-0. **Redeploy with the explainer** (E-350). The public update, a rebuild from the public commit through `web/hosted/README.md`, the owner's deploy, and `compare-deployed` with its two breaking controls; then a register row for the deploy. ⚠ The gate now runs 70 controls and the browser check needs `build-manifest.json` beside the output.
+0. **Redeploy with the explainer and the diagrams** (E-350, E-351). The public update, a rebuild from the public commit through `web/hosted/README.md`, the owner's deploy, and `compare-deployed` with its two breaking controls; then a register row for the deploy. ⚠ The gate now runs 70 controls and the browser check needs `build-manifest.json` beside the output.
 1. ~~**A third review round on step 9**~~ **run and closed** (E-347, E-348).
 2. ~~**The live site is stale.**~~ **Redeployed 2026-10-21 from `62fcac3`** (E-349). It served the output from before the review: the custody page still says a custodied account *"cannot derive its own ElGamal key"* without its exception, and the footer does not yet say the browser checks nothing. A public update carrying E-339 to E-348, a rebuild from that public commit through `web/hosted/README.md`'s steps, and the owner's redeploy change that. ⚠ Every release step changed in this review: the gate runs 66 controls, the browser check inspects more, the preflight validates the whole manifest, and the build refuses an `OUT` that is not new or empty.
 3. **The Japanese docs page** (E-341): whether to tell upstream, by a comment on the closed #3879 or a new dev-portal issue, through `/upstream-issue` and `/issue-review`. The owner's. **Deferred by the owner on 2026-10-21: later.** Until then, a post that calls #3879 fixed says the English page.
@@ -165,6 +167,11 @@ cd signer && cargo test                    # sum EVERY "test result:" line
 ## WHAT THIS SESSION TAUGHT, kept because it is the transferable part
 
 **2026-10-21 and 22, the explainer:**
+
+- **A diagram's arrows are claims no wording gate reads.** The facility diagram drew repayments and retirement in the wrong places while every label beside them was right; only a reader comparing the arrow with the code found it. Review a diagram's edges, not only its words.
+- **A diagram that repeats a page's sentence repeats its error.** The both-keys caption matched its source, and the source had been false since publication (R-8). Checking new text against old checks consistency, not truth.
+- **The root `tsc` does not cover `web/app`.** A JSX syntax error passed it and broke the build. For a web change run `tsc -p web/app/tsconfig.hosted.json` and a build before committing.
+- **A fix for a brittle name can be brittle another way.** The self-test chose a chunk by file name, then by any reference; a preloaded script is referenced and never run. Choose by what executes.
 
 - **A newcomer read finds true sentences a stranger misreads, and nothing else does.** The register read and the self pass passed *"without the figure"* beside *"the issuer can always read every balance"*, and *"some zero balances are recognisable"*; both are true, and a stranger read the first as a contradiction and the second as an edge case. For any page a stranger reads, give one leg the rendered text and nothing else.
 - **A gate check written against the raw file passed the browser's spellings.** An entity-encoded `href`, a literal in a script and a link assembled at run time each passed the first commit check. Parse what the browser parses, and check the rendered page for what no file holds. `REVIEW-059`'s lesson, in the first check written after it.

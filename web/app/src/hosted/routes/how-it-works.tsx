@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { Panel } from "../../components/Verdict";
 import { SNAPSHOT } from "../data";
+import { FacilityDiagram, LifecycleDiagram, LocalArchitectureDiagram, WhoSeesWhatDiagram } from "../Diagrams";
 
 export const Route = createFileRoute("/how-it-works")({ component: HowItWorks });
 
@@ -52,22 +53,18 @@ function HowItWorks() {
       </Panel>
 
       <Panel title="The life of a confidential position">
-        <div className="grid gap-3 sm:grid-cols-3">
-          <Step n="1" where="In" tone="public" name="Convert" tx="ConfidentialMPTConvert">
-            Moves tokens from the holder&rsquo;s public balance into their confidential inbox. The amount
-            is published. The first Convert also registers the holder&rsquo;s key, which can never be
-            changed.
-          </Step>
-          <Step n="2" where="Inside" tone="hidden" name="Send" tx="ConfidentialMPTSend">
-            Moves an amount from one confidential balance to another. The amount is hidden; the sender
-            and receiver are not. It too arrives in the receiver&rsquo;s inbox.
-          </Step>
-          <Step n="3" where="Out" tone="public" name="ConvertBack" tx="ConfidentialMPTConvertBack">
-            Moves tokens back to a public balance. The amount is published, on every ConvertBack
-            separately.
-          </Step>
-        </div>
+        <LifecycleDiagram />
         <div className="text-sm leading-relaxed space-y-2 mt-4">
+          <p>
+            <strong>Convert</strong> (<code>ConfidentialMPTConvert</code>) moves tokens from the
+            holder&rsquo;s public balance into their confidential inbox, and the amount is published. The
+            first Convert also registers the holder&rsquo;s key, which can never be changed.{" "}
+            <strong>Send</strong> (<code>ConfidentialMPTSend</code>) moves an amount from one confidential
+            balance to another; the amount is hidden, the sender and receiver are not, and it too arrives
+            in the receiver&rsquo;s inbox. <strong>ConvertBack</strong>{" "}
+            (<code>ConfidentialMPTConvertBack</code>) moves tokens back to a public balance, and the amount
+            is published, on every ConvertBack separately.
+          </p>
           <p>
             <strong>Tokens in the inbox cannot be sent yet.</strong> A separate transaction,
             MergeInbox, moves the inbox into the spending balance, so a holder who converts must merge
@@ -121,6 +118,7 @@ function HowItWorks() {
       </Panel>
 
       <Panel title="Who can read a balance, and who can spend it">
+        <WhoSeesWhatDiagram />
         <ul className="text-sm leading-relaxed list-disc pl-5 space-y-1">
           <li>The holder can read their own balance, with their key.</li>
           <li>
@@ -167,19 +165,7 @@ function HowItWorks() {
             This project built the core of that facility on XLS-96 and ran it on Devnet on 2026-08-25, in
             28 validated facility transactions besides setting up the token:
           </p>
-          <ol className="list-decimal pl-5 space-y-1">
-            <li>
-              The bank creates the token, opens a Dedicated Account (an ordinary XRPL account that holds
-              the float) and funds it publicly. The Dedicated Account converts the whole float into
-              confidential form in one Convert.
-            </li>
-            <li>
-              Each supplier enrols: the bank sends it a small public payment, and the supplier runs its
-              own Convert, which registers its key.
-            </li>
-            <li>Drawdowns and repayments are Sends between the Dedicated Account and the suppliers.</li>
-            <li>The facility is retired in tranches, each one a ConvertBack.</li>
-          </ol>
+          <FacilityDiagram />
           <p>
             The run shows that these transactions are well formed and that rippled accepts them. It read
             the ledger through a public Devnet node, not one on the same machine as the design requires,
@@ -210,6 +196,16 @@ function HowItWorks() {
           <strong>In short, it hides the shape of the book, not its size.</strong>
         </p>
         <Sources>E-146, B-18, E-151, F-24, F-26, R-1; the four accounts: E-208, E-118, E-176, E-101</Sources>
+      </Panel>
+
+      <Panel title="How the project runs on a holder's machine">
+        <p className="text-sm leading-relaxed">
+          This site only shows. The project itself runs on one machine: a Rust program,{" "}
+          <code>wconf-signer</code>, holds the keys and signs, and everything else talks to it over a local
+          socket that no web page can open.
+        </p>
+        <LocalArchitectureDiagram />
+        <Sources>the README&rsquo;s &ldquo;How it fits together&rdquo;; E-146, B-15</Sources>
       </Panel>
 
       <Panel title="Limits" tone="warn">
@@ -243,24 +239,6 @@ function HowItWorks() {
         row disagree, the row wins.
       </p>
     </>
-  );
-}
-
-function Step({ n, where, tone, name, tx, children }: {
-  n: string; where: string; tone: "public" | "hidden"; name: string; tx: string; children: ReactNode;
-}) {
-  const chip = tone === "hidden"
-    ? "bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200"
-    : "bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200";
-  return (
-    <div className="rounded border border-black/10 dark:border-white/15 p-3 text-sm">
-      <div className="flex items-center justify-between gap-2 mb-1">
-        <span className="font-semibold">{n}. {where}: {name}</span>
-        <span className={`rounded px-2 py-0.5 text-xs font-semibold ${chip}`}>amount {tone}</span>
-      </div>
-      <code className="text-[11px] opacity-60 break-all">{tx}</code>
-      <p className="mt-2 leading-relaxed">{children}</p>
-    </div>
   );
 }
 

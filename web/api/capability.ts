@@ -174,7 +174,7 @@ export const CAPABILITY_MATRIX: KeySourceRow[] = [
     proveAndSign: {
       verdict: "no",
       detail:
-        "A confidential transaction needs the ElGamal secret and the account key. These wallets supply only the account key, so a page cannot assemble the transaction through them. A wallet that held the ElGamal key and built the proofs itself could; none examined does (E-329).",
+        "A Send, a ConvertBack and the first Convert, which registers the key, need the ElGamal secret as well as the account key; a MergeInbox or a later Convert needs only the account key (TASK ZERO §3; R-8). These wallets supply only the account key, so a page cannot assemble the first three through them, and without the first Convert there is no position. A wallet that held the ElGamal key and built the proofs itself could; none examined does (E-329).",
       citation: "ADR-0003 D2; signer/src/keygen.rs",
     },
     publicTransactions: {

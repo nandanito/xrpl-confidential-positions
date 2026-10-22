@@ -26,8 +26,10 @@ export function WalletView({ rows, namedGaps }: { rows: any[]; namedGaps: { wall
         </p>
         <ol className="text-sm space-y-3 list-decimal pl-5">
           <li>
-            A confidential transaction needs two secrets: the ElGamal secret, to decrypt the balance
-            and build the proof, and the XRPL account key, to sign. A wallet supplies only the second.
+            A Send, a ConvertBack and the first Convert, which registers the key, need two secrets: the
+            ElGamal secret, to decrypt the balance and build the proof, and the XRPL account key, to
+            sign. A wallet supplies only the second. A MergeInbox or a later Convert needs only the
+            account key, and neither opens nor spends a position (CLAIMS.md R-8).
           </li>
           <li>
             Under the ruled key generation, the ElGamal secret is derived from the master seed. A
@@ -39,7 +41,8 @@ export function WalletView({ rows, namedGaps }: { rows: any[]; namedGaps: { wall
           </li>
         </ol>
         <p className="text-sm mt-4">
-          So a page cannot assemble the transaction through these wallets. They are not refusing a
+          So a page cannot assemble those transactions through these wallets, and without the first
+          Convert there is no position to hold. They are not refusing a
           permission; they hold nothing they are built to give a page.
         </p>
       </Panel>

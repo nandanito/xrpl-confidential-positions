@@ -1,0 +1,19 @@
+import {cpSync,readFileSync,writeFileSync} from 'node:fs';
+import {join} from 'node:path';
+import {HOSTED_PAGES} from '../web/hosted/pages.ts';
+import {readOutput,runChecks} from '../tools/check-web-hosted.ts';
+const root='review-work/unused-preload';
+cpSync('review-work/baseline',root,{recursive:true});
+const source=readFileSync('web/hosted/browser-check.ts','utf8');
+const helper=source.slice(source.indexOf('    const shared ='), source.indexOf('    const logs ='));
+// Evaluate the exact changed helper, with its existing imports in scope.
+const shared=new Function('HOSTED_PAGES','readFileSync','join',new Bun.Transpiler({loader:'ts'}).transformSync(helper+'return shared;'))(HOSTED_PAGES,readFileSync,join);
+console.log('baseline selected:',shared('review-work/baseline'));
+for(const p of HOSTED_PAGES){
+ const f=join(root,'.vercel/output/static',p?`${p}/index.html`:'index.html');
+ writeFileSync(f,readFileSync(f,'utf8').replace('</head>','<link rel="modulepreload" href="/assets/A-unused.js"/></head>'));
+}
+writeFileSync(join(root,'.vercel/output/static/assets/A-unused.js'),'export const unused=1;\n');
+console.log('mutated selected:',shared(root));
+console.log('runChecks:',JSON.stringify(runChecks(readOutput(root),JSON.parse(readFileSync(join(root,'build-manifest.json'),'utf8')))));
+console.log('unused chunk has no imports and is only named by modulepreload links; preload fetches but never evaluates it.');

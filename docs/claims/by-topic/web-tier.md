@@ -15,7 +15,7 @@ invisible here** — a reader in `REVIEW-040` put their confidence at ~60% for *
 about secrets"* and said they would fall back to grep. **They were right to.** For an
 exhaustive sweep, search `CLAIMS.md` directly.
 
-**21 rows.**
+**23 rows.**
 
 | id | section | headline | grade |
 |---|---|---|---|
@@ -40,3 +40,5 @@ exhaustive sweep, search `CLAIMS.md` directly.
 | [E-348](../../../CLAIMS.md#L408) | Established | REVIEW-059 round three's fixes are built, each check broken before it was believed, and the rotation is closed, so no outside reader has seen them. | A, measured |
 | [E-349](../../../CLAIMS.md#L409) | Established | The demo serves the reviewed build: PR #18 carried E-339 to E-348 to the public repository, the owner redeployed from 62fcac3, and when compared on… | A, measured |
 | [E-350](../../../CLAIMS.md#L410) | Established | The hosted demo has an explainer, /how-it-works, and an overview that orients rather than lists; both were read twice before any deploy, and this row… | A for the build,… |
+| [E-351](../../../CLAIMS.md#L411) | Established | The hosted demo has diagrams on all seven pages, read twice before any deploy, and this row records no deployment. | A for the build,… |
+| [R-8](../../../CLAIMS.md#L513) | Retracted | web/api/capability.ts's wallet row and the wallet page: *"A confidential transaction needs the ElGamal secret and the account key"*, and *"needs two… | Found by REVIEW-061… |

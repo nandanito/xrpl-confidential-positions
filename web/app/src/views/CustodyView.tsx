@@ -71,7 +71,10 @@ export function CustodyView({ sim }: { sim: { flows: any[] } }) {
           {sim.flows.map((f: any) => (
             // ⚠ A class, not a `style` attribute: the hosted build's Content
             // Security Policy blocks inline style attributes (ADR-0004).
-            <div key={f.id} className={`border-l-2 pl-3 ${f.survives ? "border-[var(--color-public)]" : "border-[var(--color-warn)]"}`}>
+            // ⚠ "survives" was --color-public, an orange-red beside the warning
+            // red, so both verdicts looked alike (REVIEW-061, leg B). Neutral
+            // for survives, red for breaks.
+            <div key={f.id} className={`border-l-2 pl-3 ${f.survives ? "border-black/30 dark:border-white/40" : "border-[var(--color-warn)]"}`}>
               <div className="text-sm font-medium">
                 {f.survives ? "survives" : "breaks"}: {f.label}
                 {notes.map((c, i) => (f.caveats.includes(c) ? <span key={c} className="font-normal opacity-70"> (note {i + 1})</span> : null))}

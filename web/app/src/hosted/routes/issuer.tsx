@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Panel } from "../../components/Verdict";
 import { SNAPSHOT } from "../data";
 import { AbsentReading, AccountHeading, LedgerReading } from "../LedgerReading";
+import { PositionAnatomyDiagram } from "../Diagrams";
 
 export const Route = createFileRoute("/issuer")({ component: Issuer });
 
@@ -29,6 +30,7 @@ function Issuer() {
           This page shows that each copy is on the ledger. It does not show the decrypted figures: a
           visitor could not check them, so this project does not publish them (ADR-0004 D-H3).
         </p>
+        <PositionAnatomyDiagram focus="issuer" />
       </Panel>
 
       <LedgerReading />
