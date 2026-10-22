@@ -122,7 +122,11 @@ export function summarise(cell: string, max = 120): string {
     .replace(/⚠+/g, "")
     .replace(/\*\*/g, "")
     .replace(/`/g, "")
-    .replace(/~~/g, "")
+    // ⚠ STRIKES ARE KEPT, NOT DELETED (R-9, 2026-10-22). Deleting `~~` turned a
+    // struck quotation into an unstruck one: F-9's headline read *"cannot be
+    // resolved from public remotes does not resolve"*, and R-9's retracted phrase
+    // reached three topic files as an assertion, which `check-disclosure-phrases`
+    // caught. A strike in the register is a strike in its excerpt.
     .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
     // ⚠⚠ **A PIPE IN A HEADLINE BECOMES A CELL BOUNDARY IN THE GENERATED ROW.**
     // Backticks are stripped above, so `` `a|b|c` `` — an ordinary grep
@@ -136,11 +140,53 @@ export function summarise(cell: string, max = 120): string {
     .replace(/\\\|/g, "|")
     .replace(/\|/g, "\\|")
     .replace(/\s+/g, " ")
+    // A lone `~`, as in "~44.8 ms", is a GFM strike delimiter too, and paired
+    // with a `~~` it swallows the strike. Escape it; `~~` is left alone.
+    .replace(/(?<![~\\])~(?!~)/g, "\\~")
     .trim();
+  return truncate(tightenStrikes(flat), max);
+}
+
+/**
+ * Stripping `⚠` and `**` can leave a space just inside a strike delimiter —
+ * `~~⚠ **RULED**~~` becomes `~~ RULED~~` — and GFM does not render a `~~`
+ * followed by a space as an opener (`REVIEW-062` round two, R2-A4). Pair the
+ * delimiters left to right and pull each one against its text; drop a pair left
+ * empty.
+ */
+export function tightenStrikes(text: string): string {
+  const parts = text.split("~~");
+  if (parts.length < 2) return text;
+  let out = parts[0];
+  for (let k = 1; k < parts.length; k++) {
+    const opening = k % 2 === 1;
+    if (opening && k + 1 < parts.length) {
+      const inner = parts[k].trim();
+      if (inner === "") {
+        const left = out.trimEnd(), right = parts[k + 1].trimStart();
+        out = left && right ? `${left} ${right}` : left + right;
+        k++;
+        continue;
+      }
+      out += "~~" + inner + "~~" + parts[k + 1];
+      k++;
+    } else {
+      // An opener with no partner: the excerpt was cut before the closer, and
+      // truncate() closes it. Pull it against its text all the same.
+      out += "~~" + (opening ? parts[k].trimStart() : parts[k]);
+    }
+  }
+  return out;
+}
+
+function truncate(flat: string, max: number): string {
   if (flat.length <= max) return flat;
   const cut = flat.slice(0, max);
   const sp = cut.lastIndexOf(" ");
-  return (sp > max * 0.6 ? cut.slice(0, sp) : cut).trimEnd() + "…";
+  const kept = (sp > max * 0.6 ? cut.slice(0, sp) : cut).trimEnd();
+  // A cut inside a strike would leave it open and strike the rest of the row.
+  const open = (kept.match(/~~/g) ?? []).length % 2 === 1;
+  return kept + "…" + (open ? "~~" : "");
 }
 
 export function parse(text: string): Entry[] {
@@ -276,11 +322,18 @@ function probeSplitter(): void {
   const S: [string, string][] = [
     ["plain a|b pipe", "plain a\\|b pipe"],
     ["already \\| escaped", "already \\| escaped"],
+    // ⚠ Strikes are kept and must still render (R-9; REVIEW-062 round two R2-A4):
+    // stripped markup inside a delimiter, a strike left empty, a lone `~`, and a
+    // strike cut by truncation, which must be closed.
+    ["~~⚠ **RULED AND NOT IMPLEMENTED**~~ done", "~~RULED AND NOT IMPLEMENTED~~ done"],
+    ["a ~~⚠~~ b", "a b"],
+    ["~~proving ~44.8 ms~~", "~~proving \\~44.8 ms~~"],
+    ["x ~~ " + "word ".repeat(40) + "~~ y", "x ~~" + "word ".repeat(23).trimEnd() + "…~~"],
   ];
   for (const [input, want] of S) {
     const got = summarise(input);
     if (got !== want) {
-      console.error(`ESCAPE PROBE FAILED: ${JSON.stringify(input)} -> ${JSON.stringify(got)}, want ${JSON.stringify(want)}`);
+      console.error(`SUMMARY PROBE FAILED: ${JSON.stringify(input)} -> ${JSON.stringify(got)}, want ${JSON.stringify(want)}`);
       bad++;
     }
   }
@@ -289,7 +342,7 @@ function probeSplitter(): void {
     process.exit(2);
   }
   console.log(
-    `Probes: ${T.length} splitter + ${C.length} content-cell + ${S.length} escape pass. ` +
+    `Probes: ${T.length} splitter + ${C.length} content-cell + ${S.length} summary pass. ` +
       `Verified before use.`,
   );
 }

@@ -15,7 +15,7 @@ invisible here** — a reader in `REVIEW-040` put their confidence at ~60% for *
 about secrets"* and said they would fall back to grep. **They were right to.** For an
 exhaustive sweep, search `CLAIMS.md` directly.
 
-**92 rows.**
+**94 rows.**
 
 | id | section | headline | grade |
 |---|---|---|---|
@@ -106,8 +106,10 @@ exhaustive sweep, search `CLAIMS.md` directly.
 | [E-348](../../../CLAIMS.md#L408) | Established | REVIEW-059 round three's fixes are built, each check broken before it was believed, and the rotation is closed, so no outside reader has seen them. | A, measured |
 | [E-350](../../../CLAIMS.md#L410) | Established | The hosted demo has an explainer, /how-it-works, and an overview that orients rather than lists; both were read twice before any deploy, and this row… | A for the build,… |
 | [E-351](../../../CLAIMS.md#L411) | Established | The hosted demo has diagrams on all seven pages, read twice before any deploy, and this row records no deployment. | A for the build,… |
-| [B-24](../../../CLAIMS.md#L422) | Pending | REVIEW-031's fixes — the seed residue B-23 left, and the gate that could not see it. | BUILT 2026-08-28. The… |
-| [B-25](../../../CLAIMS.md#L423) | Pending | REVIEW-032's fixes — the derived ElGamal secret, and the pin that did not pin. | BUILT 2026-08-28. The… |
-| [B-26](../../../CLAIMS.md#L424) | Pending | REVIEW-033's fixes — the falsifier that was UB, and the gate's fourth round of false passes. | BUILT 2026-08-28. The… |
-| [B-14](../../../CLAIMS.md#L436) | Pending | Where the transaction's own ECDSA signing nonce k comes from — a fifth randomness site, and no packet has covered it. RULED 2026-08-20 → E-109. Two… | RESOLVED → REVIEW-018-… |
-| [F-20](../../../CLAIMS.md#L484) | Findings | REVIEW-012-RULING-keygen's domain-separation table named a label family that does not exist. | A |
+| [E-354](../../../CLAIMS.md#L414) | Established | Both posts are drafted and read once, and neither is signed off or published. | A, read |
+| [E-355](../../../CLAIMS.md#L415) | Established | Round two read round one's fixes, R-9 and the blog without its tools sentence, and its stopping condition was set before it ran: no third round. | A, measured |
+| [B-24](../../../CLAIMS.md#L426) | Pending | REVIEW-031's fixes — the seed residue B-23 left, and the gate that could not see it. | BUILT 2026-08-28. The… |
+| [B-25](../../../CLAIMS.md#L427) | Pending | REVIEW-032's fixes — the derived ElGamal secret, and the pin that did not pin. | BUILT 2026-08-28. The… |
+| [B-26](../../../CLAIMS.md#L428) | Pending | REVIEW-033's fixes — the falsifier that was UB, and the gate's fourth round of false passes. | BUILT 2026-08-28. The… |
+| [B-14](../../../CLAIMS.md#L440) | Pending | ~~Where the transaction's own ECDSA signing nonce k comes from — a fifth randomness site, and no packet has covered it.~~ RULED 2026-08-20 → E-109.… | RESOLVED → REVIEW-018-… |
+| [F-20](../../../CLAIMS.md#L488) | Findings | REVIEW-012-RULING-keygen's domain-separation table named a label family that does not exist. | A |

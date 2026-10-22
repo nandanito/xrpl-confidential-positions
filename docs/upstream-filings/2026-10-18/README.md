@@ -13,7 +13,9 @@ with its file by `diff -B`; all three are identical apart from blank lines.
 
 `comment-pr152.md` is a comment, not a filing: an independent verification of PR #152's
 regenerated lockfile, posted on 2026-10-18 after the owner authorised it. #152 is the
-maintainer's fix for #148 (F-9).
+maintainer's fix for #148 (F-9). A maintainer disagreed with its last sentence on
+2026-10-20: the CI image was not a separate question, because it still used the old
+remote. #152 replaced the image and merged on 2026-10-21 (`CLAIMS.md` E-353).
 
 All three ran `docs/UPSTREAM-FILING-PROTOCOL.md` rule 1 before sending, were read once
 more by a second model on the filing day with every claim re-checked at source, and

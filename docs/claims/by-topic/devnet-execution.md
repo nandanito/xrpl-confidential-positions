@@ -48,7 +48,7 @@ exhaustive sweep, search `CLAIMS.md` directly.
 | [E-146](../../../CLAIMS.md#L197) | Established | Architecture §6 step 7 is BUILT AND EXECUTED — facility/, the receivables facility as application logic. | A, executed for… |
 | [E-147](../../../CLAIMS.md#L198) | Established | EVERY plaintext transaction in the facility was submitted TWICE, and no test could see it. | A, reasoned |
 | [E-148](../../../CLAIMS.md#L199) | Established | B-15 Option A's real cost is a FULL DEVNET SYNC, and there is no rehearsal network. Measured, not estimated. | A, executed — the… |
-| [E-149](../../../CLAIMS.md#L209) | Established | fail_hard on the submit RPC is what sets TapFailHard, and a tec under it is discarded and never relayed. READ AT SOURCE AND NOT EXECUTED — EXECUTED… | A, executed — and… |
+| [E-149](../../../CLAIMS.md#L209) | Established | fail_hard on the submit RPC is what sets TapFailHard, and a tec under it is discarded and never relayed. READ AT SOURCE ~~AND NOT EXECUTED~~ —… | A, executed — and… |
 | [E-152](../../../CLAIMS.md#L212) | Established | REVIEW-023 reviewed the accepted-risk hatch, the post-execution fixes and the executed claims — seven findings, all upheld, none stale — and FOUR of… | A, executed — the… |
 | [E-163](../../../CLAIMS.md#L223) | Established | B-16 is BUILT AND EXECUTED — the ed25519 signing nonce is hedged on the DEFAULT path. | A, executed |
 | [E-169](../../../CLAIMS.md#L229) | Established | FOUR DOCUMENTS CITED A DEVNET TRANSACTION THAT NO COMMITTED RECEIPT RECORDS. | A, source (E-244,… |
@@ -61,14 +61,14 @@ exhaustive sweep, search `CLAIMS.md` directly.
 | [E-310](../../../CLAIMS.md#L370) | Established | REVIEW-048 reviewed E-296 to E-307 with three differed legs and upheld seventeen findings, rejected two and withdrew one — and the twelve rows'… | A, recorded |
 | [E-319](../../../CLAIMS.md#L379) | Established | The four Devnet transactions the README offers a stranger can no longer be fetched from the public Devnet endpoint, and Devnet was not reset. | A, executed |
 | [E-328](../../../CLAIMS.md#L388) | Established | REVIEW-058 round one reviewed ADR-0004 with three differed legs and found its central sentence false, a gap in the facility's ledger reader, and two… | A, measured |
-| [B-30](../../../CLAIMS.md#L428) | Pending | Anything about what the Sherlock XRP Ledger Attackathon found | NOT OBTAINABLE, and… |
-| [B-15](../../../CLAIMS.md#L434) | Pending | AMENDED AGAIN 2026-08-25 → E-151: the named risk acceptance is EXTENDED to the facility's Devnet demo, because Option A turned out not to be payable… | RESOLVED → REVIEW-019-… |
-| [B-16](../../../CLAIMS.md#L435) | Pending | The ed25519 signing nonce — B-14's other half, and the LIVE path. RULED 2026-08-27 → E-158. BUILT AND EXECUTED the same day → E-163. RULED AND NOT… | CLOSED as a build →… |
-| [B-2](../../../CLAIMS.md#L440) | Pending | "ConfidentialTransfer is not enabled on Mainnet" | RESOLVED 2026-08-16 →… |
-| [B-3](../../../CLAIMS.md#L441) | Pending | "The Confidential Devnet has ConfidentialTransfer, PermissionedDomains and SingleAssetVault enabled" | RESOLVED 2026-08-16 →… |
-| [F-2](../../../CLAIMS.md#L463) | Findings | Spec §13.2.2's "separate view keys" have no ledger field. Protocol layer: issuer keys are permanent. Operational layer: an issuer choosing Mechanism… | A / B |
-| [F-25](../../../CLAIMS.md#L476) | Findings | tapFailHard cannot be bound into a transaction. It is a submission-time choice, and only the submitter can make it. | A (E-162) |
-| [F-28](../../../CLAIMS.md#L479) | Findings | tapFailHard stops a tec reaching the LEDGER. It does not stop the ciphertext reaching the NODE you submitted to — and under a remote ledger source… | A on the reading, NOT… |
-| [F-23](../../../CLAIMS.md#L480) | Findings | A wrong ledger read is a CONFIDENTIALITY break, not a rejected transaction — and the signer cannot control which. | A, executed |
-| [F-22](../../../CLAIMS.md#L481) | Findings | This project's own signer built a four-participant proof and serialised three ciphertexts, and no test or Devnet run could see it. | A (E-162) |
-| [F-21](../../../CLAIMS.md#L482) | Findings | Devnet rejects a transaction that carries an explicit NetworkID, and nothing a signer author reads says which networks those are the codec's… | A, executed (E-162) |
+| [B-30](../../../CLAIMS.md#L432) | Pending | Anything about what the Sherlock XRP Ledger Attackathon found | NOT OBTAINABLE, and… |
+| [B-15](../../../CLAIMS.md#L438) | Pending | AMENDED AGAIN 2026-08-25 → E-151: the named risk acceptance is EXTENDED to the facility's Devnet demo, because Option A turned out not to be payable… | RESOLVED → REVIEW-019-… |
+| [B-16](../../../CLAIMS.md#L439) | Pending | ~~The ed25519 signing nonce — B-14's other half, and the LIVE path.~~ RULED 2026-08-27 → E-158. BUILT AND EXECUTED the same day → E-163. ~~RULED AND…~~ | CLOSED as a build →… |
+| [B-2](../../../CLAIMS.md#L444) | Pending | ~~"ConfidentialTransfer is not enabled on Mainnet"~~ | RESOLVED 2026-08-16 →… |
+| [B-3](../../../CLAIMS.md#L445) | Pending | ~~"The Confidential Devnet has ConfidentialTransfer, PermissionedDomains and SingleAssetVault enabled"~~ | RESOLVED 2026-08-16 →… |
+| [F-2](../../../CLAIMS.md#L467) | Findings | Spec §13.2.2's "separate view keys" have no ledger field. Protocol layer: issuer keys are permanent. Operational layer: an issuer choosing Mechanism… | A / B |
+| [F-25](../../../CLAIMS.md#L480) | Findings | tapFailHard cannot be bound into a transaction. It is a submission-time choice, and only the submitter can make it. | A (E-162) |
+| [F-28](../../../CLAIMS.md#L483) | Findings | tapFailHard stops a tec reaching the LEDGER. It does not stop the ciphertext reaching the NODE you submitted to — and under a remote ledger source… | A on the reading, NOT… |
+| [F-23](../../../CLAIMS.md#L484) | Findings | A wrong ledger read is a CONFIDENTIALITY break, not a rejected transaction — and the signer cannot control which. | A, executed |
+| [F-22](../../../CLAIMS.md#L485) | Findings | This project's own signer built a four-participant proof and serialised three ciphertexts, and no test or Devnet run could see it. | A (E-162) |
+| [F-21](../../../CLAIMS.md#L486) | Findings | Devnet rejects a transaction that carries an explicit NetworkID, and ~~nothing a signer author reads says which networks those are~~ the codec's… | A, executed (E-162) |

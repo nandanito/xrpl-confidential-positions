@@ -69,7 +69,7 @@ Each ran rule 1 before sending (`docs/reviews/REVIEW-053` to `-055`), was re-che
 
 ### Outcomes, checked at source on 2026-10-18
 
-Re-surveyed on 2026-10-20 before the posts: no filing has changed since, and the #3879 row below gained what one language's grep had missed ([survey](docs/evidence/upstream-survey-2026-10-20/README.md), `CLAIMS.md` E-341).
+Re-surveyed on 2026-10-20 before the posts: no filing has changed since, and the #3879 row below gained what one language's grep had missed ([survey](docs/evidence/upstream-survey-2026-10-20/README.md), `CLAIMS.md` E-341). Re-surveyed again on 2026-10-22: #148 is fixed and closed, and the #141, #148 and #611 rows below are updated ([survey](docs/evidence/upstream-survey-2026-10-22/README.md), E-353).
 
 ⚠ Four filings were resolved upstream in September, and this register did not know until a maintainer's comment on #141 prompted a survey of all eleven. Each *resolved* below was verified against the merged text, not taken from the closing comment (`CLAIMS.md` E-316).
 
@@ -79,10 +79,10 @@ Re-surveyed on 2026-10-20 before the posts: no filing has changed since, and the
 | #608 (U-5, U-6, U-4, U-7, U-18) | Closed 2026-09-10. Items 1, 2 and 5 fixed in PR #604 (merged 2026-09-03); items 3 and 4 in PR #628 (merged 2026-09-10). At `58ccd30`: `RevealedAmount` 0, *"public reserve"* 0, *"view keys"* 0 (the maintainer: *"a legacy design"*), one `## 14.`, and the *"laptop-class"* timings removed rather than parameterised |
 | #609 (U-41) | Closed 2026-09-10 by PR #628: *"Yes, it is good to mention this … No protocol changes needed."* Line 904 now says `tecBAD_PROOF` and the other `tec` codes are applied and *"recorded in full, ciphertexts included"* |
 | #610 (U-50) | Closed 2026-09-10 by PR #604. §7.2 now states both policies: holder-initiated deletion is blocked while the issuance's `ConfidentialOutstandingAmount` is non-zero, and implicit deletion while any confidential field is present |
-| #611 (U-24) | Open, no response after 53 days |
+| #611 (U-24) | Open, no response after 57 days (2026-10-22) |
 | #8118 (U-12, U-13, U-14, U-51) | Closed without comment on 2026-08-26, the day it was filed (`closedAt` read 2026-10-18; E-216 found it closed on 2026-09-01). ⚠ This cell cited E-156 until 2026-10-18; that row records the corrections posted, not the close |
-| #141 (U-34) | Open. Maintainer reply 2026-10-17: PR #145 adds the export, and the issue stays open for the npm wrapper, which the owner offered to write on 2026-10-18 |
-| #148 (F-9) | Open. PR #152, opened 2026-10-17, makes the change at all three sites and on every CI runner, cites clio#3118 as the filing did, and closes #148 on merge. This project verified the lockfile half at its head `5bec336` and posted that as a comment ([link](https://github.com/XRPLF/mpt-crypto/pull/152#issuecomment-6244735263), archived at `docs/upstream-filings/2026-10-18/comment-pr152.md`) |
+| #141 (U-34) | Open. Maintainer reply 2026-10-17: PR #145 adds the export, and the issue stays open for the npm wrapper, which the owner offered to write on 2026-10-18. On 2026-10-20 the maintainer accepted and said they would post once #145 is in a release; #145 is approved twice and not merged (E-353) |
+| #148 (F-9) | Closed 2026-10-21 when PR #152 merged as `385b3611b`, which makes the change at all three sites and on every CI runner and cites clio#3118 as the filing did. On `main`, not in a release. This project verified the lockfile at #152's head `5bec336` and posted that as a comment ([link](https://github.com/XRPLF/mpt-crypto/pull/152#issuecomment-6244735263), archived at `docs/upstream-filings/2026-10-18/comment-pr152.md`); the merged lockfile is the same file, and it resolved again through rippled's setup on 2026-10-22. ⚠ The comment called the CI image question separate, and a maintainer disagreed: the old image still used the old remote, so #152 replaced it (E-353) |
 | #153, #154, #155 (F-17, F-12, F-13) | Filed 2026-10-18 |
 
 **What this says about the channel.** `XRPL-Standards` and `xrpl-dev-portal` acted on errata within two weeks and closed each issue when its fix merged; `mpt-crypto` answered in the filing's own terms after seven weeks, and fixed #148 the same way; `rippled` closed the positives filing silently; #611 has had no reply. ⚠ E-304 read XLS-0096 at `58ccd3047` on 2026-09-14, the commit that incorporated this project's errata, and did not notice.

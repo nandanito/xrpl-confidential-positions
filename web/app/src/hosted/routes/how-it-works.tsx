@@ -193,7 +193,10 @@ function HowItWorks() {
           </div>
         </div>
         <p className="text-sm leading-relaxed mt-4">
-          <strong>In short, it hides the shape of the book, not its size.</strong>
+          <strong>
+            In short, it hides how much each supplier draws and owes, not who borrows, when, or the
+            size of the float.
+          </strong>
         </p>
         <Sources>E-146, B-18, E-151, F-24, F-26, R-1; the four accounts: E-208, E-118, E-176, E-101</Sources>
       </Panel>

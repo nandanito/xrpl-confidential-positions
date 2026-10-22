@@ -52,6 +52,14 @@ interface Retracted {
   why: string;
   /** Tokens that mark a hit as a RECORDED retraction rather than an assertion. */
   markers: string[];
+  /**
+   * The occurrence ITSELF must sit inside a `~~` strike; a strike elsewhere in
+   * the window does not forgive it. Added 2026-10-22 for R-9, whose row promises
+   * the old wording is refused "unless it is struck beside this id": `REVIEW-062`
+   * round two showed an unrelated `~~note~~` or "no longer" nearby forgave an
+   * unstruck copy. Older entries keep the window rule, which the gate prints.
+   */
+  ownStrike?: boolean;
 }
 
 /**
@@ -192,6 +200,15 @@ const RETRACTED: Retracted[] = [
     why: "Store::len() counts cancelled confirmations, failed proofs and aborted attempts, which public ledger history cannot reveal (store.rs:753-756, E-230)",
     markers: ["E-230", "~~", "STRUCK", "RETRACTED"],
   },
+  // --- retracted 2026-10-22 by REVIEW-062 (R-9). True as the register meant it,
+  // and read by a stranger as hiding who borrows and when, which is public. One
+  // needle covers both spellings: "not its size" and "not the size of the book".
+  {
+    phrase: "hides the shape of the book",
+    why: "a reader takes 'shape' to mean who borrows, when and how often, all public; it hides how much each supplier draws and owes (R-9)",
+    markers: ["R-9", "~~", "STRUCK", "RETRACTED"],
+    ownStrike: true,
+  },
 ];
 
 const EXEMPT_DIRS = ["docs/reviews/", "node_modules", "/.git/", "/target/", "/dist/"];
@@ -250,6 +267,40 @@ function liveFiles(dir = "."): string[] {
  * the real page edited. Other markup between words, a tag or an entity or
  * emphasis, still hides a copy, and the gate's printed limits say so.
  */
+/**
+ * Whether the occurrence starting on source line `line` lies inside a `~~`
+ * strike. A GFM strike cannot cross a paragraph or a table cell, so the text
+ * considered is the occurrence's own paragraph, or its own cell when the line is
+ * a table row, flattened the same way the needle was: an odd number of `~~`
+ * before the needle, and one after it. An unbalanced `~~` earlier in the same
+ * paragraph or cell makes a struck copy look unstruck, which FAILS, the loud
+ * direction.
+ */
+export function insideStrike(lines: string[], line: number, needle: string): boolean {
+  const isRow = (l: string) => /^\s*\|/.test(l);
+  let lo = line, hi = line;
+  if (!isRow(lines[line])) {
+    while (lo > 0 && lines[lo - 1].trim() !== "" && !isRow(lines[lo - 1])) lo--;
+    while (hi < lines.length - 1 && lines[hi + 1].trim() !== "" && !isRow(lines[hi + 1])) hi++;
+  }
+  const seg = flatten(lines.slice(lo, hi + 1).join("\n")).flat;
+  // EVERY copy in the paragraph or cell must be struck: which copy the caller
+  // matched is not recoverable here, so one struck copy may not forgive another.
+  let seen = 0;
+  for (let at = seg.indexOf(needle); at >= 0; at = seg.indexOf(needle, at + 1)) {
+    seen++;
+    let head = seg.slice(0, at);
+    let tail = seg.slice(at + needle.length);
+    if (isRow(lines[line])) {
+      head = head.slice(head.lastIndexOf("|") + 1);
+      const end = tail.indexOf("|");
+      if (end >= 0) tail = tail.slice(0, end);
+    }
+    if (!((head.split("~~").length - 1) % 2 === 1 && tail.includes("~~"))) return false;
+  }
+  return seen > 0;
+}
+
 function flatten(text: string): { flat: string; lineAt: number[] } {
   let flat = "";
   const lineAt: number[] = [];
@@ -315,7 +366,9 @@ export function scan(extra?: { name: string; text: string }): Hit[] {
         // the requirement was toothless. **Caught by this gate's own new
         // control, before the fix was believed.** Identity and strike must come
         // from disjoint sets.
-        const struck = RETRACTION_TOKENS.some((m) => window.includes(m));
+        const struck = r.ownStrike
+          ? insideStrike(lines, i, needle)
+          : RETRACTION_TOKENS.some((m) => window.includes(m));
         const cited = r.markers
           .filter((m) => !RETRACTION_TOKENS.includes(m))
           .some((m) => window.includes(m));
@@ -361,6 +414,24 @@ if (import.meta.main) {
   }
 
   console.log("\nControls — each runs through the SAME detector the real check calls");
+  const own = RETRACTED.find((r) => r.ownStrike)!;
+  const id = own.markers[0];
+  control(
+    `${id}: an unstruck copy cited beside an UNRELATED strike IS caught`,
+    scan({ name: "<injected>", text: `~~an old note~~ (${id})\nIt ${own.phrase}, not its size (${id}).\n` }).some((h) => h.file === "<injected>"),
+  );
+  control(
+    `${id}: an unstruck copy cited beside "no longer" IS caught`,
+    scan({ name: "<injected>", text: `This is no longer current (${id}).\nIt ${own.phrase}, not its size.\n` }).some((h) => h.file === "<injected>"),
+  );
+  control(
+    `${id}: a copy struck ITSELF, cited, is NOT caught`,
+    !scan({ name: "<injected>", text: `~~It ${own.phrase}, not its size~~ (${id}).\n` }).some((h) => h.file === "<injected>"),
+  );
+  control(
+    `${id}: a struck copy wrapped across lines, cited, is NOT caught`,
+    !scan({ name: "<injected>", text: `> ~~It ${own.phrase.replace("the book", "the\n> book")}, not its size~~\n> (${id})\n` }).some((h) => h.file === "<injected>"),
+  );
   const p = RETRACTED[0];
   control(
     "an INJECTED retracted phrase with no correction marker IS caught",
@@ -455,4 +526,8 @@ if (import.meta.main) {
   );
   console.log("⚠ LEXICAL, over a NAMED SET. It catches COPIES, not paraphrases, and it");
   console.log("  cannot tell whether a claim is true. See the header for what it does not say.");
+  const ownCount = RETRACTED.filter((r) => r.ownStrike).length;
+  console.log(`⚠ ${ownCount} of ${RETRACTED.length} phrase(s) must be struck THEMSELVES to be forgiven; the rest are`);
+  console.log("  forgiven by any strike token and their own id within six lines, so a nearby");
+  console.log("  unrelated strike can forgive an unstruck copy of those (REVIEW-062 round two).");
 }

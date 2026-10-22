@@ -20,8 +20,8 @@ exhaustive sweep, search `CLAIMS.md` directly.
 | id | section | headline | grade |
 |---|---|---|---|
 | [E-1](../../../CLAIMS.md#L41) | Established | XLS-0096 authors: Cenk, Malhotra, Akinyele, Chen, Xie, Qian; status Draft, created 2026-01-15. Superseded upstream on 2026-09-03. XLS-0096 PR #604,… | A |
-| [E-13](../../../CLAIMS.md#L54) | Established | xrpl.js@5.0.0 and ripple-binary-codec@2.8.0 contain no Confidential MPT types or fields SUPERSEDED 2026-08-16 → E-30. True of the versions named;… | A |
-| [E-14](../../../CLAIMS.md#L55) | Established | mpt-crypto is C/C++; 0.4.0-rc4 in rippled 3.3.0. no bindings, no WASM target, no published package PARTLY SUPERSEDED 2026-08-16 → E-31. A WASM target… | A |
+| [E-13](../../../CLAIMS.md#L54) | Established | ~~xrpl.js@5.0.0 and ripple-binary-codec@2.8.0 contain no Confidential MPT types or fields~~ SUPERSEDED 2026-08-16 → E-30. True of the versions named;… | A |
+| [E-14](../../../CLAIMS.md#L55) | Established | mpt-crypto is C/C++; 0.4.0-rc4 in rippled 3.3.0. ~~no bindings, no WASM target, no published package~~ PARTLY SUPERSEDED 2026-08-16 → E-31. A WASM… | A |
 | [E-18](../../../CLAIMS.md#L59) | Established | An MPToken cannot be deleted once confidential fields are initialised, even at zero balance. Superseded upstream on 2026-09-03. XLS-0096 PR #604… | A |
 | [E-57](../../../CLAIMS.md#L107) | Established | GAP-11 closed. The Rust path for ADR-0001's signer already exists upstream and is published. | A on existence and… |
 | [E-66](../../../CLAIMS.md#L117) | Established | The XLS-96 registration PoK IS bound to the account, so a registration proof is not copyable to another account. Issue #4 closed, and §(b)'s… | A, read |
@@ -38,7 +38,7 @@ exhaustive sweep, search `CLAIMS.md` directly.
 | [E-113](../../../CLAIMS.md#L164) | Established | A test written the same hour, for the ruling it was guarding, could not check the thing its name promised. | A, executed |
 | [E-114](../../../CLAIMS.md#L165) | Established | ADR-0002's open question may be premised on a facility TASK ZERO §9 does not describe, and two review rounds could not see it because the packet… | A, source |
 | [E-115](../../../CLAIMS.md#L166) | Established | ADR-0002's hybrid is resolved on a TECHNICAL ground, and the scope question two revisions deferred to turns out not to decide it. | A, executed |
-| [E-117](../../../CLAIMS.md#L168) | Established | Rejecting the XLS-65 Vault traded away a custody property, and ADR-0002 does not say so ADR-0002 has said so since c34dcec (E-256, E-295). | A, source on both… |
+| [E-117](../../../CLAIMS.md#L168) | Established | Rejecting the XLS-65 Vault traded away a custody property, and ~~ADR-0002 does not say so~~ ADR-0002 has said so since c34dcec (E-256, E-295). | A, source on both… |
 | [E-118](../../../CLAIMS.md#L169) | Established | Architecture §6 step 6 is built: the ElGamal key is DERIVED from the master seed under the ruled construction, and the ledger holds the result. | A, executed |
 | [E-119](../../../CLAIMS.md#L170) | Established | ADR-0001 §(e)'s only benefit is now EXECUTED rather than described: the seed alone reproduced the key the ledger holds. | A, executed |
 | [E-122](../../../CLAIMS.md#L173) | Established | A module header called the ECDSA nonce "unruled" for a full day after REVIEW-018 ruled it, in a file whose code had already been changed to hedge. | A, reasoned |
@@ -95,18 +95,18 @@ exhaustive sweep, search `CLAIMS.md` directly.
 | [E-345](../../../CLAIMS.md#L405) | Established | REVIEW-059 round two found that five of round one's fixes did not discharge their findings, so its stopping condition fired and a third round is the… | A, measured |
 | [E-346](../../../CLAIMS.md#L406) | Established | REVIEW-059 round two's fixes are built: each now runs its finding's own example and the next case in that example's class, and each check was broken… | A, measured |
 | [E-347](../../../CLAIMS.md#L407) | Established | REVIEW-059 round three, run as the owner ruled on 2026-10-21, found three of round two's fixes still partial and two new browser gaps, and the… | A, measured |
-| [B-22](../../../CLAIMS.md#L420) | Pending | The KEY-DERIVATION path leaves secret material unwiped, and B-21 deliberately did not cover it. sha512half is used for public transaction digests… | 268 tests at B-22;… |
-| [B-23](../../../CLAIMS.md#L421) | Pending | The seed's residue in holder.rs — the second half of B-22's ruled unit, IN SCOPE and NOT deferred. | BUILT AND EXECUTED… |
-| [B-24](../../../CLAIMS.md#L422) | Pending | REVIEW-031's fixes — the seed residue B-23 left, and the gate that could not see it. | BUILT 2026-08-28. The… |
-| [B-27](../../../CLAIMS.md#L425) | Pending | RULED 2026-09-13 by the project owner (E-294). | A ruling by the… |
-| [B-28](../../../CLAIMS.md#L426) | Pending | Whether this repository becomes public, for what purpose, and in which form. | A ruling by the… |
-| [B-20](../../../CLAIMS.md#L430) | Pending | The deterministic signing arm is pub in an ordinary release build, and only a doc comment says it is for vectors. CLOSED 2026-08-27, with the B-16… | CLOSED, with a REAL… |
-| [B-18](../../../CLAIMS.md#L433) | Pending | LARGELY CLOSED 2026-08-25 → E-146, E-149, F-27. What remains is narrower and is stated at the end of this row. | A loopback rippled… |
-| [B-15](../../../CLAIMS.md#L434) | Pending | AMENDED AGAIN 2026-08-25 → E-151: the named risk acceptance is EXTENDED to the facility's Devnet demo, because Option A turned out not to be payable… | RESOLVED → REVIEW-019-… |
-| [B-16](../../../CLAIMS.md#L435) | Pending | The ed25519 signing nonce — B-14's other half, and the LIVE path. RULED 2026-08-27 → E-158. BUILT AND EXECUTED the same day → E-163. RULED AND NOT… | CLOSED as a build →… |
-| [B-14](../../../CLAIMS.md#L436) | Pending | Where the transaction's own ECDSA signing nonce k comes from — a fifth randomness site, and no packet has covered it. RULED 2026-08-20 → E-109. Two… | RESOLVED → REVIEW-018-… |
-| [B-7](../../../CLAIMS.md#L445) | Pending | Any statement about what the 192-byte sigma proof proves — including ADR-0001's premise that balance linkage requires the sender's secret key | RESOLVED 2026-08-16 →… |
-| [F-20](../../../CLAIMS.md#L484) | Findings | REVIEW-012-RULING-keygen's domain-separation table named a label family that does not exist. | A |
-| [F-29](../../../CLAIMS.md#L490) | Findings | XLS-0096 §7.4 states the MPToken deletion blocker unconditionally; rippled enforces it through two paths that disagree. | A, not executed |
-| [R-2](../../../CLAIMS.md#L507) | Retracted | ADR-0001 rev 1: local proving is "the only option under which the confidentiality claim is true" | Conflated custody… |
-| [R-6](../../../CLAIMS.md#L510) | Retracted | B-11 / ADR-0002 blocker 3 / investigation §12: that encrypted loan accounting is structurally blocked, because XLS-96's additive homomorphism "cannot… | The mathematics was… |
+| [B-22](../../../CLAIMS.md#L424) | Pending | ~~The KEY-DERIVATION path leaves secret material unwiped, and B-21 deliberately did not cover it. sha512half is used for public transaction digests…~~ | 268 tests at B-22;… |
+| [B-23](../../../CLAIMS.md#L425) | Pending | The seed's residue in holder.rs — the second half of B-22's ruled unit, IN SCOPE and NOT deferred. | BUILT AND EXECUTED… |
+| [B-24](../../../CLAIMS.md#L426) | Pending | REVIEW-031's fixes — the seed residue B-23 left, and the gate that could not see it. | BUILT 2026-08-28. The… |
+| [B-27](../../../CLAIMS.md#L429) | Pending | RULED 2026-09-13 by the project owner (E-294). | A ruling by the… |
+| [B-28](../../../CLAIMS.md#L430) | Pending | Whether this repository becomes public, for what purpose, and in which form. | A ruling by the… |
+| [B-20](../../../CLAIMS.md#L434) | Pending | ~~The deterministic signing arm is pub in an ordinary release build, and only a doc comment says it is for vectors.~~ CLOSED 2026-08-27, with the… | CLOSED, with a REAL… |
+| [B-18](../../../CLAIMS.md#L437) | Pending | LARGELY CLOSED 2026-08-25 → E-146, E-149, F-27. What remains is narrower and is stated at the end of this row. | A loopback rippled… |
+| [B-15](../../../CLAIMS.md#L438) | Pending | AMENDED AGAIN 2026-08-25 → E-151: the named risk acceptance is EXTENDED to the facility's Devnet demo, because Option A turned out not to be payable… | RESOLVED → REVIEW-019-… |
+| [B-16](../../../CLAIMS.md#L439) | Pending | ~~The ed25519 signing nonce — B-14's other half, and the LIVE path.~~ RULED 2026-08-27 → E-158. BUILT AND EXECUTED the same day → E-163. ~~RULED AND…~~ | CLOSED as a build →… |
+| [B-14](../../../CLAIMS.md#L440) | Pending | ~~Where the transaction's own ECDSA signing nonce k comes from — a fifth randomness site, and no packet has covered it.~~ RULED 2026-08-20 → E-109.… | RESOLVED → REVIEW-018-… |
+| [B-7](../../../CLAIMS.md#L449) | Pending | ~~Any statement about what the 192-byte sigma proof proves — including ADR-0001's premise that balance linkage requires the sender's secret key~~ | RESOLVED 2026-08-16 →… |
+| [F-20](../../../CLAIMS.md#L488) | Findings | REVIEW-012-RULING-keygen's domain-separation table named a label family that does not exist. | A |
+| [F-29](../../../CLAIMS.md#L494) | Findings | XLS-0096 §7.4 states the MPToken deletion blocker unconditionally; rippled enforces it through two paths that disagree. | A, not executed |
+| [R-2](../../../CLAIMS.md#L511) | Retracted | ADR-0001 rev 1: local proving is "the only option under which the confidentiality claim is true" | Conflated custody… |
+| [R-6](../../../CLAIMS.md#L514) | Retracted | B-11 / ADR-0002 blocker 3 / investigation §12: that encrypted loan accounting is structurally blocked, because XLS-96's additive homomorphism "cannot… | The mathematics was… |

@@ -187,6 +187,10 @@ const OVERRIDES: Record<string, string[]> = {
   "E-350": ["web-tier", "review-rounds", "confidentiality-limits", "instruments-and-gates"],
   // E-351 likewise names the diagrams and pages, not the tier or the review by the patterns' words.
   "E-351": ["web-tier", "review-rounds", "instruments-and-gates"],
+  // E-352 records the deploy, as E-349 did; its headline names the demo and the host.
+  "E-352": ["web-tier"],
+  // E-354 records the post drafts and their read; its headline names posts, not a review by the patterns' words.
+  "E-354": ["review-rounds", "confidentiality-limits", "upstream-and-filings"],
   // ⚠ E-256's headline is about a stale clause in another row and names no
   // instrument by keyword; the custody subject it settles is in the body.
   "E-256": ["claims-and-drift", "decisions-and-scope"],

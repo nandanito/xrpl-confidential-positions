@@ -15,7 +15,7 @@ invisible here** — a reader in `REVIEW-040` put their confidence at ~60% for *
 about secrets"* and said they would fall back to grep. **They were right to.** For an
 exhaustive sweep, search `CLAIMS.md` directly.
 
-**37 rows.**
+**40 rows.**
 
 | id | section | headline | grade |
 |---|---|---|---|
@@ -47,12 +47,15 @@ exhaustive sweep, search `CLAIMS.md` directly.
 | [E-346](../../../CLAIMS.md#L406) | Established | REVIEW-059 round two's fixes are built: each now runs its finding's own example and the next case in that example's class, and each check was broken… | A, measured |
 | [E-349](../../../CLAIMS.md#L409) | Established | The demo serves the reviewed build: PR #18 carried E-339 to E-348 to the public repository, the owner redeployed from 62fcac3, and when compared on… | A, measured |
 | [E-350](../../../CLAIMS.md#L410) | Established | The hosted demo has an explainer, /how-it-works, and an overview that orients rather than lists; both were read twice before any deploy, and this row… | A for the build,… |
-| [B-22](../../../CLAIMS.md#L420) | Pending | The KEY-DERIVATION path leaves secret material unwiped, and B-21 deliberately did not cover it. sha512half is used for public transaction digests… | 268 tests at B-22;… |
-| [B-28](../../../CLAIMS.md#L426) | Pending | Whether this repository becomes public, for what purpose, and in which form. | A ruling by the… |
-| [F-1](../../../CLAIMS.md#L462) | Findings | Docs claim the reset inbox value is indistinguishable; it is the canonical EncZero, recomputable by any observer from public inputs, and used on… | A |
-| [F-9](../../../CLAIMS.md#L470) | Findings | mpt-crypto's committed conan.lock cannot be resolved from public remotes does not resolve from conancenter, or from the remote rippled's setup adds… | A |
-| [F-19](../../../CLAIMS.md#L483) | Findings | mpt-crypto's exported PoK API makes account binding optional, and the public header does not say so. | A (E-162) |
-| [F-16](../../../CLAIMS.md#L485) | Findings | A LoanSet in which both parties signed the same pre-CounterpartySignature payload was accepted, first attempt. | A |
-| [R-1](../../../CLAIMS.md#L506) | Retracted | TASK ZERO §9 rev 1: the restructured facility "shows nothing about which supplier drew how much" | Found independently… |
-| [R-5](../../../CLAIMS.md#L511) | Retracted | TASK ZERO §9: the vault converts the whole facility float in one transaction | The retraction was… |
-| [R-7](../../../CLAIMS.md#L512) | Retracted | docs/explainer/WHAT-CONFIDENTIAL-MEANS-2026-09-02.md, limit 1, and the README before 2026-10-19: a holder who converts in 500, receives nothing and… | The README's rewrite… |
+| [E-352](../../../CLAIMS.md#L412) | Established | The demo serves the explainer and its diagrams: PR #19 and PR #20 carried E-349 to E-351, R-7 and R-8 to the public repository, the owner deployed… | A, measured |
+| [E-354](../../../CLAIMS.md#L414) | Established | Both posts are drafted and read once, and neither is signed off or published. | A, read |
+| [B-22](../../../CLAIMS.md#L424) | Pending | ~~The KEY-DERIVATION path leaves secret material unwiped, and B-21 deliberately did not cover it. sha512half is used for public transaction digests…~~ | 268 tests at B-22;… |
+| [B-28](../../../CLAIMS.md#L430) | Pending | Whether this repository becomes public, for what purpose, and in which form. | A ruling by the… |
+| [F-1](../../../CLAIMS.md#L466) | Findings | Docs claim the reset inbox value is indistinguishable; it is the canonical EncZero, recomputable by any observer from public inputs, and used on… | A |
+| [F-9](../../../CLAIMS.md#L474) | Findings | mpt-crypto's committed conan.lock ~~cannot be resolved from public remotes~~ does not resolve from conancenter, or from the remote rippled's setup… | A |
+| [F-19](../../../CLAIMS.md#L487) | Findings | mpt-crypto's exported PoK API makes account binding optional, and the public header does not say so. | A (E-162) |
+| [F-16](../../../CLAIMS.md#L489) | Findings | A LoanSet in which both parties signed the same pre-CounterpartySignature payload was accepted, first attempt. | A |
+| [R-1](../../../CLAIMS.md#L510) | Retracted | TASK ZERO §9 rev 1: the restructured facility "shows nothing about which supplier drew how much" | Found independently… |
+| [R-5](../../../CLAIMS.md#L515) | Retracted | TASK ZERO §9: the vault converts the whole facility float in one transaction | The retraction was… |
+| [R-7](../../../CLAIMS.md#L516) | Retracted | docs/explainer/WHAT-CONFIDENTIAL-MEANS-2026-09-02.md, limit 1, and the README before 2026-10-19: a holder who converts in 500, receives nothing and… | The README's rewrite… |
+| [R-9](../../../CLAIMS.md#L518) | Retracted | The hosted explainer /how-it-works, README.md and WHAT-CONFIDENTIAL-MEANS, the last as *"the sentence to use"*: ~~*"it hides the shape of the book,…~~ | True as the register… |

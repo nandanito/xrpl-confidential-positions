@@ -47,7 +47,7 @@ const PHRASES = ["shorthand", "not a real name", "zero times in rippled"];
 
 /** The reader-facing set. Directories are walked for `.md` files. */
 const TOP_LEVEL = ["README.md", "GETTING-STARTED-CLAUDE-CODE.md", "PREFLIGHT.md", "CONTRIBUTING.md", "SECURITY.md", "CODE_OF_CONDUCT.md"];
-const DIRS = ["docs/architecture", "docs/explainer", ".github"];
+const DIRS = ["docs/architecture", "docs/explainer", "docs/posts", ".github"];
 const FILES = ["docs/VOCABULARY.md", "facility/README.md", "signer/README.md", "web/README.md"];
 /** Evidence and tool READMEs are reader-facing too; their logs and data are not. */
 const README_UNDER = ["docs/evidence", "tools"];
@@ -103,6 +103,7 @@ if (import.meta.main) {
   control("a leak inside a code block is caught", leaks("```sh\nsubmit --tapFailHard\n```") === 1);
   control("README.md is in scope", inScope("README.md"));
   control("an explainer is in scope", inScope("docs/explainer/X.md"));
+  control("a post draft is in scope", inScope("docs/posts/X.md"));
   control("an evidence README is in scope, its logs are not", inScope("docs/evidence/a/README.md") && !inScope("docs/evidence/a/logs/x.log"));
   control("docs/reviews is out of scope by ruling", !inScope("docs/reviews/REVIEW-001.md"));
   control("CLAIMS.md is out of scope by ruling", !inScope("CLAIMS.md"));

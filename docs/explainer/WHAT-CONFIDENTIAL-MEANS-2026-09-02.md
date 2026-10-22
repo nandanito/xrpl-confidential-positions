@@ -130,7 +130,12 @@ reason to look** (**P-9**).
 
 ## The sentence to use
 
-> **It hides the shape of the book, not the size of the book.**
+> **It hides how much each supplier draws and owes, not who borrows, when, or the
+> size of the float.**
+
+⚠ This said ~~*"It hides the shape of the book, not the size of the book"*~~ until
+2026-10-22. A reader new to the project took *shape* to mean who borrows and when,
+which is public, so it overstated the privacy (`CLAIMS.md` R-9).
 
 That is real, and it is a good deal less than "confidential positions" sounds
 like — which is why [`README.md`](../../README.md) states what is **public** as

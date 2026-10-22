@@ -15,7 +15,7 @@ invisible here** — a reader in `REVIEW-040` put their confidence at ~60% for *
 about secrets"* and said they would fall back to grep. **They were right to.** For an
 exhaustive sweep, search `CLAIMS.md` directly.
 
-**94 rows.**
+**97 rows.**
 
 | id | section | headline | grade |
 |---|---|---|---|
@@ -83,7 +83,7 @@ exhaustive sweep, search `CLAIMS.md` directly.
 | [E-263](../../../CLAIMS.md#L323) | Established | Giving rule 6 to cmark-gfm made two of the harness's own probes stale, and the harness is the only thing that said so. | A, measured |
 | [E-264](../../../CLAIMS.md#L324) | Established | The emphasis-gate rotation STOPS at three rounds, which departs from CLAUDE.md's rule, and the owner ruled it on 2026-09-09. | A, reasoned |
 | [E-267](../../../CLAIMS.md#L327) | Established | CLAIMS.md's revision history is DERIVED from git as of 2026-09-11, and building it manufactured a defect that did not exist. | A, measured |
-| [E-268](../../../CLAIMS.md#L328) | Established | A generated file whose input includes its own commit has NO FIXPOINT — FALSE AS STATED, and corrected the next day by an external review (E-271).… | A, measured |
+| [E-268](../../../CLAIMS.md#L328) | Established | ~~A generated file whose input includes its own commit has NO FIXPOINT~~ — FALSE AS STATED, and corrected the next day by an external review (E-271).… | A, measured |
 | [E-272](../../../CLAIMS.md#L332) | Established | Round two on the same work: the concurrency lock was wrong TWICE, and a retired sentence came back because a GENERATOR emits it. | A, measured |
 | [E-273](../../../CLAIMS.md#L333) | Established | A retired sentence that lives in a GENERATOR regenerates, so fixing the behaviour and leaving the template reinstates the false claim on every run. | A, measured |
 | [E-277](../../../CLAIMS.md#L337) | Established | The handover cited a commit that does not exist, one section below the paragraph where a fabricated sha had already been removed for the same reason. | A, measured |
@@ -103,13 +103,16 @@ exhaustive sweep, search `CLAIMS.md` directly.
 | [E-341](../../../CLAIMS.md#L401) | Established | The filings were re-surveyed at source on 2026-10-20 before either post is drafted, and two things E-316 did not record were found: the Japanese copy… | A, read at source |
 | [E-344](../../../CLAIMS.md#L404) | Established | Checked against each finding's own words rather than the adjudication's summary of it, four of E-343's fixes discharged half a finding, and the… | A, measured |
 | [E-349](../../../CLAIMS.md#L409) | Established | The demo serves the reviewed build: PR #18 carried E-339 to E-348 to the public repository, the owner redeployed from 62fcac3, and when compared on… | A, measured |
-| [B-20](../../../CLAIMS.md#L430) | Pending | The deterministic signing arm is pub in an ordinary release build, and only a doc comment says it is for vectors. CLOSED 2026-08-27, with the B-16… | CLOSED, with a REAL… |
-| [F-1](../../../CLAIMS.md#L462) | Findings | Docs claim the reset inbox value is indistinguishable; it is the canonical EncZero, recomputable by any observer from public inputs, and used on… | A |
-| [F-2](../../../CLAIMS.md#L463) | Findings | Spec §13.2.2's "separate view keys" have no ledger field. Protocol layer: issuer keys are permanent. Operational layer: an issuer choosing Mechanism… | A / B |
-| [F-3](../../../CLAIMS.md#L464) | Findings | Docs say confidentiality can be toggled on and off; spec and transactor have no clear flag | A |
-| [F-4](../../../CLAIMS.md#L465) | Findings | Docs say clawback resets the version counter to 0; it increments | A |
-| [F-24](../../../CLAIMS.md#L475) | Findings | Our own facility walkthrough understates what a ConvertBack publishes. | A, executed |
-| [F-26](../../../CLAIMS.md#L477) | Findings | The facility walkthrough's *"After this, no plaintext amount appears again until the facility is retired or resized"* was FALSE, and it is the SECOND… | A on the reading, NOT… |
-| [R-3](../../../CLAIMS.md#L508) | Retracted | F-3: "docs say confidentiality can be toggled on and off" | Corrected upstream.… |
-| [R-4](../../../CLAIMS.md#L509) | Retracted | F-4: "docs say clawback resets the version counter" | Not a doc error.… |
-| [R-7](../../../CLAIMS.md#L512) | Retracted | docs/explainer/WHAT-CONFIDENTIAL-MEANS-2026-09-02.md, limit 1, and the README before 2026-10-19: a holder who converts in 500, receives nothing and… | The README's rewrite… |
+| [E-353](../../../CLAIMS.md#L413) | Established | The filings were re-surveyed on 2026-10-22, before either post is drafted, and F-9's is fixed: mpt-crypto PR #152 merged on 2026-10-21 and closed… | A, run and read |
+| [E-355](../../../CLAIMS.md#L415) | Established | Round two read round one's fixes, R-9 and the blog without its tools sentence, and its stopping condition was set before it ran: no third round. | A, measured |
+| [B-20](../../../CLAIMS.md#L434) | Pending | ~~The deterministic signing arm is pub in an ordinary release build, and only a doc comment says it is for vectors.~~ CLOSED 2026-08-27, with the… | CLOSED, with a REAL… |
+| [F-1](../../../CLAIMS.md#L466) | Findings | Docs claim the reset inbox value is indistinguishable; it is the canonical EncZero, recomputable by any observer from public inputs, and used on… | A |
+| [F-2](../../../CLAIMS.md#L467) | Findings | Spec §13.2.2's "separate view keys" have no ledger field. Protocol layer: issuer keys are permanent. Operational layer: an issuer choosing Mechanism… | A / B |
+| [F-3](../../../CLAIMS.md#L468) | Findings | Docs say confidentiality can be toggled on and off; spec and transactor have no clear flag | A |
+| [F-4](../../../CLAIMS.md#L469) | Findings | Docs say clawback resets the version counter to 0; it increments | A |
+| [F-24](../../../CLAIMS.md#L479) | Findings | Our own facility walkthrough understates what a ConvertBack publishes. | A, executed |
+| [F-26](../../../CLAIMS.md#L481) | Findings | The facility walkthrough's *"After this, no plaintext amount appears again until the facility is retired or resized"* was FALSE, and it is the SECOND… | A on the reading, NOT… |
+| [R-3](../../../CLAIMS.md#L512) | Retracted | F-3: "docs say confidentiality can be toggled on and off" | Corrected upstream.… |
+| [R-4](../../../CLAIMS.md#L513) | Retracted | F-4: "docs say clawback resets the version counter" | Not a doc error.… |
+| [R-7](../../../CLAIMS.md#L516) | Retracted | docs/explainer/WHAT-CONFIDENTIAL-MEANS-2026-09-02.md, limit 1, and the README before 2026-10-19: a holder who converts in 500, receives nothing and… | The README's rewrite… |
+| [R-9](../../../CLAIMS.md#L518) | Retracted | The hosted explainer /how-it-works, README.md and WHAT-CONFIDENTIAL-MEANS, the last as *"the sentence to use"*: ~~*"it hides the shape of the book,…~~ | True as the register… |

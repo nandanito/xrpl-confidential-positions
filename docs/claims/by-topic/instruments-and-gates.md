@@ -15,7 +15,7 @@ invisible here** — a reader in `REVIEW-040` put their confidence at ~60% for *
 about secrets"* and said they would fall back to grep. **They were right to.** For an
 exhaustive sweep, search `CLAIMS.md` directly.
 
-**97 rows.**
+**98 rows.**
 
 | id | section | headline | grade |
 |---|---|---|---|
@@ -76,16 +76,16 @@ exhaustive sweep, search `CLAIMS.md` directly.
 | [E-247](../../../CLAIMS.md#L307) | Established | REVIEW-041 — ROUND TWO, TWO EXTERNAL LEGS, AND THE HEADLINE IS A FALSE PREMISE THE GATE WAS BUILT ON. IN A GFM TABLE A PIPE IS A CELL DELIMITER EVEN… | A, measured |
 | [E-251](../../../CLAIMS.md#L311) | Established | tools/check-emphasis.ts is built, and it caught four violations in the fifteen rows the session wrote under the discipline while building the gate… | A, measured |
 | [E-253](../../../CLAIMS.md#L313) | Established | A probe that verified the gate's cutoff passed for the wrong reason, and the exit code is what showed it. | A, measured |
-| [E-257](../../../CLAIMS.md#L317) | Established | make check-zeroize-bounds mutates tracked signer sources for the ~2 minutes it runs, and a git status taken during that window reported M… | A, source |
+| [E-257](../../../CLAIMS.md#L317) | Established | make check-zeroize-bounds mutates tracked signer sources for the \~2 minutes it runs, and a git status taken during that window reported M… | A, source |
 | [E-258](../../../CLAIMS.md#L318) | Established | REVIEW-043 found five defects in the emphasis gate and its harness, and the sharpest is that the harness could not tell a crash from a verdict. | A, measured |
 | [E-259](../../../CLAIMS.md#L319) | Established | REVIEW-044, round two, three legs with differed packets: the fixes carried a live false-pass, one defect a fix INTRODUCED, and a sentence that was… | A, measured |
 | [E-260](../../../CLAIMS.md#L320) | Established | REVIEW-044's own fix for false-passing probes false-passed, and testing the fix is what found it. | A, measured |
 | [E-261](../../../CLAIMS.md#L321) | Established | REVIEW-045, round three: the hand-written block splitter FALSE-PASSED six real over-800-character paragraphs, and the fix is a design change rather… | A, measured |
 | [E-263](../../../CLAIMS.md#L323) | Established | Giving rule 6 to cmark-gfm made two of the harness's own probes stale, and the harness is the only thing that said so. | A, measured |
 | [E-264](../../../CLAIMS.md#L324) | Established | The emphasis-gate rotation STOPS at three rounds, which departs from CLAUDE.md's rule, and the owner ruled it on 2026-09-09. | A, reasoned |
-| [E-268](../../../CLAIMS.md#L328) | Established | A generated file whose input includes its own commit has NO FIXPOINT — FALSE AS STATED, and corrected the next day by an external review (E-271).… | A, measured |
+| [E-268](../../../CLAIMS.md#L328) | Established | ~~A generated file whose input includes its own commit has NO FIXPOINT~~ — FALSE AS STATED, and corrected the next day by an external review (E-271).… | A, measured |
 | [E-269](../../../CLAIMS.md#L329) | Established | Two concurrent runs of check-zeroize-bounds corrupt source, and the second is now refused. | A, measured |
-| [E-270](../../../CLAIMS.md#L330) | Established | check-zeroize-bounds takes ~2 minutes or ~28 depending only on what ran before it, and nothing said so. | A, measured |
+| [E-270](../../../CLAIMS.md#L330) | Established | check-zeroize-bounds takes \~2 minutes or \~28 depending only on what ran before it, and nothing said so. | A, measured |
 | [E-271](../../../CLAIMS.md#L331) | Established | An external review of this session's own work upheld five findings, and the sharpest refuted a row written the day before. | A, measured |
 | [E-274](../../../CLAIMS.md#L334) | Established | The two-commit workflow this gate prescribes made its own generator NON-IDEMPOTENT, and --check could not see the loop. | A, measured |
 | [E-275](../../../CLAIMS.md#L335) | Established | Every check in the revision gate read committed git objects, so deleting a row before committing reported PASS. | A, measured |
@@ -113,6 +113,7 @@ exhaustive sweep, search `CLAIMS.md` directly.
 | [E-349](../../../CLAIMS.md#L409) | Established | The demo serves the reviewed build: PR #18 carried E-339 to E-348 to the public repository, the owner redeployed from 62fcac3, and when compared on… | A, measured |
 | [E-350](../../../CLAIMS.md#L410) | Established | The hosted demo has an explainer, /how-it-works, and an overview that orients rather than lists; both were read twice before any deploy, and this row… | A for the build,… |
 | [E-351](../../../CLAIMS.md#L411) | Established | The hosted demo has diagrams on all seven pages, read twice before any deploy, and this row records no deployment. | A for the build,… |
-| [B-24](../../../CLAIMS.md#L422) | Pending | REVIEW-031's fixes — the seed residue B-23 left, and the gate that could not see it. | BUILT 2026-08-28. The… |
-| [B-26](../../../CLAIMS.md#L424) | Pending | REVIEW-033's fixes — the falsifier that was UB, and the gate's fourth round of false passes. | BUILT 2026-08-28. The… |
-| [F-23](../../../CLAIMS.md#L480) | Findings | A wrong ledger read is a CONFIDENTIALITY break, not a rejected transaction — and the signer cannot control which. | A, executed |
+| [E-352](../../../CLAIMS.md#L412) | Established | The demo serves the explainer and its diagrams: PR #19 and PR #20 carried E-349 to E-351, R-7 and R-8 to the public repository, the owner deployed… | A, measured |
+| [B-24](../../../CLAIMS.md#L426) | Pending | REVIEW-031's fixes — the seed residue B-23 left, and the gate that could not see it. | BUILT 2026-08-28. The… |
+| [B-26](../../../CLAIMS.md#L428) | Pending | REVIEW-033's fixes — the falsifier that was UB, and the gate's fourth round of false passes. | BUILT 2026-08-28. The… |
+| [F-23](../../../CLAIMS.md#L484) | Findings | A wrong ledger read is a CONFIDENTIALITY break, not a rejected transaction — and the signer cannot control which. | A, executed |
