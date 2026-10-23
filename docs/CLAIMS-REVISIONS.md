@@ -9,7 +9,7 @@ the file first contains its id — not to one that merely edits or mentions it.
 
 ⚠ **Simplified, and that word is load-bearing.** `git log -- <path>` prunes a merge
 that is TREESAME to its first parent, so this is NOT every commit whose tree touched
-the file: `--full-history` reports **9** against the 9 listed below. The
+the file: `--full-history` reports **10** against the 10 listed below. The
 pruned ones are merges that introduced nothing the branch had not already introduced,
 which is what makes this the readable history. ⚠ **The append-only check does NOT run
 on this walk** — it runs over every reachable commit against every parent, precisely
@@ -20,10 +20,10 @@ because pruning could hide a row dropped at a merge.
 table for the entries that have one. The rest are deliberately not reconstructed:
 a narrative written now would be one session's reading of other sessions' work.
 
-- **Commits in the simplified walk:** 9, spanning 2026-10-19 to 2026-10-22 (`--full-history`: 9)
-- **Of those, commits that introduced at least one row:** 8
-- **Rows in the register at `3bf55f6`:** 436
-- **History covered up to:** `3bf55f62f54b93a9b1970c114a746f183efe928f`
+- **Commits in the simplified walk:** 10, spanning 2026-10-19 to 2026-10-23 (`--full-history`: 10)
+- **Of those, commits that introduced at least one row:** 9
+- **Rows in the register at `6ba4b13`:** 441
+- **History covered up to:** `6ba4b13e09c3fed3ea5a6ecacce9e32cdecc3f47`
 
 ⚠ Every number above is derived from the git query its own label names — the first
 three from the list below, the `--full-history` figure from a separate query that
@@ -45,6 +45,7 @@ corrected by E-271.
 
 | Date | Commit | Rows first appearing | Subject |
 |---|---|---|---|
+| 2026-10-23 | `6ba4b13` | E-356 – E-360 | The launch posts and their reviews, the blog published, and the filings re-surveyed (E-356 to E-360) |
 | 2026-10-22 | `3bf55f6` | E-352 – E-355, R-9 | The filings re-surveyed, and "the shape of the book" replaced (R-9) |
 | 2026-10-22 | `d13dc2b` | E-351, R-8 | Diagrams on every page of the hosted demo, read twice |
 | 2026-10-22 | `b7cae7a` | E-349, E-350, R-7 | The hosted demo's explainer, read twice, and the deploy that preceded it |
