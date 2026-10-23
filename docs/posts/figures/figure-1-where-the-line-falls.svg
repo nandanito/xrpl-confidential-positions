@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 470" role="img" aria-labelledby="title desc" font-family="'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <title id="title">Where the line between public and hidden falls</title>
+  <desc id="desc">A token balance moves left to right. On the left, holder A's public balance, an ordinary MPT holding. An arrow labelled Convert, amount public, leads into the centre panel, confidential balances, where holder A sends to holder B: the amount is hidden from the public, the sender and receiver are public, and each balance is hidden from the public unless it is visibly zero. An arrow labelled ConvertBack, amount public, leads out to holder B's public balance on the right. Below, two boxes. Public everywhere: who sends to whom, when and how often, and the total held in confidential form. The issuer reads every confidential balance: so does an auditor, if the token names one, and no setting turns this off. Footer: a balance is visibly zero in three cases, a new balance, an inbox just merged, and a position clawed back.</desc>
+
+  <defs>
+    <marker id="a-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#34374C"/>
+    </marker>
+    <marker id="a-tint" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8a8c9e"/>
+    </marker>
+  </defs>
+
+  <rect width="900" height="470" fill="#ffffff"/>
+
+  <text x="450" y="38" text-anchor="middle" font-size="11" letter-spacing="2" fill="#777777">XLS-96 CONFIDENTIAL TRANSFERS · WHAT AN OBSERVER SEES</text>
+  <text x="450" y="72" text-anchor="middle" font-size="23" font-weight="600" fill="#000000">Only a Send hides its amount. Who pays whom is always public.</text>
+
+  <!-- public balance, left -->
+  <rect rx="2" x="30" y="132" width="160" height="84" fill="#fafafa" stroke="#c8c8c8"/>
+  <text x="110" y="166" text-anchor="middle" font-size="15" font-weight="600" fill="#000000">A's public balance</text>
+  <text x="110" y="188" text-anchor="middle" font-size="13" fill="#555555">an ordinary MPT holding</text>
+
+  <!-- Convert -->
+  <line x1="192" y1="174" x2="276" y2="174" stroke="#8a8c9e" stroke-width="1.4" marker-end="url(#a-tint)"/>
+  <text x="234" y="162" text-anchor="middle" font-size="13" font-weight="600" fill="#555555">Convert</text>
+  <text x="234" y="196" text-anchor="middle" font-size="12" fill="#777777">amount public</text>
+
+  <!-- confidential panel, the figure's subject -->
+  <rect rx="2" x="282" y="104" width="336" height="164" fill="#fafafa" stroke="#34374C" stroke-width="1.6"/>
+  <rect x="282" y="104" width="5" height="164" fill="#34374C"/>
+  <text x="450" y="128" text-anchor="middle" font-size="11" letter-spacing="1.8" fill="#777777">CONFIDENTIAL BALANCES</text>
+  <rect rx="2" x="306" y="146" width="92" height="40" fill="#ffffff" stroke="#c8c8c8"/>
+  <text x="352" y="171" text-anchor="middle" font-size="14" fill="#000000">holder A</text>
+  <rect rx="2" x="502" y="146" width="92" height="40" fill="#ffffff" stroke="#c8c8c8"/>
+  <text x="548" y="171" text-anchor="middle" font-size="14" fill="#000000">holder B</text>
+  <line x1="400" y1="166" x2="498" y2="166" stroke="#34374C" stroke-width="1.6" marker-end="url(#a-accent)"/>
+  <text x="450" y="158" text-anchor="middle" font-size="13" font-weight="600" fill="#34374C">Send</text>
+  <text x="450" y="210" text-anchor="middle" font-size="14" font-weight="600" fill="#34374C">amount hidden from the public</text>
+  <text x="450" y="229" text-anchor="middle" font-size="13" fill="#555555">sender and receiver public</text>
+  <line x1="306" y1="241" x2="594" y2="241" stroke="#e5e5e5"/>
+  <text x="450" y="259" text-anchor="middle" font-size="13" fill="#555555">each balance hidden from the public, unless visibly zero</text>
+
+  <!-- ConvertBack -->
+  <line x1="624" y1="174" x2="706" y2="174" stroke="#8a8c9e" stroke-width="1.4" marker-end="url(#a-tint)"/>
+  <text x="665" y="162" text-anchor="middle" font-size="13" font-weight="600" fill="#555555">ConvertBack</text>
+  <text x="665" y="196" text-anchor="middle" font-size="12" fill="#777777">amount public</text>
+
+  <!-- public balance, right -->
+  <rect rx="2" x="710" y="132" width="160" height="84" fill="#fafafa" stroke="#c8c8c8"/>
+  <text x="790" y="166" text-anchor="middle" font-size="15" font-weight="600" fill="#000000">B's public balance</text>
+  <text x="790" y="188" text-anchor="middle" font-size="13" fill="#555555">an ordinary MPT holding</text>
+
+  <!-- public everywhere -->
+  <rect rx="2" x="30" y="290" width="410" height="96" fill="#fafafa" stroke="#e5e5e5"/>
+  <text x="50" y="316" font-size="11" letter-spacing="1.8" fill="#777777">PUBLIC EVERYWHERE</text>
+  <text x="50" y="342" font-size="15" fill="#000000">Who sends to whom, when and how often.</text>
+  <text x="50" y="366" font-size="15" fill="#000000">The total held in confidential form.</text>
+
+  <!-- the issuer -->
+  <rect rx="2" x="460" y="290" width="410" height="96" fill="#fafafa" stroke="#e5e5e5"/>
+  <text x="480" y="316" font-size="11" letter-spacing="1.8" fill="#777777">THE ISSUER READS EVERY CONFIDENTIAL BALANCE</text>
+  <text x="480" y="342" font-size="15" fill="#000000">So does an auditor, if the token names one.</text>
+  <text x="480" y="366" font-size="15" fill="#000000">No setting turns this off.</text>
+
+  <line x1="30" y1="410" x2="870" y2="410" stroke="#e5e5e5"/>
+  <text x="450" y="438" text-anchor="middle" font-size="14" font-style="italic" fill="#555555">A balance is visibly zero in three cases: a new balance, an inbox just merged, a position clawed back.</text>
+</svg>

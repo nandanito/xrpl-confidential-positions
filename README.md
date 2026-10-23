@@ -166,7 +166,7 @@ So Devnet is the only network where this can run. Amendment state changes; run `
 
 Seven findings about XLS-96, its reference implementation and its ecosystem: proof sizes and composition, why a large balance can decrypt faster than a small one, and where a confidential balance fails to compose with the ledger's vault and lending primitives. Three correct a reading this project first got wrong. None is a security claim about this project. **→ [`PROTOCOL-FINDINGS`](docs/explainer/PROTOCOL-FINDINGS-2026-09-02.md)**
 
-Observations for the XLS-96 authors collect in [`UPSTREAM-FEEDBACK.md`](UPSTREAM-FEEDBACK.md). Eleven have been filed upstream since 2026-08-26; the four since 2026-09-28 were reviewed before filing, under [`docs/UPSTREAM-FILING-PROTOCOL.md`](docs/UPSTREAM-FILING-PROTOCOL.md). Their outcomes were re-surveyed on 2026-10-22 ([survey](docs/evidence/upstream-survey-2026-10-22/README.md)); one fix reached the English docs page and not its Japanese translation. Found a defect *here*? Open an issue on this repository.
+Observations for the XLS-96 authors collect in [`UPSTREAM-FEEDBACK.md`](UPSTREAM-FEEDBACK.md). Eleven have been filed upstream since 2026-08-26; the four since 2026-09-28 were reviewed before filing, under [`docs/UPSTREAM-FILING-PROTOCOL.md`](docs/UPSTREAM-FILING-PROTOCOL.md). Their outcomes were re-surveyed on 2026-10-23 ([survey](docs/evidence/upstream-survey-2026-10-23/README.md)); one fix reached the English docs page and not its Japanese translation. Found a defect *here*? Open an issue on this repository.
 
 ---
 

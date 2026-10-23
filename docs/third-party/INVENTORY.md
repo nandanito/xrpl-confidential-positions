@@ -22,7 +22,7 @@ identifier pass leaves out because every package's dependency list looks alike, 
 only the line pass sees a manifest, and only unreflowed.
 
 **What is compared.** On the tracked side, every file `git ls-files` lists with a text
-extension (781 files), except lockfiles, `LICENSE`, `NOTICE`, `LICENSES/`
+extension (818 files), except lockfiles, `LICENSE`, `NOTICE`, `LICENSES/`
 and this directory; lines lose a line-number prefix first. On the upstream side, 110
 corpora are configured in 106 projects:
 **96 were compared and 14 were unavailable**, listed
@@ -36,7 +36,7 @@ Compared at `master`, `9fbf7ef8eb69973f43d44836875e01e6364a3ecb`.
 
 | file | kind | lines |
 |---|---|---|
-| `CLAIMS.md` | prose | 213–216, 491–494 |
+| `CLAIMS.md` | prose | 213–216, 496–499 |
 | `docs/reviews/REVIEW-012-REQUEST-keygen-2026-08-18.md` | prose | 65–68 |
 | `docs/reviews/REVIEW-021-REQUEST-step7-convert-back-2026-08-25.md` | code, prose | 148–176, 184–188 |
 | `docs/reviews/REVIEW-046b-gemini-custody-request-2026-09-13.md` | code, prose | 11–22 |
@@ -48,6 +48,7 @@ Compared at `master`, `9fbf7ef8eb69973f43d44836875e01e6364a3ecb`.
 | `docs/reviews/REVIEW-057-packets/round-two-stderr.txt` | code | 6760, 6942 |
 | `docs/reviews/REVIEW-058-packets/round-one-codex-stderr.txt` | code | 7784–7839, 8474–8475, 9572–9619 |
 | `docs/reviews/REVIEW-058-packets/round-one-prompt-gemini.md` | code, prose | 2954–2957, 2960–4041 |
+| `docs/reviews/REVIEW-062-packets/round-two-leg-a-codex-stderr.txt` | code | 7014–7078, 8076–8102, 8104–8113 |
 | `docs/task-zero/SOURCES-2026-08-18.md` | prose | 96–98 |
 | `docs/task-zero/XLS-66-INVESTIGATION-2026-08-16.md` | prose | 323–326 |
 | `docs/upstream-filings/2026-08-26/01-devportal-enczero.md` | code, prose | 27–30 |

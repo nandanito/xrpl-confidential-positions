@@ -196,6 +196,12 @@ against the live URL** (`web/hosted/README.md` step 7), after breaking it on a c
 of the output as E-349 did, with a zeroed digest and an altered header. A post
 links a demo checked that day, and waits if the comparison fails.
 
+**Amended 2026-10-23, on E-360: on the day each post is published, re-run the filing
+survey too, however recent the last one.** The blog went up a day after a survey,
+with a pull request it called *"approved and not merged"* merged in between; the
+publication step had re-taken the amendment readings and not the filings. A post
+that names a filing's state waits until the survey has run that day.
+
 ⚠ **Gate amended 2026-10-18, on E-316: every filing is re-surveyed at source before
 a word of either post is drafted.** The survey is the one E-316 records: the comments
 on each issue this project filed, by anyone but this project; `gh pr view` on every
@@ -228,6 +234,36 @@ section and runs the same survey before publication.
    *secure* (P-5).
 
 **Exit:** both published, both pointing at a live demo and a public repository.
+
+**Status 2026-10-23 (E-359).** The owner signed off the blog, the LinkedIn post and the
+X, Bluesky, Mastodon and Nostr posts after `REVIEW-064`. The blog is published at
+`https://nandan.me/writing/amounts-not-relationships/`. The owner is scheduling
+the LinkedIn and social posts for Sunday 2026-10-25, evening in Japan; their status
+sentences read *"as I write this"*, so re-run `make check-amendments` before they go
+out. Phase 3's exit is met when they are posted.
+
+---
+
+## After the launch: the posts that follow
+
+Recorded at the owner's request on 2026-10-23. In order:
+
+1. **The EVM half.** Every launch post promises it: the same receivables facility, run
+   on EVM chains. Its timing follows the private disclosure in that study, and nothing
+   about its results is published before then.
+2. **The comparison.** The same facility on both ledgers, side by side: what each hides
+   from the public, what each lets the issuer or an auditor read, and how keys are held
+   and replaced. The owner rates it very useful. It waits for the EVM post, and every
+   EVM sentence in it needs that study's own evidence; a negative about EVM needs its
+   own search (P-12).
+3. **Candidates, not commitments.** A dated update when XLS-99 (key rotation and
+   recovery) moves, or when `ConfidentialTransfer` is enabled on Testnet or Mainnet,
+   using the filing survey and `check-amendments`. And a method piece on the claims
+   register and the checks that catch a false sentence, which needs no new claim about
+   XLS-96.
+
+Each post runs `claims-check`, a claims leg and the doc-coauthoring reader test before
+the owner signs it off, as the launch posts did (`REVIEW-062` to `REVIEW-064`).
 
 ---
 

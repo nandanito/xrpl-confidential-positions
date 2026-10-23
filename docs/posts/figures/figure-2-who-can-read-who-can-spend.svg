@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 470" role="img" aria-labelledby="title desc" font-family="'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <title id="title">Who can read a confidential balance, and who can spend it</title>
+  <desc id="desc">A table with four rows and five columns. Columns: who pays whom and when; amounts converted in or out; a holder's balance; a Send's amount; can spend a balance. Anyone: yes, yes, only whether it is visibly zero, no, no. A holder: yes, yes, their own, their own, their own with both their keys. The issuer, highlighted: yes, yes, every one, every one, and no, though if the token's settings allow, it can destroy or freeze one. An auditor, if the token names one: yes, yes, every one, every one, no. Footer: a dashed cell is a partial yes and a grey cell is no; a balance is visibly zero when it is new, when its inbox was just merged, or after a clawback.</desc>
+
+  <rect width="900" height="470" fill="#ffffff"/>
+
+  <text x="450" y="38" text-anchor="middle" font-size="11" letter-spacing="2" fill="#777777">WHO CAN READ, AND WHO CAN SPEND</text>
+  <text x="450" y="72" text-anchor="middle" font-size="23" font-weight="600" fill="#000000">The issuer reads every balance. Only the holder's keys can spend one.</text>
+
+  <!-- column heads -->
+  <text x="188" y="114" font-size="12" font-weight="600" fill="#555555">Who pays whom,</text>
+  <text x="188" y="130" font-size="12" font-weight="600" fill="#555555">and when</text>
+  <text x="330" y="114" font-size="12" font-weight="600" fill="#555555">Amounts converted</text>
+  <text x="330" y="130" font-size="12" font-weight="600" fill="#555555">in or out</text>
+  <text x="472" y="114" font-size="12" font-weight="600" fill="#555555">A holder's</text>
+  <text x="472" y="130" font-size="12" font-weight="600" fill="#555555">balance</text>
+  <text x="614" y="114" font-size="12" font-weight="600" fill="#555555">A Send's</text>
+  <text x="614" y="130" font-size="12" font-weight="600" fill="#555555">amount</text>
+  <text x="756" y="114" font-size="12" font-weight="600" fill="#555555">Can spend</text>
+  <text x="756" y="130" font-size="12" font-weight="600" fill="#555555">a balance</text>
+  <line x1="30" y1="142" x2="884" y2="142" stroke="#e5e5e5"/>
+
+  <!-- Anyone -->
+  <text x="42" y="183" font-size="14" font-weight="600" fill="#000000">Anyone</text>
+  <rect rx="2" x="180" y="152" width="136" height="54" fill="#ffffff" stroke="#c8c8c8"/>
+  <text x="248" y="184" text-anchor="middle" font-size="13" font-weight="600" fill="#000000">yes</text>
+  <rect rx="2" x="322" y="152" width="136" height="54" fill="#ffffff" stroke="#c8c8c8"/>
+  <text x="390" y="184" text-anchor="middle" font-size="13" font-weight="600" fill="#000000">yes</text>
+  <rect rx="2" x="464" y="152" width="136" height="54" fill="#ffffff" stroke="#8a8c9e" stroke-dasharray="4 3"/>
+  <text x="532" y="176" text-anchor="middle" font-size="13" fill="#000000">only whether it</text>
+  <text x="532" y="192" text-anchor="middle" font-size="13" fill="#000000">is visibly zero</text>
+  <rect rx="2" x="606" y="152" width="136" height="54" fill="#fafafa" stroke="#e5e5e5"/>
+  <text x="674" y="184" text-anchor="middle" font-size="13" fill="#777777">no</text>
+  <rect rx="2" x="748" y="152" width="136" height="54" fill="#fafafa" stroke="#e5e5e5"/>
+  <text x="816" y="184" text-anchor="middle" font-size="13" fill="#777777">no</text>
+
+  <!-- A holder -->
+  <text x="42" y="245" font-size="14" font-weight="600" fill="#000000">A holder</text>
+  <rect rx="2" x="180" y="214" width="136" height="54" fill="#ffffff" stroke="#c8c8c8"/>
+  <text x="248" y="246" text-anchor="middle" font-size="13" font-weight="600" fill="#000000">yes</text>
+  <rect rx="2" x="322" y="214" width="136" height="54" fill="#ffffff" stroke="#c8c8c8"/>
+  <text x="390" y="246" text-anchor="middle" font-size="13" font-weight="600" fill="#000000">yes</text>
+  <rect rx="2" x="464" y="214" width="136" height="54" fill="#ffffff" stroke="#8a8c9e" stroke-dasharray="4 3"/>
+  <text x="532" y="246" text-anchor="middle" font-size="13" fill="#000000">their own</text>
+  <rect rx="2" x="606" y="214" width="136" height="54" fill="#ffffff" stroke="#8a8c9e" stroke-dasharray="4 3"/>
+  <text x="674" y="246" text-anchor="middle" font-size="13" fill="#000000">their own</text>
+  <rect rx="2" x="748" y="214" width="136" height="54" fill="#ffffff" stroke="#8a8c9e" stroke-dasharray="4 3"/>
+  <text x="816" y="238" text-anchor="middle" font-size="13" fill="#000000">their own, with</text>
+  <text x="816" y="254" text-anchor="middle" font-size="13" fill="#000000">both their keys</text>
+
+  <!-- The issuer accent -->
+  <rect x="30" y="276" width="4" height="54" fill="#34374C"/>
+  <text x="42" y="307" font-size="14" font-weight="600" fill="#34374C">The issuer</text>
+  <rect rx="2" x="180" y="276" width="136" height="54" fill="#ffffff" stroke="#c8c8c8"/>
+  <text x="248" y="308" text-anchor="middle" font-size="13" font-weight="600" fill="#000000">yes</text>
+  <rect rx="2" x="322" y="276" width="136" height="54" fill="#ffffff" stroke="#c8c8c8"/>
+  <text x="390" y="308" text-anchor="middle" font-size="13" font-weight="600" fill="#000000">yes</text>
+  <rect rx="2" x="464" y="276" width="136" height="54" fill="#ffffff" stroke="#34374C" stroke-width="1.6"/>
+  <text x="532" y="308" text-anchor="middle" font-size="13" font-weight="600" fill="#34374C">every one</text>
+  <rect rx="2" x="606" y="276" width="136" height="54" fill="#ffffff" stroke="#34374C" stroke-width="1.6"/>
+  <text x="674" y="308" text-anchor="middle" font-size="13" font-weight="600" fill="#34374C">every one</text>
+  <rect rx="2" x="748" y="276" width="136" height="54" fill="#ffffff" stroke="#c8c8c8"/>
+  <text x="816" y="293" text-anchor="middle" font-size="13" font-weight="600" fill="#000000">no; but if its settings</text>
+  <text x="816" y="308" text-anchor="middle" font-size="13" fill="#000000">allow, it can destroy</text>
+  <text x="816" y="323" text-anchor="middle" font-size="13" fill="#000000">or freeze one</text>
+
+  <!-- An auditor, if named -->
+  <text x="42" y="362" font-size="14" font-weight="600" fill="#000000">An auditor,</text>
+  <text x="42" y="379" font-size="12" fill="#777777">if named</text>
+  <rect rx="2" x="180" y="338" width="136" height="54" fill="#ffffff" stroke="#c8c8c8"/>
+  <text x="248" y="370" text-anchor="middle" font-size="13" font-weight="600" fill="#000000">yes</text>
+  <rect rx="2" x="322" y="338" width="136" height="54" fill="#ffffff" stroke="#c8c8c8"/>
+  <text x="390" y="370" text-anchor="middle" font-size="13" font-weight="600" fill="#000000">yes</text>
+  <rect rx="2" x="464" y="338" width="136" height="54" fill="#ffffff" stroke="#c8c8c8"/>
+  <text x="532" y="370" text-anchor="middle" font-size="13" font-weight="600" fill="#000000">every one</text>
+  <rect rx="2" x="606" y="338" width="136" height="54" fill="#ffffff" stroke="#c8c8c8"/>
+  <text x="674" y="370" text-anchor="middle" font-size="13" font-weight="600" fill="#000000">every one</text>
+  <rect rx="2" x="748" y="338" width="136" height="54" fill="#fafafa" stroke="#e5e5e5"/>
+  <text x="816" y="370" text-anchor="middle" font-size="13" fill="#777777">no</text>
+
+  <line x1="30" y1="410" x2="884" y2="410" stroke="#e5e5e5"/>
+  <text x="450" y="438" text-anchor="middle" font-size="14" font-style="italic" fill="#555555">Dashed: a partial yes. Grey: no. Visibly zero: a new balance, an inbox just merged, a position clawed back.</text>
+</svg>

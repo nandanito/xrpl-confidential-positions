@@ -241,7 +241,9 @@ export function render(entries: Entry[]): string {
     L.push(`## ${section} — ${rows.length} rows`, "");
     L.push("| id | summary | grade |", "|---|---|---|");
     for (const e of rows) {
-      L.push(`| [${e.id}](../CLAIMS.md#L${e.line}) | ${e.summary} | ${e.grade} |`);
+      // GitHub renders CLAIMS.md as a preview, where #L anchors do not scroll;
+      // ?plain=1 opens the source view, where they do (E-360).
+      L.push(`| [${e.id}](../CLAIMS.md?plain=1#L${e.line}) | ${e.summary} | ${e.grade} |`);
     }
     L.push("");
   }

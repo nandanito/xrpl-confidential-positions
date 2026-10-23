@@ -1,0 +1,8 @@
+leg B: start 2026-10-22T03:46:15Z
+leg A: start 2026-10-22T03:47:15Z
+leg B exit=0 end 2026-10-22T03:47:49Z
+leg A exit=0 end 2026-10-22T03:49:20Z
+round two leg A: start 2026-10-22T04:51:32Z
+round two leg B: start 2026-10-22T04:51:32Z
+round two leg B exit=0 end 2026-10-22T04:53:21Z
+round two leg A exit=0 end 2026-10-22T04:59:28Z

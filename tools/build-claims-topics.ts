@@ -351,7 +351,8 @@ function renderTopic(t: Topic, rows: Entry[]): string {
     "|---|---|---|---|",
   ];
   for (const e of rows) {
-    L.push(`| [${e.id}](../../../CLAIMS.md#L${e.line}) | ${shortSection(e.section)} | ${summarise(e.headline, 150)} | ${e.grade} |`);
+    // ?plain=1: #L anchors do not scroll in GitHub's rendered preview (E-360).
+    L.push(`| [${e.id}](../../../CLAIMS.md?plain=1#L${e.line}) | ${shortSection(e.section)} | ${summarise(e.headline, 150)} | ${e.grade} |`);
   }
   L.push("");
   return L.join("\n");

@@ -1,0 +1,18 @@
+Round-one fixes are mostly present, but the LinkedIn outside-review disclosure remains incomplete, the social amendment-status claim relies on an author-only date, and new business-case and lost-key statements exceed the cited evidence. The topic-pages link resolves to a file in this tree, and the id-finding instructions are usable, though the definitions are shorthand rather than complete descriptions of each register section.
+
+Full review comments:
+
+- [P2] Qualify the business-case claims as illustrative — $USER_TMP/T/r064a.hJ99Di/repo/docs/posts/BLOG-2026-10-22-draft.md:73-79
+  The new business-case section presents several uncited generalizations as facts: that buyers often pay weeks or months after delivery, that drawing more or more often means a supplier is short of cash, that this information tells competitors, customers and lenders, and that banks do not publish their exposures. The register and cited project materials support the facility example, not these market and business claims. Add sources or frame these as assumptions for the example. The LinkedIn sentence “how much a supplier draws, and how often, shows its cash position” repeats the unsupported inference; “For a regulated issuer that may be the point” also risks implying regulatory expectations the post has not established. (Blog lines 68–79; LinkedIn line 38.)
+
+- [P2] Name the outside reviews in the LinkedIn post — $USER_TMP/T/r064a.hJ99Di/repo/docs/posts/LINKEDIN-2026-10-22-draft.md:48-48
+  The post says upstream's code had three outside reviews and that one report was readable, but does not name the reviews or identify which report could be checked. Phase 3 explicitly requires both posts to name Trail of Bits, Sherlock and Zellic and say which one could be checked; the blog's fuller disclosure does not satisfy that requirement for this separate post. Add the names and identify Trail of Bits as the report that could be checked.
+
+- [P2] Date the social posts' Devnet amendment claim — $USER_TMP/T/r064a.hJ99Di/repo/docs/posts/SOCIAL-2026-10-22-draft.md:49-49
+  The social copy says the feature is available “on Devnet” (for example, X line 49), but the only date for the amendment reading is in the author-only note. P-3 requires a dated feature-RPC check alongside an amendment-status claim, and a post's timestamp does not establish that the reading is current or travel with copied text. Include the reading date in the post or avoid implying current enabled status.
+
+- [P2] Avoid calling clawback the only lost-key remedy — $USER_TMP/T/r064a.hJ99Di/repo/docs/posts/BLOG-2026-10-22-draft.md:272-274
+  The answer says “The only remedy is a clawback” if the token allows one. E-10 supports that losing the ElGamal key permanently loses access, and E-12 says clawback burns the balance; neither establishes that clawback is the only possible remedy. The post's own explanation says the key may be derived from a seed, so first distinguish losing the key from losing every seed it could be re-derived from, then describe clawback as an issuer action that may be available rather than the sole remedy.
+
+- [P2] Carry the freeze condition into the figure alt text — $USER_TMP/T/r064a.hJ99Di/repo/docs/posts/BLOG-2026-10-22-draft.md:186-186
+  The visible Figure 2 cell and its SVG description now say freezing depends on token settings, but the blog's alt text only says “if the token's settings allow,” which omits E-290's material condition: the issuer can turn on locking later unless the token's flags were made unchangeable at creation. The nearby prose states this accurately, but the figure's alternative text must not make a different, less precise claim. State the flags condition in the alt text as well.
