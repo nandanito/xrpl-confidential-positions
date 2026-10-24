@@ -9,7 +9,7 @@ the file first contains its id — not to one that merely edits or mentions it.
 
 ⚠ **Simplified, and that word is load-bearing.** `git log -- <path>` prunes a merge
 that is TREESAME to its first parent, so this is NOT every commit whose tree touched
-the file: `--full-history` reports **10** against the 10 listed below. The
+the file: `--full-history` reports **11** against the 11 listed below. The
 pruned ones are merges that introduced nothing the branch had not already introduced,
 which is what makes this the readable history. ⚠ **The append-only check does NOT run
 on this walk** — it runs over every reachable commit against every parent, precisely
@@ -20,10 +20,10 @@ because pruning could hide a row dropped at a merge.
 table for the entries that have one. The rest are deliberately not reconstructed:
 a narrative written now would be one session's reading of other sessions' work.
 
-- **Commits in the simplified walk:** 10, spanning 2026-10-19 to 2026-10-23 (`--full-history`: 10)
-- **Of those, commits that introduced at least one row:** 9
-- **Rows in the register at `6ba4b13`:** 441
-- **History covered up to:** `6ba4b13e09c3fed3ea5a6ecacce9e32cdecc3f47`
+- **Commits in the simplified walk:** 11, spanning 2026-10-19 to 2026-10-24 (`--full-history`: 11)
+- **Of those, commits that introduced at least one row:** 10
+- **Rows in the register at `b3dd954`:** 444
+- **History covered up to:** `b3dd954906c862a0a92837104143e25b9cf0153d`
 
 ⚠ Every number above is derived from the git query its own label names — the first
 three from the list below, the `--full-history` figure from a separate query that
@@ -45,6 +45,7 @@ corrected by E-271.
 
 | Date | Commit | Rows first appearing | Subject |
 |---|---|---|---|
+| 2026-10-24 | `b3dd954` | E-361, R-10, R-11 | MergeInbox states no amount; clawback can be switched on later (E-361, R-10, R-11) |
 | 2026-10-23 | `6ba4b13` | E-356 – E-360 | The launch posts and their reviews, the blog published, and the filings re-surveyed (E-356 to E-360) |
 | 2026-10-22 | `3bf55f6` | E-352 – E-355, R-9 | The filings re-surveyed, and "the shape of the book" replaced (R-9) |
 | 2026-10-22 | `d13dc2b` | E-351, R-8 | Diagrams on every page of the hosted demo, read twice |
