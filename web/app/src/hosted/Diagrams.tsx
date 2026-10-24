@@ -153,7 +153,7 @@ const AT: Record<string, string> = {
 export function LifecycleDiagram() {
   const lane = "text-[11px] font-semibold opacity-80 self-end";
   return (
-    <Figure caption="Holder A converts, merges and sends to holder B, who merges and converts back. Only the Send hides its amount.">
+    <Figure caption="Holder A converts, merges and sends to holder B, who merges and converts back. The Send hides its amount, and a merge states none.">
       <div className="grid gap-x-3 gap-y-1 sm:grid-cols-[1fr_13rem_1fr] items-center">
         <div className={`${lane} ${AT["1/1"]}`}>Holder A</div>
         <div className={AT["1/2"]}><Node tone="public" title="Public balance" /></div>
@@ -194,7 +194,7 @@ export function WhoSeesWhatDiagram() {
   const rows: [string, [string, string][]][] = [
     ["Anyone", [["yes", YES], ["yes", YES], ["yes", YES], ["only whether it is a recognisable zero", PART], ["no", NO], ["no", NO]]],
     ["A holder", [["yes", YES], ["yes", YES], ["yes", YES], ["their own; others only as a recognisable zero", PART], ["their own only", PART], ["their own, with both their keys", PART]]],
-    ["The issuer", [["yes", YES], ["yes", YES], ["yes", YES], ["every one", YES], ["every one", YES], ["no; it can destroy one if the token allows clawback, and may freeze one", NO]]],
+    ["The issuer", [["yes", YES], ["yes", YES], ["yes", YES], ["every one", YES], ["every one", YES], ["no; it can destroy one if the token allows clawback, and may freeze one; it can switch either on later unless made unchangeable", NO]]],
     ["An auditor, if the token names one", [["yes", YES], ["yes", YES], ["yes", YES], ["every one", YES], ["every one", YES], ["no", NO]]],
   ];
   return (

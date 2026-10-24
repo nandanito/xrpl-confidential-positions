@@ -115,6 +115,6 @@ exhaustive sweep, search `CLAIMS.md` directly.
 | [E-351](../../../CLAIMS.md?plain=1#L411) | Established | The hosted demo has diagrams on all seven pages, read twice before any deploy, and this row records no deployment. | A for the build,… |
 | [E-352](../../../CLAIMS.md?plain=1#L412) | Established | The demo serves the explainer and its diagrams: PR #19 and PR #20 carried E-349 to E-351, R-7 and R-8 to the public repository, the owner deployed… | A, measured |
 | [E-356](../../../CLAIMS.md?plain=1#L416) | Established | The demo serves R-9: PR #21 carried E-352 to E-355 and R-9 to the public repository, held the post drafts and their review records back as the owner… | A, measured |
-| [B-24](../../../CLAIMS.md?plain=1#L431) | Pending | REVIEW-031's fixes — the seed residue B-23 left, and the gate that could not see it. | BUILT 2026-08-28. The… |
-| [B-26](../../../CLAIMS.md?plain=1#L433) | Pending | REVIEW-033's fixes — the falsifier that was UB, and the gate's fourth round of false passes. | BUILT 2026-08-28. The… |
-| [F-23](../../../CLAIMS.md?plain=1#L489) | Findings | A wrong ledger read is a CONFIDENTIALITY break, not a rejected transaction — and the signer cannot control which. | A, executed |
+| [B-24](../../../CLAIMS.md?plain=1#L432) | Pending | REVIEW-031's fixes — the seed residue B-23 left, and the gate that could not see it. | BUILT 2026-08-28. The… |
+| [B-26](../../../CLAIMS.md?plain=1#L434) | Pending | REVIEW-033's fixes — the falsifier that was UB, and the gate's fourth round of false passes. | BUILT 2026-08-28. The… |
+| [F-23](../../../CLAIMS.md?plain=1#L490) | Findings | A wrong ledger read is a CONFIDENTIALITY break, not a rejected transaction — and the signer cannot control which. | A, executed |

@@ -2,7 +2,7 @@
 layout: post
 title: "Amounts, not relationships: what confidential transfers on the XRP Ledger hide"
 excerpt: "XLS-96 lets a token holder keep balances encrypted on the public XRP Ledger. I built the core of a receivables facility on it and ran it on Devnet to see exactly where the line falls. It hides how much moves inside confidential form. It does not hide who pays whom, when, the amounts at the edges, or anything from the issuer."
-modified: 2026-10-23
+modified: 2026-10-24
 category: writing
 tags: [XRP Ledger, Confidential Transfers, Zero-Knowledge Proofs, Digital Assets]
 author: nandan
@@ -130,10 +130,11 @@ A position moves through four transactions:
   inbox. The amount is hidden. The sender and receiver are not.
 - **MergeInbox** moves the inbox into the balance the holder can spend. Arrivals
   wait in the inbox so that they cannot change a balance while a proof about it is
-  being built, and they cannot be sent until they are merged.
+  being built, and they cannot be sent until they are merged. It states no amount:
+  the whole inbox moves, still encrypted, and the holder's total does not change.
 - **ConvertBack** moves tokens back to a public balance. The amount is published.
 
-Only Send hides an amount.
+Convert and ConvertBack publish their amounts. Send and MergeInbox do not (E-361).
 
 The specification, XLS-0096, is the work of Murat Cenk, Aanchal Malhotra, Ayo
 Akinyele, Peter Chen, Shawn Xie and Yinyi Qian, and is a final standard (E-1). The
@@ -183,12 +184,14 @@ the account's master seed, as this project derives it, whoever holds the seed ho
 the secret too. The issuer cannot spend a holder's balance. If the token allows
 clawback, a setting that lets an issuer take tokens back, the issuer can destroy a
 confidential balance, crediting no one, and this project's tokens allow clawback
-(E-12). Unless the token's flags were made unchangeable when it was created, the
-issuer can also turn on locking later and freeze balances. That second power I read
-in rippled's source and did not run (E-290).
+(E-12). On Devnet an issuer can also switch clawback on after creating a token, and
+the same goes for locking, which freezes balances. Only making that setting
+unchangeable prevents it, and an issuer can do that when it creates the token or at
+any time later; this project's tokens have no setting made unchangeable. These
+powers I read in rippled's source and did not run (E-290, E-361).
 
 <figure>
-  <img src="/images/posts/amounts-not-relationships/figure-2-who-can-read-who-can-spend.svg" alt="A table of who can see what. Columns: who pays whom and when; amounts converted in or out; a holder's balance; a Send's amount; can spend a balance. Anyone: yes, yes, only whether it is visibly zero, no, no. A holder: yes, yes, their own, their own, their own with both their keys. The issuer, highlighted: yes, yes, every one, every one, and no, though if the token's settings allow, it can destroy or freeze one. An auditor, if the token names one: yes, yes, every one, every one, no. The issuer can destroy a balance only if the token allows clawback, and can freeze one only if locking was allowed when the token was created or can still be turned on.">
+  <img src="/images/posts/amounts-not-relationships/figure-2-who-can-read-who-can-spend.svg" alt="A table of who can see what. Columns: who pays whom and when; amounts converted in or out; a holder's balance; a Send's amount; can spend a balance. Anyone: yes, yes, only whether it is visibly zero, no, no. A holder: yes, yes, their own, their own, their own with both their keys. The issuer, highlighted: yes, yes, every one, every one, and no, though if the token's settings allow, it can destroy or freeze one. An auditor, if the token names one: yes, yes, every one, every one, no. The issuer can destroy a balance only if the token allows clawback, and freeze one only if it allows locking; an issuer can switch either on later unless it has made that setting unchangeable.">
   <figcaption>Figure 2. Who can read what, and who can spend. A dashed cell is a partial yes.</figcaption>
 </figure>
 
@@ -215,8 +218,8 @@ A registered key can never be changed (E-9). XLS-96 has no key rotation and no k
 recovery (P-10). A holder who loses their encryption key loses access to the balance
 (E-10). In this project the key is derived from the account's master seed, so it can
 be re-derived while the seed survives; lose both, and the balance cannot be spent. If
-the token allows clawback, the issuer can remove such a balance, and a clawback
-destroys it.
+the token allows clawback, or the issuer can still switch it on, the issuer can
+remove such a balance, and a clawback destroys it.
 
 A draft standard, XLS-99, by Aanchal Malhotra and Yinyi Qian, proposes rotation for
 holder, issuer and auditor keys, and recovery from key loss. When I checked, rippled
@@ -277,10 +280,11 @@ supplier drew, and when, is public.
    is supported (E-11). That is a statement about who can decrypt what, not a claim
    that it meets any regulator's requirements (P-6).
 6. **A lost key:** if a supplier loses its key and the seed it was derived from, the
-   balance cannot be spent (P-10, E-10). If the token allows clawback, the bank can
-   remove it, and a clawback destroys it (E-12).
+   balance cannot be spent (P-10, E-10). If the token allows clawback, or the bank
+   can still switch it on, the bank can remove it, and a clawback destroys it (E-12).
 7. **The bank, as issuer:** it cannot spend a supplier's balance. If the token's
-   settings allow, it can destroy one or freeze one (E-12, E-290).
+   settings allow, or it can still switch them on, it can destroy one or freeze one
+   (E-12, E-290, E-361).
 
 So the business case holds for amounts and fails for relationships. A supplier that
 minds being seen to borrow at all, or how often, gets no cover from XLS-96.

@@ -131,7 +131,7 @@ const RETRACTED: Retracted[] = [
   },
   {
     phrase: "It hides AMOUNTS. It hides nothing else",
-    why: "Convert and ConvertBack publish MPTAmount in plaintext; only a Send hides one (E-224, F-24)",
+    why: "Convert and ConvertBack publish MPTAmount in plaintext; Send and MergeInbox publish none (E-224, F-24)",
     markers: ["E-224", "E-136", "F-24", "~~", "STRUCK", "RETRACTED"],
   },
   {
@@ -207,6 +207,62 @@ const RETRACTED: Retracted[] = [
     phrase: "hides the shape of the book",
     why: "a reader takes 'shape' to mean who borrows, when and how often, all public; it hides how much each supplier draws and owes (R-9)",
     markers: ["R-9", "~~", "STRUCK", "RETRACTED"],
+    ownStrike: true,
+  },
+  // --- retracted 2026-10-24 on a RippleX reader's note (R-10). MergeInbox states no
+  // amount either, so "only Send" read as though it published one. Three needles,
+  // because the copies said "Only Send", "Only a Send" and "Only the Send".
+  {
+    phrase: "Only Send hides",
+    why: "MergeInbox states no amount either; Convert and ConvertBack are the ones that publish theirs (R-10, E-361)",
+    markers: ["R-10", "~~", "STRUCK", "RETRACTED"],
+    ownStrike: true,
+  },
+  {
+    phrase: "Only a Send hides",
+    why: "MergeInbox states no amount either; Convert and ConvertBack are the ones that publish theirs (R-10, E-361)",
+    markers: ["R-10", "~~", "STRUCK", "RETRACTED"],
+    ownStrike: true,
+  },
+  {
+    phrase: "Only the Send hides",
+    why: "MergeInbox states no amount either; Convert and ConvertBack are the ones that publish theirs (R-10, E-361)",
+    markers: ["R-10", "~~", "STRUCK", "RETRACTED"],
+    ownStrike: true,
+  },
+  // --- retracted 2026-10-24 on the same note (R-11). Under DynamicMPT an issuer can
+  // switch clawback or locking on later, and make a flag immutable at creation OR
+  // later; these sentences gave the condition for locking only, and at creation only.
+  {
+    phrase: "flags were made unchangeable when it",
+    why: "a flag can be made immutable at creation or later, and clawback can be switched on later too (R-11, E-361)",
+    markers: ["R-11", "~~", "STRUCK", "RETRACTED"],
+    ownStrike: true,
+  },
+  {
+    phrase: "flags were fixed when it was created",
+    why: "a flag can be made immutable at creation or later, and clawback can be switched on later too (R-11, E-361)",
+    markers: ["R-11", "~~", "STRUCK", "RETRACTED"],
+    ownStrike: true,
+  },
+  {
+    phrase: "created with its flags made immutable",
+    why: "a flag can be made immutable at creation or later, and clawback can be switched on later too (R-11, E-361)",
+    markers: ["R-11", "~~", "STRUCK", "RETRACTED"],
+    ownStrike: true,
+  },
+  {
+    phrase: "locking was allowed when the token was created",
+    why: "a flag can be made immutable at creation or later, and clawback can be switched on later too (R-11, E-361)",
+    markers: ["R-11", "~~", "STRUCK", "RETRACTED"],
+    ownStrike: true,
+  },
+  // REVIEW-064 A-4 fixed "the only remedy" in the blog and left it in the README,
+  // ADR-0001 and the hosted explainer; found while fixing R-11, and folded into it.
+  {
+    phrase: "only remedy is",
+    why: "clawback needs the flag, which the issuer may or may not be able to set, and nothing establishes it is the only remedy for a lost key (R-11, E-361)",
+    markers: ["R-11", "~~", "STRUCK", "RETRACTED"],
     ownStrike: true,
   },
 ];

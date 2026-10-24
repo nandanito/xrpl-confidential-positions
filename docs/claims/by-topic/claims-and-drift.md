@@ -15,7 +15,7 @@ invisible here** — a reader in `REVIEW-040` put their confidence at ~60% for *
 about secrets"* and said they would fall back to grep. **They were right to.** For an
 exhaustive sweep, search `CLAIMS.md` directly.
 
-**98 rows.**
+**101 rows.**
 
 | id | section | headline | grade |
 |---|---|---|---|
@@ -106,14 +106,17 @@ exhaustive sweep, search `CLAIMS.md` directly.
 | [E-353](../../../CLAIMS.md?plain=1#L413) | Established | The filings were re-surveyed on 2026-10-22, before either post is drafted, and F-9's is fixed: mpt-crypto PR #152 merged on 2026-10-21 and closed… | A, run and read |
 | [E-355](../../../CLAIMS.md?plain=1#L415) | Established | Round two read round one's fixes, R-9 and the blog without its tools sentence, and its stopping condition was set before it ran: no third round. | A, measured |
 | [E-358](../../../CLAIMS.md?plain=1#L418) | Established | The posts' second round ran, with the business case the owner asked for: the blog has a key to the register's ids and a business case with a scored… | A, read |
-| [B-20](../../../CLAIMS.md?plain=1#L439) | Pending | ~~The deterministic signing arm is pub in an ordinary release build, and only a doc comment says it is for vectors.~~ CLOSED 2026-08-27, with the… | CLOSED, with a REAL… |
-| [F-1](../../../CLAIMS.md?plain=1#L471) | Findings | Docs claim the reset inbox value is indistinguishable; it is the canonical EncZero, recomputable by any observer from public inputs, and used on… | A |
-| [F-2](../../../CLAIMS.md?plain=1#L472) | Findings | Spec §13.2.2's "separate view keys" have no ledger field. Protocol layer: issuer keys are permanent. Operational layer: an issuer choosing Mechanism… | A / B |
-| [F-3](../../../CLAIMS.md?plain=1#L473) | Findings | Docs say confidentiality can be toggled on and off; spec and transactor have no clear flag | A |
-| [F-4](../../../CLAIMS.md?plain=1#L474) | Findings | Docs say clawback resets the version counter to 0; it increments | A |
-| [F-24](../../../CLAIMS.md?plain=1#L484) | Findings | Our own facility walkthrough understates what a ConvertBack publishes. | A, executed |
-| [F-26](../../../CLAIMS.md?plain=1#L486) | Findings | The facility walkthrough's *"After this, no plaintext amount appears again until the facility is retired or resized"* was FALSE, and it is the SECOND… | A on the reading, NOT… |
-| [R-3](../../../CLAIMS.md?plain=1#L517) | Retracted | F-3: "docs say confidentiality can be toggled on and off" | Corrected upstream.… |
-| [R-4](../../../CLAIMS.md?plain=1#L518) | Retracted | F-4: "docs say clawback resets the version counter" | Not a doc error.… |
-| [R-7](../../../CLAIMS.md?plain=1#L521) | Retracted | docs/explainer/WHAT-CONFIDENTIAL-MEANS-2026-09-02.md, limit 1, and the README before 2026-10-19: a holder who converts in 500, receives nothing and… | The README's rewrite… |
-| [R-9](../../../CLAIMS.md?plain=1#L523) | Retracted | The hosted explainer /how-it-works, README.md and WHAT-CONFIDENTIAL-MEANS, the last as *"the sentence to use"*: ~~*"it hides the shape of the book,…~~ | True as the register… |
+| [E-361](../../../CLAIMS.md?plain=1#L421) | Established | A RippleX reader of the published blog found two sentences misleading, and both points hold at source: MergeInbox states no amount (R-10), and an… | A, read |
+| [B-20](../../../CLAIMS.md?plain=1#L440) | Pending | ~~The deterministic signing arm is pub in an ordinary release build, and only a doc comment says it is for vectors.~~ CLOSED 2026-08-27, with the… | CLOSED, with a REAL… |
+| [F-1](../../../CLAIMS.md?plain=1#L472) | Findings | Docs claim the reset inbox value is indistinguishable; it is the canonical EncZero, recomputable by any observer from public inputs, and used on… | A |
+| [F-2](../../../CLAIMS.md?plain=1#L473) | Findings | Spec §13.2.2's "separate view keys" have no ledger field. Protocol layer: issuer keys are permanent. Operational layer: an issuer choosing Mechanism… | A / B |
+| [F-3](../../../CLAIMS.md?plain=1#L474) | Findings | Docs say confidentiality can be toggled on and off; spec and transactor have no clear flag | A |
+| [F-4](../../../CLAIMS.md?plain=1#L475) | Findings | Docs say clawback resets the version counter to 0; it increments | A |
+| [F-24](../../../CLAIMS.md?plain=1#L485) | Findings | Our own facility walkthrough understates what a ConvertBack publishes. | A, executed |
+| [F-26](../../../CLAIMS.md?plain=1#L487) | Findings | The facility walkthrough's *"After this, no plaintext amount appears again until the facility is retired or resized"* was FALSE, and it is the SECOND… | A on the reading, NOT… |
+| [R-3](../../../CLAIMS.md?plain=1#L518) | Retracted | F-3: "docs say confidentiality can be toggled on and off" | Corrected upstream.… |
+| [R-4](../../../CLAIMS.md?plain=1#L519) | Retracted | F-4: "docs say clawback resets the version counter" | Not a doc error.… |
+| [R-7](../../../CLAIMS.md?plain=1#L522) | Retracted | docs/explainer/WHAT-CONFIDENTIAL-MEANS-2026-09-02.md, limit 1, and the README before 2026-10-19: a holder who converts in 500, receives nothing and… | The README's rewrite… |
+| [R-9](../../../CLAIMS.md?plain=1#L524) | Retracted | The hosted explainer /how-it-works, README.md and WHAT-CONFIDENTIAL-MEANS, the last as *"the sentence to use"*: ~~*"it hides the shape of the book,…~~ | True as the register… |
+| [R-10](../../../CLAIMS.md?plain=1#L525) | Retracted | The published blog, figure 1 and the LinkedIn card drawn from it, the README, the signer's onboarding disclosure, and the hosted explainer and its… | Meant of the four… |
+| [R-11](../../../CLAIMS.md?plain=1#L526) | Retracted | The published blog, figure 2's alt text, the social drafts, the README, ADR-0001 and the hosted explainer: clawback given as fixed, *"if the token… | The condition was… |

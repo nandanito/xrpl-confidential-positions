@@ -22,7 +22,7 @@ identifier pass leaves out because every package's dependency list looks alike, 
 only the line pass sees a manifest, and only unreflowed.
 
 **What is compared.** On the tracked side, every file `git ls-files` lists with a text
-extension (818 files), except lockfiles, `LICENSE`, `NOTICE`, `LICENSES/`
+extension (823 files), except lockfiles, `LICENSE`, `NOTICE`, `LICENSES/`
 and this directory; lines lose a line-number prefix first. On the upstream side, 110
 corpora are configured in 106 projects:
 **96 were compared and 14 were unavailable**, listed
@@ -36,7 +36,7 @@ Compared at `master`, `9fbf7ef8eb69973f43d44836875e01e6364a3ecb`.
 
 | file | kind | lines |
 |---|---|---|
-| `CLAIMS.md` | prose | 213–216, 496–499 |
+| `CLAIMS.md` | prose | 213–216, 497–500 |
 | `docs/reviews/REVIEW-012-REQUEST-keygen-2026-08-18.md` | prose | 65–68 |
 | `docs/reviews/REVIEW-021-REQUEST-step7-convert-back-2026-08-25.md` | code, prose | 148–176, 184–188 |
 | `docs/reviews/REVIEW-046b-gemini-custody-request-2026-09-13.md` | code, prose | 11–22 |

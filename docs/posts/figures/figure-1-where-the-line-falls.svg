@@ -15,7 +15,7 @@
   <rect width="900" height="470" fill="#ffffff"/>
 
   <text x="450" y="38" text-anchor="middle" font-size="11" letter-spacing="2" fill="#777777">XLS-96 CONFIDENTIAL TRANSFERS · WHAT AN OBSERVER SEES</text>
-  <text x="450" y="72" text-anchor="middle" font-size="23" font-weight="600" fill="#000000">Only a Send hides its amount. Who pays whom is always public.</text>
+  <text x="450" y="72" text-anchor="middle" font-size="23" font-weight="600" fill="#000000">Amounts converted in or out are public. So is who pays whom.</text>
 
   <!-- public balance, left -->
   <rect rx="2" x="30" y="132" width="160" height="84" fill="#fafafa" stroke="#c8c8c8"/>

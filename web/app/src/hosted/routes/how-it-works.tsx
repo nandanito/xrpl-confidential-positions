@@ -71,8 +71,9 @@ function HowItWorks() {
             before their first Send.
           </p>
           <p>
-            <strong>Only Send hides an amount.</strong> The amount is encrypted separately for the
-            sender, the receiver, the issuer and any auditor. Send&rsquo;s proofs show that every copy is
+            <strong>Send hides its amount.</strong> MergeInbox states none, while Convert and ConvertBack
+            publish theirs. A Send&rsquo;s amount is encrypted separately for the sender, the receiver,
+            the issuer and any auditor. Send&rsquo;s proofs show that every copy is
             the same number, that the sender holds the key to their balance, and that neither the amount
             nor the sender&rsquo;s remaining balance is negative.
           </p>
@@ -215,8 +216,9 @@ function HowItWorks() {
         <ul className="text-sm leading-relaxed list-disc pl-5 space-y-2">
           <li>
             <strong>No key rotation or recovery in XLS-96.</strong> A registered key can never be changed.
-            If a holder loses it, and any seed it can be re-derived from, the balance cannot be spent, and
-            the only remedy is an issuer clawback, which destroys the balance. A key this project derives
+            If a holder loses it, and any seed it can be re-derived from, the balance cannot be spent. If
+            the token allows clawback, or the issuer can still switch it on, the issuer can remove the
+            balance, and a clawback destroys it. A key this project derives
             from the master seed can be re-derived from that seed, but the derivation is not a published
             standard. A draft standard, XLS-99, proposes rotation and recovery; on 2026-10-20 Mainnet,
             Testnet and Devnet did not know its amendment.
@@ -224,9 +226,10 @@ function HowItWorks() {
           <li>
             <strong>The issuer can act without the holder&rsquo;s consent.</strong> If the token allows
             clawback, the issuer can destroy a holder&rsquo;s whole confidential balance; this
-            project&rsquo;s tokens allow it. Unless the token&rsquo;s flags were made unchangeable when it
-            was created, and this project&rsquo;s were not, the issuer can also turn on locking later and
-            freeze balances. That second power was read in rippled&rsquo;s source, not run.
+            project&rsquo;s tokens allow it. If the token allows locking, the issuer can freeze balances.
+            On Devnet an issuer can switch either on after creating the token; only making that setting
+            unchangeable prevents it, which an issuer can do at creation or later, and this
+            project&rsquo;s issuers have not. These powers were read in rippled&rsquo;s source, not run.
           </li>
           <li>
             <strong>Not audited.</strong> This is a research project on a test network. It is not

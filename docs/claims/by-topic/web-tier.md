@@ -43,4 +43,4 @@ exhaustive sweep, search `CLAIMS.md` directly.
 | [E-351](../../../CLAIMS.md?plain=1#L411) | Established | The hosted demo has diagrams on all seven pages, read twice before any deploy, and this row records no deployment. | A for the build,… |
 | [E-352](../../../CLAIMS.md?plain=1#L412) | Established | The demo serves the explainer and its diagrams: PR #19 and PR #20 carried E-349 to E-351, R-7 and R-8 to the public repository, the owner deployed… | A, measured |
 | [E-359](../../../CLAIMS.md?plain=1#L419) | Established | The owner signed off the launch posts on 2026-10-23, and the blog is published at https://nandan.me/writing/amounts-not-relationships/, its text byte… | A, measured |
-| [R-8](../../../CLAIMS.md?plain=1#L522) | Retracted | web/api/capability.ts's wallet row and the wallet page: *"A confidential transaction needs the ElGamal secret and the account key"*, and *"needs two… | Found by REVIEW-061… |
+| [R-8](../../../CLAIMS.md?plain=1#L523) | Retracted | web/api/capability.ts's wallet row and the wallet page: *"A confidential transaction needs the ElGamal secret and the account key"*, and *"needs two… | Found by REVIEW-061… |

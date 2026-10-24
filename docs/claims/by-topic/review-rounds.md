@@ -112,8 +112,8 @@ exhaustive sweep, search `CLAIMS.md` directly.
 | [E-358](../../../CLAIMS.md?plain=1#L418) | Established | The posts' second round ran, with the business case the owner asked for: the blog has a key to the register's ids and a business case with a scored… | A, read |
 | [E-359](../../../CLAIMS.md?plain=1#L419) | Established | The owner signed off the launch posts on 2026-10-23, and the blog is published at https://nandan.me/writing/amounts-not-relationships/, its text byte… | A, measured |
 | [E-360](../../../CLAIMS.md?plain=1#L420) | Established | Re-surveyed on 2026-10-23 at the owner's request: no filing changed, and two mpt-crypto pull requests merged on 2026-10-22 after E-353's survey read… | A, read |
-| [B-24](../../../CLAIMS.md?plain=1#L431) | Pending | REVIEW-031's fixes — the seed residue B-23 left, and the gate that could not see it. | BUILT 2026-08-28. The… |
-| [B-25](../../../CLAIMS.md?plain=1#L432) | Pending | REVIEW-032's fixes — the derived ElGamal secret, and the pin that did not pin. | BUILT 2026-08-28. The… |
-| [B-26](../../../CLAIMS.md?plain=1#L433) | Pending | REVIEW-033's fixes — the falsifier that was UB, and the gate's fourth round of false passes. | BUILT 2026-08-28. The… |
-| [B-14](../../../CLAIMS.md?plain=1#L445) | Pending | ~~Where the transaction's own ECDSA signing nonce k comes from — a fifth randomness site, and no packet has covered it.~~ RULED 2026-08-20 → E-109.… | RESOLVED → REVIEW-018-… |
-| [F-20](../../../CLAIMS.md?plain=1#L493) | Findings | REVIEW-012-RULING-keygen's domain-separation table named a label family that does not exist. | A |
+| [B-24](../../../CLAIMS.md?plain=1#L432) | Pending | REVIEW-031's fixes — the seed residue B-23 left, and the gate that could not see it. | BUILT 2026-08-28. The… |
+| [B-25](../../../CLAIMS.md?plain=1#L433) | Pending | REVIEW-032's fixes — the derived ElGamal secret, and the pin that did not pin. | BUILT 2026-08-28. The… |
+| [B-26](../../../CLAIMS.md?plain=1#L434) | Pending | REVIEW-033's fixes — the falsifier that was UB, and the gate's fourth round of false passes. | BUILT 2026-08-28. The… |
+| [B-14](../../../CLAIMS.md?plain=1#L446) | Pending | ~~Where the transaction's own ECDSA signing nonce k comes from — a fifth randomness site, and no packet has covered it.~~ RULED 2026-08-20 → E-109.… | RESOLVED → REVIEW-018-… |
+| [F-20](../../../CLAIMS.md?plain=1#L494) | Findings | REVIEW-012-RULING-keygen's domain-separation table named a label family that does not exist. | A |

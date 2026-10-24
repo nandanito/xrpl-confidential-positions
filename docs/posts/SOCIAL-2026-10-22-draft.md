@@ -41,8 +41,8 @@ when, and every amount converted in or out, but no balance beyond whether it is 
 no Send amount. A holder sees their own balance and Sends, and can spend their own with both
 their keys. The issuer, highlighted, reads every balance and every Send amount and cannot spend,
 but if the token's settings allow, it can destroy or freeze a balance: destroy only if
-the token allows clawback, and freeze only if locking was allowed when the token was
-created or can still be turned on. An auditor, if the token
+the token allows clawback, and freeze only if it allows locking. An issuer can switch
+either on later unless it has made that setting unchangeable. An auditor, if the token
 names one, reads every balance and Send amount and cannot spend.
 -->
 
@@ -96,7 +96,7 @@ Hidden from the public: each holder's balance, and the amount of each transfer b
 
 Public: who pays whom, when and how often; every amount moved into or out of confidential form; and some zero balances, which anyone can recompute from public inputs. I matched that fixed encryption of zero byte for byte against live Devnet state.
 
-The token's issuer reads every balance, always, and no setting turns that off. If the token allows clawback, the issuer can destroy a confidential balance, and unless the token's flags were fixed when it was created, it can turn on locking later and freeze one.
+The token's issuer reads every balance, always, and no setting turns that off. If the token allows clawback, the issuer can destroy a confidential balance, and if it allows locking, freeze one. The issuer can switch either on later, unless it has made that setting unchangeable.
 
 Keys cannot be rotated or recovered, in XLS-96 or, as I write this, on Mainnet, Testnet or Devnet. A draft standard, XLS-99, would add both; those three networks do not know it yet.
 

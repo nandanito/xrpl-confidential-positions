@@ -241,8 +241,8 @@ pub const WHAT_IS_NOT_HIDDEN: &str = "\
   It hides nothing else — and that is narrower than it sounds:
 
   - CONVERTING IN OR OUT PUBLISHES THE AMOUNT, in plaintext, every time.
-    Only a Send hides one. So the figure you move into confidential form and
-    every figure you take back out are public forever.
+    A Send or a MergeInbox publishes no amount. So the figure you move into
+    confidential form and every figure you take back out are public forever.
   - A balance that has never been used is publicly recognisable as EXACTLY
     ZERO. A balance you have spent down to zero is not.
   - Who you are, who you transact with, when, and how often are all public.

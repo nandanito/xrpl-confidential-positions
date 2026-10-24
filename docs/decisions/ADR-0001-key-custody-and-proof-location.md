@@ -180,9 +180,9 @@ Verified against spec §6, §7, §12, `sfields.macro` and `ledger_entries.macro`
 >
 > **Who can spend a holder's balance:** only that holder.
 >
-> **What the issuer can do without holder consent:** if `lsfMPTCanClawback` is set on the issuance, **destroy** any holder's entire confidential balance at any time — burned, not transferred. The issuer can also remove the Permissioned Domain gate unilaterally by clearing `DomainID`. Whether to set the clawback flag is this project's choice and must be disclosed either way.
+> **What the issuer can do without holder consent:** if `lsfMPTCanClawback` is set on the issuance, **destroy** any holder's entire confidential balance at any time — burned, not transferred. The issuer can also remove the Permissioned Domain gate unilaterally by clearing `DomainID`. Whether to set the clawback flag is this project's choice and must be disclosed either way. ⚠ **Corrected 2026-10-24 (R-11):** under `DynamicMPT` an issuer can also set `lsfMPTCanClawback` after creation, unless it has made that flag immutable, at creation or later (E-361).
 >
-> **If a holder loses their key:** the balance is permanently unspendable. No rotation, no recovery. The only remedy is clawback, which destroys it.
+> **If a holder loses their key:** the balance is permanently unspendable. No rotation, no recovery. ~~The only remedy is clawback, which destroys it.~~ ⚠ **STRUCK 2026-10-24 (R-11):** if the issuance allows clawback, or the issuer can still enable it, the issuer can remove the balance, and a clawback destroys it; nothing establishes that it is the only remedy.
 >
 > **Trusted parties:** the issuer, for supply integrity, for clawback, and for decryption of every balance. The auditor, if named, for decryption of every balance.
 
